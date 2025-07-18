@@ -1,0 +1,30 @@
+{
+    "name": "nwidart/tankerlogistics",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\TankerLogistics\\": "app/",
+            "Modules\\TankerLogistics\\Database\\Factories\\": "database/factories/",
+            "Modules\\TankerLogistics\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\TankerLogistics\\Tests\\": "tests/"
+        }
+    }
+}

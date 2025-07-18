@@ -2,5 +2,6 @@
     "UsersAndTeams": true,
     "DistributionNetwork": true,
     "Sensors": true,
-    "WaterSources": true
+    "WaterSources": true,
+    "TankerLogistics": true
 }
