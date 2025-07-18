@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\TankerLogistics\Providers;
+namespace Modules\WaterDistributionOperations\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 

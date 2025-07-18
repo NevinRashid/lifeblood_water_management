@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\TankerLogistics\Providers;
+namespace Modules\WaterDistributionOperations\Providers;
 
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
@@ -8,13 +8,13 @@ use Nwidart\Modules\Traits\PathNamespace;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
-class TankerLogisticsServiceProvider extends ServiceProvider
+class WaterDistributionOperationsServiceProvider extends ServiceProvider
 {
     use PathNamespace;
 
-    protected string $name = 'TankerLogistics';
+    protected string $name = 'WaterDistributionOperations';
 
-    protected string $nameLower = 'tankerlogistics';
+    protected string $nameLower = 'waterdistributionoperations';
 
     /**
      * Boot the application events.

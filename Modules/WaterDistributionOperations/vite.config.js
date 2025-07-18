@@ -6,14 +6,14 @@ import { fileURLToPath } from 'url';
 
 export default defineConfig({
     build: {
-        outDir: '../../public/build-tankerlogistics',
+        outDir: '../../public/build-waterdistributionoperations',
         emptyOutDir: true,
         manifest: true,
     },
     plugins: [
         laravel({
             publicDirectory: '../../public',
-            buildDirectory: 'build-tankerlogistics',
+            buildDirectory: 'build-waterdistributionoperations',
             input: [
                 __dirname + '/resources/assets/sass/app.scss',
                 __dirname + '/resources/assets/js/app.js'
@@ -32,7 +32,7 @@ export default defineConfig({
 //            const filePath = join(currentPath, file);
 //            const stats = statSync(filePath);
 //            if (stats.isFile() && !file.startsWith('.')) {
-//                const relativePath = 'Modules/TankerLogistics/'+relative(__dirname, filePath);
+//                const relativePath = 'Modules/WaterDistributionOperations/'+relative(__dirname, filePath);
 //                filePaths.push(relativePath);
 //            } else if (stats.isDirectory()) {
 //                walkDirectory(filePath);
@@ -52,6 +52,6 @@ export default defineConfig({
 
 
 //export const paths = [
-//    'Modules/TankerLogistics/resources/assets/sass/app.scss',
-//    'Modules/TankerLogistics/resources/assets/js/app.js',
+//    'Modules/WaterDistributionOperations/resources/assets/sass/app.scss',
+//    'Modules/WaterDistributionOperations/resources/assets/js/app.js',
 //];

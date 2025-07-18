@@ -1,13 +1,13 @@
 <?php
 
-namespace Modules\TankerLogistics\Providers;
+namespace Modules\WaterDistributionOperations\Providers;
 
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Route;
 
 class RouteServiceProvider extends ServiceProvider
 {
-    protected string $name = 'TankerLogistics';
+    protected string $name = 'WaterDistributionOperations';
 
     /**
      * Called before routes are registered.

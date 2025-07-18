@@ -1,5 +1,5 @@
 {
-    "name": "nwidart/tankerlogistics",
+    "name": "nwidart/waterdistributionoperations",
     "description": "",
     "authors": [
         {
@@ -17,14 +17,14 @@
     },
     "autoload": {
         "psr-4": {
-            "Modules\\TankerLogistics\\": "app/",
-            "Modules\\TankerLogistics\\Database\\Factories\\": "database/factories/",
-            "Modules\\TankerLogistics\\Database\\Seeders\\": "database/seeders/"
+            "Modules\\WaterDistributionOperations\\": "app/",
+            "Modules\\WaterDistributionOperations\\Database\\Factories\\": "database/factories/",
+            "Modules\\WaterDistributionOperations\\Database\\Seeders\\": "database/seeders/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Modules\\TankerLogistics\\Tests\\": "tests/"
+            "Modules\\WaterDistributionOperations\\Tests\\": "tests/"
         }
     }
 }

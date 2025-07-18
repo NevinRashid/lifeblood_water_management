@@ -1,10 +1,10 @@
 <?php
 
-namespace Modules\TankerLogistics\Database\Seeders;
+namespace Modules\WaterDistributionOperations\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 
-class TankerLogisticsDatabaseSeeder extends Seeder
+class WaterDistributionOperationsDatabaseSeeder extends Seeder
 {
     /**
      * Run the database seeds.

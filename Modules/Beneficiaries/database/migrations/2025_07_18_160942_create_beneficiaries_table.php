@@ -21,8 +21,7 @@ return new class extends Migration
             $table->foreignId('distribution_point_id')->constrained('distribution_points')->cascadeOnDelete();
             $table->enum('status', ['active', 'inactive', 'relocated']);
             $table->text('notes')->nullable();
-            $table->index(['family_name', 'benefit_type', 'distribution_point_id']);
-            $table->spatialIndex('location');
+            $table->index(['benefit_type', 'distribution_point_id']);
             $table->timestamps();
         });
     }

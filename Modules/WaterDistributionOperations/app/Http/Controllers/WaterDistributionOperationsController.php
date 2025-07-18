@@ -1,18 +1,18 @@
 <?php
 
-namespace Modules\TankerLogistics\Http\Controllers;
+namespace Modules\WaterDistributionOperations\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class TankerLogisticsController extends Controller
+class WaterDistributionOperationsController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return view('tankerlogistics::index');
+        return view('waterdistributionoperations::index');
     }
 
     /**
@@ -20,7 +20,7 @@ class TankerLogisticsController extends Controller
      */
     public function create()
     {
-        return view('tankerlogistics::create');
+        return view('waterdistributionoperations::create');
     }
 
     /**
@@ -33,7 +33,7 @@ class TankerLogisticsController extends Controller
      */
     public function show($id)
     {
-        return view('tankerlogistics::show');
+        return view('waterdistributionoperations::show');
     }
 
     /**
@@ -41,7 +41,7 @@ class TankerLogisticsController extends Controller
      */
     public function edit($id)
     {
-        return view('tankerlogistics::edit');
+        return view('waterdistributionoperations::edit');
     }
 
     /**

@@ -1,0 +1,11 @@
+{
+    "name": "WaterDistributionOperations",
+    "alias": "waterdistributionoperations",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\WaterDistributionOperations\\Providers\\WaterDistributionOperationsServiceProvider"
+    ],
+    "files": []
+}
