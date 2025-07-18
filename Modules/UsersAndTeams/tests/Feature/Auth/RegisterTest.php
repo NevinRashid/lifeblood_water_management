@@ -1,10 +1,9 @@
 <?php
+namespace Modules\UsersAndTeams\Auth\tests;
 
-namespace Tests\Feature\Auth;
-
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Modules\UsersAndTeams\Models\User;
 use Tests\TestCase;
 
 class RegisterTest extends TestCase

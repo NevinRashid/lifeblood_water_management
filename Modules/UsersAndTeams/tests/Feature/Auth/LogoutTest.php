@@ -1,11 +1,11 @@
 <?php
 
-namespace Tests\Feature\Auth;
+namespace Modules\UsersAndTeams\Auth\tests;
 
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Laravel\Sanctum\Sanctum;
+use Modules\UsersAndTeams\Models\User;
 use Tests\TestCase;
 
 class LogoutTest extends TestCase
