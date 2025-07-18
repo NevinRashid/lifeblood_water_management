@@ -3,5 +3,6 @@
     "DistributionNetwork": true,
     "Sensors": true,
     "WaterSources": true,
-    "TankerLogistics": true
+    "TankerLogistics": true,
+    "Beneficiaries": true
 }
