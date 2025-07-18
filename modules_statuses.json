@@ -1,4 +1,5 @@
 {
     "UsersAndTeams": true,
-    "DistributionNetwork": true
+    "DistributionNetwork": true,
+    "Sensors": true
 }
