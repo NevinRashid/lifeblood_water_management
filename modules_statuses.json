@@ -1,5 +1,6 @@
 {
     "UsersAndTeams": true,
     "DistributionNetwork": true,
-    "Sensors": true
+    "Sensors": true,
+    "WaterSources": true
 }
