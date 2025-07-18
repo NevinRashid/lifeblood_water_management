@@ -1,0 +1,11 @@
+{
+    "name": "TicketsAndReforms",
+    "alias": "ticketsandreforms",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\TicketsAndReforms\\Providers\\TicketsAndReformsServiceProvider"
+    ],
+    "files": []
+}

@@ -4,5 +4,6 @@
     "Sensors": true,
     "WaterSources": true,
     "TankerLogistics": true,
-    "Beneficiaries": true
+    "Beneficiaries": true,
+    "TicketsAndReforms": true
 }

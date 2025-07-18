@@ -1,0 +1,30 @@
+{
+    "name": "nwidart/ticketsandreforms",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\TicketsAndReforms\\": "app/",
+            "Modules\\TicketsAndReforms\\Database\\Factories\\": "database/factories/",
+            "Modules\\TicketsAndReforms\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\TicketsAndReforms\\Tests\\": "tests/"
+        }
+    }
+}
