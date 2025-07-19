@@ -1,0 +1,11 @@
+{
+    "name": "WaterSources",
+    "alias": "watersources",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\WaterSources\\Providers\\WaterSourcesServiceProvider"
+    ],
+    "files": []
+}

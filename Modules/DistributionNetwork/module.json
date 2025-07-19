@@ -1,0 +1,11 @@
+{
+    "name": "DistributionNetwork",
+    "alias": "distributionnetwork",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\DistributionNetwork\\Providers\\DistributionNetworkServiceProvider"
+    ],
+    "files": []
+}

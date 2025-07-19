@@ -1,0 +1,30 @@
+{
+    "name": "nwidart/waterdistributionoperations",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\WaterDistributionOperations\\": "app/",
+            "Modules\\WaterDistributionOperations\\Database\\Factories\\": "database/factories/",
+            "Modules\\WaterDistributionOperations\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\WaterDistributionOperations\\Tests\\": "tests/"
+        }
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "UsersAndTeams": true,
+    "DistributionNetwork": true,
+    "Sensors": true,
+    "WaterSources": true,
+    "TankerLogistics": true,
+    "Beneficiaries": true,
+    "TicketsAndReforms": true,
+    "WaterDistributionOperations": true
+}
