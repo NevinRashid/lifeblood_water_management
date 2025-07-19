@@ -16,17 +16,20 @@ use Modules\WaterDistributionOperations\Models\DeliveryRoute;
 use Modules\WaterDistributionOperations\Models\ReservoirActivity;
 use Modules\WaterDistributionOperations\Models\Tanker;
 use Modules\WaterDistributionOperations\Models\UserTanker;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Modules\UsersAndTeams\Database\Factories\UserFactory> */
-    use HasFactory, HasApiTokens, Notifiable;
+    use HasFactory,HasRoles, HasApiTokens, Notifiable;
 
     /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
      */
+    
+    protected $guard_name ='web';
     protected $fillable = [
         'name',
         'email',
