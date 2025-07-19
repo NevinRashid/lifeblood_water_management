@@ -8,12 +8,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Modules\UsersAndTeams\Models\User;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Translatable\HasTranslations;
 
 // use Modules\TicketsAndReforms\Database\Factories\TroubleTicketFactory;
 
 class TroubleTicket extends Model
 {
-    use HasFactory;
+    use HasFactory,LogsActivity, HasTranslations;
 
     /**
      * The attributes that are mass assignable.
@@ -61,4 +64,11 @@ class TroubleTicket extends Model
     // {
     //     // return TroubleTicketFactory::new();
     // }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+        ->logFillable();
+        // Chain fluent methods for configuration options
+    }
 }

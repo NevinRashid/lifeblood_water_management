@@ -7,12 +7,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\DistributionNetwork\Models\DistributionPoint;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Translatable\HasTranslations;
 
 // use Modules\Beneficiaries\Database\Factories\BeneficiaryFactory;
 
 class Beneficiary extends Model
 {
-    use HasFactory;
+    use HasFactory,LogsActivity, HasTranslations;
 
     /**
      * The attributes that are mass assignable.
@@ -53,4 +56,11 @@ class Beneficiary extends Model
     // {
     //     // return BeneficiaryFactory::new();
     // }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+        ->logFillable();
+        // Chain fluent methods for configuration options
+    }
 }

@@ -17,18 +17,21 @@ use Modules\WaterDistributionOperations\Models\ReservoirActivity;
 use Modules\WaterDistributionOperations\Models\Tanker;
 use Modules\WaterDistributionOperations\Models\UserTanker;
 use Spatie\Permission\Traits\HasRoles;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Translatable\HasTranslations;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Modules\UsersAndTeams\Database\Factories\UserFactory> */
-    use HasFactory,HasRoles, HasApiTokens, Notifiable;
+
+    use HasFactory,HasRoles, HasApiTokens, Notifiable,LogsActivity,HasTranslations;
 
     /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
      */
-    
+
     protected $guard_name ='web';
     protected $fillable = [
         'name',
@@ -104,5 +107,12 @@ class User extends Authenticatable
         return $this->belongsToMany(Tanker::class, 'user_tanker')
             ->using(UserTanker::class)
             ->withTimestamps();
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+        ->logFillable();
+        // Chain fluent methods for configuration options
     }
 }

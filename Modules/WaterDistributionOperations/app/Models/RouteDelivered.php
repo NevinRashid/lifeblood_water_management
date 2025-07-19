@@ -6,12 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Modules\DistributionNetwork\Models\DistributionPoint;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Translatable\HasTranslations;
 
 // use Modules\WaterDistributionOperations\Database\Factories\RouteDeliveredFactory;
 
 class RouteDelivered extends Model
 {
-    use HasFactory;
+    use HasFactory,LogsActivity, HasTranslations;
 
     /**
      * The attributes that are mass assignable.
@@ -42,5 +45,12 @@ class RouteDelivered extends Model
     public function distributionPoint(): BelongsTo
     {
         return $this->belongsTo(DistributionPoint::class);
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+        ->logFillable();
+        // Chain fluent methods for configuration options
     }
 }

@@ -6,12 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Translatable\HasTranslations;
 
 // use Modules\Sensors\Database\Factories\SensorFactory;
 
 class Sensor extends Model
 {
-    use HasFactory;
+    use HasFactory,LogsActivity,HasTranslations;
 
     /**
      * The attributes that are mass assignable.
@@ -51,4 +54,11 @@ class Sensor extends Model
     // {
     //     // return SensorFactory::new();
     // }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+        ->logFillable();
+        // Chain fluent methods for configuration options
+    }
 }
