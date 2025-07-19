@@ -7,11 +7,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use MatanYadaev\EloquentSpatial\Traits\HasSpatial;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Translatable\HasTranslations;
+
 // use Modules\WaterSources\Database\Factories\WaterSourceFactory;
 
 class WaterSource extends Model
 {
-    use HasFactory , HasSpatial ;
+    use HasFactory , HasSpatial, LogsActivity ,HasTranslations;
 
     /**
      * The attributes that are mass assignable.
@@ -29,7 +33,7 @@ class WaterSource extends Model
     protected $casts = [
         'location' => 'point', // Cast location as spatial point
     ];
-    
+
     /**
      * Get all extractions from this source
      */
@@ -61,4 +65,11 @@ class WaterSource extends Model
     // {
     //     // return WaterSourceFactory::new();
     // }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+        ->logFillable();
+        // Chain fluent methods for configuration options
+    }
 }

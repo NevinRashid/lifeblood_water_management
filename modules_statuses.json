@@ -6,5 +6,7 @@
     "TankerLogistics": true,
     "Beneficiaries": true,
     "TicketsAndReforms": true,
-    "WaterDistributionOperations": true
+    "WaterDistributionOperations": true,
+    "Notification": true,
+    "Notifications": true
 }
