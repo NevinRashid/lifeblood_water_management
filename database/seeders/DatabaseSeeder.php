@@ -8,6 +8,7 @@ use Modules\UsersAndTeams\Database\Seeders\PermissionSeeder;
 use Modules\UsersAndTeams\Database\Seeders\RoleSeeder;
 use Modules\UsersAndTeams\Database\Seeders\UsersAndTeamsDatabaseSeeder;
 
+
 class DatabaseSeeder extends Seeder
 {
     /**
@@ -19,6 +20,7 @@ class DatabaseSeeder extends Seeder
             PermissionSeeder::class,
             RoleSeeder::class,
             UsersAndTeamsDatabaseSeeder::class
+
         ]);
     }
 }
