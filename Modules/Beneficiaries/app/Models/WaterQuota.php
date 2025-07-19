@@ -6,12 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Modules\WaterDistributionOperations\Models\DeliveryRoute;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Translatable\HasTranslations;
 
 // use Modules\Beneficiaries\Database\Factories\WaterQuotaFactory;
 
 class WaterQuota extends Model
 {
-    use HasFactory;
+    use HasFactory,LogsActivity, HasTranslations;
 
     /**
      * The attributes that are mass assignable.
@@ -49,4 +52,11 @@ class WaterQuota extends Model
     // {
     //     // return WaterQuotaFactory::new();
     // }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+        ->logFillable();
+        // Chain fluent methods for configuration options
+    }
 }

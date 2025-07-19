@@ -7,12 +7,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\UsersAndTeams\Models\User;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Translatable\HasTranslations;
 
 // use Modules\WaterDistributionOperations\Database\Factories\TankerFactory;
 
 class Tanker extends Model
 {
-    use HasFactory;
+    use HasFactory,LogsActivity, HasTranslations;
 
     /**
      * The attributes that are mass assignable.
@@ -45,5 +48,12 @@ class Tanker extends Model
     public function deliveryRoutes(): HasMany
     {
         return $this->hasMany(DeliveryRoute::class, 'user_tanker_id');
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+        ->logFillable();
+        // Chain fluent methods for configuration options
     }
 }

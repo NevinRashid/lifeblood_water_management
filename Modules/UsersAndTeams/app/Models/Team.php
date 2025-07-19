@@ -8,12 +8,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\TicketsAndReforms\Models\Reform;
 use Modules\TicketsAndReforms\Models\TroubleTicket;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Translatable\HasTranslations;
 
 // use Modules\UsersAndTeams\Database\Factories\TeamFactory;
 
 class Team extends Model
 {
-    use HasFactory ;
+    use HasFactory ,LogsActivity,HasTranslations;
 
     /**
      * The attributes that are mass assignable.
@@ -50,4 +53,11 @@ class Team extends Model
     // {
     //     // return TeamFactory::new();
     // }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+        ->logFillable();
+        // Chain fluent methods for configuration options
+    }
 }
