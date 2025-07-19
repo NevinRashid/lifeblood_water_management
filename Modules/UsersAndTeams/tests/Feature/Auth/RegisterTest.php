@@ -1,5 +1,5 @@
 <?php
-namespace Modules\UsersAndTeams\Auth\tests;
+namespace Modules\UsersAndTeams\Tests\Feature\Auth;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
