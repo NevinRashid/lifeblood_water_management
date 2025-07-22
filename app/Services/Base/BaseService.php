@@ -47,13 +47,26 @@ abstract class BaseService implements BaseServiceInterface
     protected function handle(Closure $callback)
     {
         try {
-            return $callback();
+        return $callback();
         } catch (ModelNotFoundException $e) {
-            throw new CrudException("Resource Not Found", 404);
-        } catch (\Throwable $e) {
-            throw new CrudException('An unexpected error,', 500);
-        }
+        throw new CrudException("Resource Not Found", 404);
+    } catch (\Throwable $e) {
+
+    if (config('app.debug', false)) {
+
+        $detailedMessage = sprintf(
+        "Error: %s in %s on line %d",
+        $e->getMessage(),
+        $e->getFile(),
+        $e->getLine(),
+                );
+    throw new CrudException($detailedMessage, 500);
     }
+
+    throw new CrudException('An unexpected error has occurred.', 500);
+    }
+    }
+
 
     /**
      * Retrieve all records from the associated repository, with optional filtering and pagination.
