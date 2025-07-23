@@ -11,7 +11,11 @@ use Modules\WaterSources\Http\Requests\UpdateWaterQualityTestRequest;
 class WaterQualityTestController extends Controller
 {
 
-    public function __construct(protected WaterQualityTestService $service) {}
+    public function __construct(protected WaterQualityTestService $service) {
+
+        $this->middleware('permission:record water quality analysis')->only('store');
+        $this->middleware('permission:view water quality reports')->only(['index', 'show']);
+    }
 
     /**
      * Display a listing of the resource.
