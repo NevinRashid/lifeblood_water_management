@@ -25,17 +25,17 @@ class AuthService
                 'password' => Hash::make($data['password']),
             ]);
 
-            // Attempt to send email verification
-            try {
-                $user->sendEmailVerificationNotification();
-            } catch (Exception $e) {
-                throw new Exception('Failed to send verification email. Please try again.');
-            }
+            // // Attempt to send email verification
+            // try {
+            //     $user->sendEmailVerificationNotification();
+            // } catch (Exception $e) {
+            //     throw new Exception('Failed to send verification email. Please try again.');
+            // }
 
             return $user;
         } catch (Exception $e) {
             Log::error("Error registering user: " . $e->getMessage());
-            throw new Exception('User registration failed.');
+            throw new Exception('User registration failed.' . $e);
         }
     }
 
@@ -55,9 +55,9 @@ class AuthService
             throw new Exception('Invalid credentials');
         }
 
-        if (!$user->hasVerifiedEmail()) {
-            throw new Exception('Please verify your email first.');
-        }
+        // if (!$user->hasVerifiedEmail()) {
+        //     throw new Exception('Please verify your email first.');
+        // }
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
