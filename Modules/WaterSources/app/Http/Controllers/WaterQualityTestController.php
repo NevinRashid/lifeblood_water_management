@@ -13,7 +13,7 @@ class WaterQualityTestController extends Controller
 
     public function __construct(protected WaterQualityTestService $service) {
 
-        $this->middleware('permission:record water quality analysis')->only('store');
+        $this->middleware('permission:record water quality analysis')->only('store' , 'update');
         $this->middleware('permission:view water quality reports')->only(['index', 'show']);
     }
 
