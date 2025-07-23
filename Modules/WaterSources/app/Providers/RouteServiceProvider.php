@@ -4,6 +4,7 @@ namespace Modules\WaterSources\Providers;
 
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Route;
+use Modules\WaterSources\Models\WaterSource;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -17,6 +18,7 @@ class RouteServiceProvider extends ServiceProvider
     public function boot(): void
     {
         parent::boot();
+        Route::model('watersources',WaterSource::class);
     }
 
     /**

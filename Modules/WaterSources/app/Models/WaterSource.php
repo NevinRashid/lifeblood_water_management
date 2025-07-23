@@ -2,20 +2,22 @@
 
 namespace Modules\WaterSources\Models;
 
+use Spatie\Activitylog\LogOptions;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Translatable\HasTranslations;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use MatanYadaev\EloquentSpatial\Objects\Point;
+use MatanYadaev\EloquentSpatial\Traits\HasSpatial;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use MatanYadaev\EloquentSpatial\Traits\HasSpatial;
-use Spatie\Activitylog\LogOptions;
-use Spatie\Activitylog\Traits\LogsActivity;
-use Spatie\Translatable\HasTranslations;
 
 // use Modules\WaterSources\Database\Factories\WaterSourceFactory;
 
 class WaterSource extends Model
 {
-    use HasFactory , HasSpatial, LogsActivity ,HasTranslations;
+    use HasFactory , HasSpatial, LogsActivity ,HasTranslations,InteractsWithMedia;
 
     /**
      * The attributes that are mass assignable.
@@ -30,10 +32,18 @@ class WaterSource extends Model
         'operating_date'
     ];
 
-    protected $casts = [
-        'location' => 'point', // Cast location as spatial point
-    ];
+        protected $casts = [
+            'location' => Point::class,
+            'operating_date' => 'date',
+        ];
 
+    // Register media collections
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('water_source_documents');
+        $this->addMediaCollection('water_source_images');
+        $this->addMediaCollection('water_source_videos');
+    }
     /**
      * Get all extractions from this source
      */
@@ -66,10 +76,15 @@ class WaterSource extends Model
     //     // return WaterSourceFactory::new();
     // }
 
-    public function getActivitylogOptions(): LogOptions
+   public function getActivitylogOptions(): LogOptions
+{
+    return LogOptions::defaults()
+        ->logOnly(['name', 'source', 'status', 'operating_date'])
+        ->logOnlyDirty()
+        ->dontSubmitEmptyLogs();
+}
+     public function setNameAttribute($value)
     {
-        return LogOptions::defaults()
-        ->logFillable();
-        // Chain fluent methods for configuration options
+        $this->attributes['name'] = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
     }
 }
