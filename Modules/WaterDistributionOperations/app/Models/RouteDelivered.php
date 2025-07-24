@@ -31,6 +31,8 @@ class RouteDelivered extends Model
         'arrival_time' => 'datetime'
     ];
 
+    protected $table = 'route_deliverd';
+
     /**
      * The parent delivery route
      */

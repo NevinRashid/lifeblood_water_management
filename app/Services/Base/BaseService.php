@@ -32,7 +32,6 @@ abstract class BaseService implements BaseServiceInterface
      */
     protected BaseRepositoryInterface $repository;
 
-
     /**
      * Handles the execution of a given callback, providing centralized exception handling.
      *

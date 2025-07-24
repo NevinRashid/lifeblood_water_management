@@ -4,6 +4,8 @@ namespace Modules\TicketsAndReforms\Providers;
 
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
+use Modules\TicketsAndReforms\Models\Reform;
+use Modules\TicketsAndReforms\Observers\ReformObserver;
 use Nwidart\Modules\Traits\PathNamespace;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -27,6 +29,7 @@ class TicketsAndReformsServiceProvider extends ServiceProvider
         $this->registerConfig();
         $this->registerViews();
         $this->loadMigrationsFrom(module_path($this->name, 'database/migrations'));
+        Reform::observe(ReformObserver::class);
     }
 
     /**

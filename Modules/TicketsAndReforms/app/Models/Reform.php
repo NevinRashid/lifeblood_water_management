@@ -2,19 +2,21 @@
 
 namespace Modules\TicketsAndReforms\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Modules\UsersAndTeams\Models\Team;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Translatable\HasTranslations;
 
 // use Modules\TicketsAndReforms\Database\Factories\ReformFactory;
 
 class Reform extends Model
 {
-    use HasFactory,LogsActivity, HasTranslations;
+    use HasFactory,LogsActivity, HasTranslations,InteractsWithMedia;
 
     /**
      * The attributes that are mass assignable.
@@ -23,9 +25,9 @@ class Reform extends Model
         'trouble_ticket_id',
         'description',
         'status',
+        'team_id',
         'reform_cost',
         'materials_used',
-        'team_id',
         'start_date',
         'end_date'
     ];
@@ -52,10 +54,25 @@ class Reform extends Model
         return $this->belongsTo(Team::class);
     }
 
-    // protected static function newFactory(): ReformFactory
-    // {
-    //     // return ReformFactory::new();
-    // }
+    /**
+     * This method is to clean the description from harmful tags.
+     */
+    protected function description(): Attribute
+    {
+        return Attribute::make(
+            set: fn (string $value) => strip_tags($value),
+        );
+    }
+
+    /**
+     * This method is to clean the materials_used from harmful tags.
+     */
+    protected function materials_used(): Attribute
+    {
+        return Attribute::make(
+            set: fn (string $value) => strip_tags($value),
+        );
+    }
 
     public function getActivitylogOptions(): LogOptions
     {

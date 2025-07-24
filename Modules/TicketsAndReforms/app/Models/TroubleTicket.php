@@ -2,11 +2,14 @@
 
 namespace Modules\TicketsAndReforms\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use MatanYadaev\EloquentSpatial\Objects\Point;
+use MatanYadaev\EloquentSpatial\Traits\HasSpatial;
 use Modules\UsersAndTeams\Models\User;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -16,7 +19,7 @@ use Spatie\Translatable\HasTranslations;
 
 class TroubleTicket extends Model
 {
-    use HasFactory,LogsActivity, HasTranslations;
+    use HasFactory,LogsActivity, HasTranslations,HasSpatial;
 
     /**
      * The attributes that are mass assignable.
@@ -26,13 +29,11 @@ class TroubleTicket extends Model
         'body',
         'location',
         'status',
-        'ticketable_id',
-        'ticketable_type',
         'user_id'
     ];
 
     protected $casts = [
-        'location' => 'point',
+        'location' => Point::class,
     ];
 
     /**
@@ -52,18 +53,14 @@ class TroubleTicket extends Model
     }
 
     /**
-     * The related asset (polymorphic)
-     * (Pipe, Valve, Reservoir etc.)
+     * This method is to clean the body from harmful tags.
      */
-    public function ticketable(): MorphTo
+    protected function body(): Attribute
     {
-        return $this->morphTo();
+        return Attribute::make(
+            set: fn (string $value) => strip_tags($value),
+        );
     }
-
-    // protected static function newFactory(): TroubleTicketFactory
-    // {
-    //     // return TroubleTicketFactory::new();
-    // }
 
     public function getActivitylogOptions(): LogOptions
     {

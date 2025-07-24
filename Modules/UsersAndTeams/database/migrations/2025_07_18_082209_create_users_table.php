@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('password');
             $table->string('phone', 50)->nullable();
             $table->string('address', 255)->nullable();
+            $table->unsignedBigInteger('team_id')->nullable();
+            $table->foreign('team_id')->references('id')->on('teams')->nullOnDelete();
             $table->rememberToken();
             $table->timestamps();
         });

@@ -19,18 +19,14 @@ class AuthService
     public function register(array $data)
     {
         try {
-            $user = User::create([
-                'name' => $data['name'],
-                'email' => $data['email'],
-                'password' => Hash::make($data['password']),
-            ]);
+            $user = User::create($data);
 
             // Attempt to send email verification
-            try {
+            /*try {
                 $user->sendEmailVerificationNotification();
             } catch (Exception $e) {
                 throw new Exception('Failed to send verification email. Please try again.');
-            }
+            }*/
 
             return $user;
         } catch (Exception $e) {
@@ -42,22 +38,23 @@ class AuthService
     /**
      * Log in a user.
      *
-     * @param string $email The user's email
-     * @param string $password The user's password
+     * @param array $data
      * @return array
      * @throws Exception
      */
-    public function login(string $email, string $password)
+    public function login(array $data)
     {
+        $email = $data['email'];
+        $password = $data['password'];
         $user = User::where('email', $email)->first();
 
         if (!$user || !Hash::check($password, $user->password)) {
             throw new Exception('Invalid credentials');
         }
 
-        if (!$user->hasVerifiedEmail()) {
+        /*if (!$user->hasVerifiedEmail()) {
             throw new Exception('Please verify your email first.');
-        }
+        }*/
 
         $token = $user->createToken('auth_token')->plainTextToken;
 

@@ -2,9 +2,11 @@
 
 namespace Modules\DistributionNetwork\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use MatanYadaev\EloquentSpatial\Objects\Polygon;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Translatable\HasTranslations;
@@ -25,7 +27,7 @@ class DistributionNetwork extends Model
     ];
 
     protected $casts = [
-        'zone' => 'polygon'
+        'zone' => Polygon::class
     ];
 
     /** Get all reservoirs in this network */
@@ -37,7 +39,7 @@ class DistributionNetwork extends Model
     /** Get all distribution points in this network */
     public function distributionPoints(): HasMany
     {
-        return $this->hasMany(DistributionPoint::class);
+        return $this->hasMany(DistributionPoint::class,'distribution_network_id');
     }
 
     /** Get all pumping stations in this network */
@@ -55,13 +57,20 @@ class DistributionNetwork extends Model
     /** Get all pipes in this network */
     public function pipes(): HasMany
     {
-        return $this->hasMany(Pipe::class);
+        return $this->hasMany(Pipe::class,'distribution_network_id');
     }
 
-    // protected static function newFactory(): DistributionNetworkFactory
-    // {
-    //     // return DistributionNetworkFactory::new();
-    // }
+    /**
+     * This function ensures that the name is always in a specified format
+     *  (the first letter is uppercase when reading, all letters are lowercase when writing)
+     */
+    protected function name(): Attribute
+    {
+        return Attribute::make(
+            get: fn (string $value) => ucfirst($value),
+            set: fn (string $value) => strtolower($value),
+        );
+    }
 
     public function getActivitylogOptions(): LogOptions
     {
