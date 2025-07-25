@@ -37,7 +37,7 @@ class ReservoirActivity extends Model
     protected $casts = [
         'activity_time' => 'datetime'
     ];
-
+ 
     /**
      * The reservoir where activity occurred
      */

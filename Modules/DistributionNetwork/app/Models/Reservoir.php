@@ -46,6 +46,13 @@ class Reservoir extends Model
         return $this->hasMany(ReservoirActivity::class);
     }
 
+    // Accessor to current level
+    // public function getCurrentLevelAttribute(): float
+    // {
+    //     return app(ReservoirsActivityService::class)->calculateCurrentLevel($this->id);
+    // }
+
+    
     // protected static function newFactory(): ReservoirFactory
     // {
     //     // return ReservoirFactory::new();

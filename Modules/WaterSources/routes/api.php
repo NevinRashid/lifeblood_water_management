@@ -7,12 +7,12 @@ use Modules\WaterSources\Http\Controllers\WaterQualityTestController;
 
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('watersources', WaterSourcesController::class)->names('watersources');
-
+ 
 });
-
 
 Route::apiResource('testing-parameters', TestingParameterController::class);
 
 Route::apiResource('water-quality-tests', WaterQualityTestController::class);
+
 
 
