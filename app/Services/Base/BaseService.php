@@ -3,47 +3,17 @@
 namespace App\Services\Base;
 
 use App\Exceptions\CrudException;
-use App\Repositories\Interfaces\BaseRepositoryInterface;
-use App\Services\Interfaces\BaseServiceInterface;
 use Closure;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
-/**
- * Abstract base class for services, providing common business logic operations
- * and centralized exception handling.
- *
- * This class implements the BaseServiceInterface and offers generic methods
- * for interacting with repositories, such as retrieving all records,
- * fetching a single record, storing, updating, and deleting data.
- * It also includes a `handle` method to wrap operations in a try-catch block
- * for consistent error management.
- *
- * @package App\Services\Base
- */
-abstract class BaseService implements BaseServiceInterface
+abstract class BaseService
 {
 
-    /**
-     * The Base repository instance
-     *
-     * @var BaseRepositoryInterface
-     */
-    protected BaseRepositoryInterface $repository;
+    protected Model $model;
 
-
-    /**
-     * Handles the execution of a given callback, providing centralized exception handling.
-     *
-     * Catches common exceptions like ModelNotFoundException,
-     * and general Throwable instances, re-throwing them as custom CrudException or the original exception.
-     *
-     * @param Closure $callback The callback function to execute.
-     * @return mixed The result of the executed callback.
-     * @throws CrudException If a resource is not found (404) or an unexpected error occurs (500).
-     * @throws \Throwable For any other unhandled exceptions.
-     */
     protected function handle(Closure $callback)
     {
         try {
@@ -51,80 +21,129 @@ abstract class BaseService implements BaseServiceInterface
         } catch (ModelNotFoundException $e) {
             throw new CrudException("Resource Not Found", 404);
         } catch (\Throwable $e) {
-            throw new CrudException('An unexpected error,', 500);
+
+            if (config('app.debug', false)) {
+
+                $detailedMessage = sprintf(
+                    "Error: %s in %s on line %d",
+                    $e->getMessage(),
+                    $e->getFile(),
+                    $e->getLine(),
+
+                );
+                throw new CrudException($detailedMessage, 500);
+            }
+
+            throw new CrudException('An unexpected error has occurred.', 500);
         }
     }
 
     /**
-     * Retrieve all records from the associated repository, with optional filtering and pagination.
-     *
-     * @param array $filters An associative array of filters, which may include pagination parameters.
-     * @return LengthAwarePaginator The paginated list of model instances.
+     * Throws an HttpResponseException with a formatted JSON error response.
+     * @param mixed $message
+     * @param mixed $code
+     * @param mixed $errors
+     * @throws \Illuminate\Http\Exceptions\HttpResponseException
+     * @return never
+     */
+    public function throwExceptionJson($message = 'An error occurred', $code = 500, $errors = null)
+    {
+        $response = [
+            'status' => 'error',
+            'message' => $message,
+        ];
+
+        if ($errors) {
+            $response['errors'] = $errors;
+        }
+
+        throw new HttpResponseException(response()->json($response, $code));
+    }
+
+    /**
+     * Get paginated locations
+     * 
+     * @return LengthAwarePaginator The paginated list of  model
      */
     public function getAll(array $filters = [])
     {
         return $this->handle(function () use ($filters) {
 
-            return $this->repository->getAll($filters);
+            $query = $this->query($filters);
+            $perPage = $filters['per_page'] ?? 10;
+            return $query->paginate($perPage);
         });
     }
 
 
     /**
-     * Retrieve a single model instance by its ID or return the provided model instance.
-     *
-     * @param string|Model $modelOrId The ID of the record to retrieve, or an existing Model instance.
-     * @return Model The retrieved model instance.
-     * @throws CrudException If the resource is not found (404).
+     * to get one model using id
+     * 
+     * @param string get model by id
      */
-    public function get(string|Model $modelOrId)
+    public function get(string $id)
     {
-        return $this->handle(function () use ($modelOrId) {
-            return $this->repository->get($modelOrId);
+        return $this->handle(function () use ($id) {
+            return $this->model->findOrFail($id);
         });
     }
 
     /**
-     * Store a new record in the database via the associated repository.
-     *
-     * @param array $data The data to be stored for the new record.
-     * @return Model The newly created model instance.
-     * @throws CrudException If an unexpected error occurs (500).
+     * For store a new model
+     * 
+     * @param array $data To store the model
      */
     public function store(array $data)
     {
         return $this->handle(function () use ($data) {
-            return $this->repository->store($data);
+            return $this->model->create($data);
         });
     }
 
     /**
-     * Update an existing record in the database via the associated repository.
-     *
-     * @param array $data The data to update the record with.
-     * @param string|Model $modelOrId The ID of the record to update, or an existing Model instance.
-     * @return Model The updated model instance.
-     * @throws CrudException If the resource is not found (404) or an unexpected error occurs (500).
+     * For update a model
+     * 
+     * @param array $data To Update the model
+     * @param string|Model $id get model by id
      */
     public function update(array $data, string|Model $modelOrId)
     {
         return $this->handle(function () use ($data, $modelOrId) {
 
-            return $this->repository->update($data, $modelOrId);
+            if (!($modelOrId instanceof Model)) {
+                $model = $this->model->findOrFail($modelOrId);
+                $model->update($data);
+                return $model;
+            }
+
+            $modelOrId->update($data);
+            return $modelOrId;
         });
     }
 
     /**
-     * Delete the specified model from the database via the associated repository.
-     *
-     * @param string|Model $modelOrId The ID of the record to delete, or an existing Model instance.
-     * @return bool|null True if the model was deleted, false otherwise. Null if no model found.
-     * @throws CrudException If the resource is not found (404) or an unexpected error occurs (500).
+     *  Delete the specified model
+     * 
+     *  @param string $id get model by id
+     *  @return bool|null True if the model was deleted, false otherwise
      */
-    public function destroy(string|Model $modelOrId)
+    public function destroy(string $id)
     {
-        return $this->handle(function () use ($modelOrId) {
-            return $this->repository->destroy($modelOrId);
+        return $this->handle(function () use ($id) {
+            return $this->model->findOrFail($id)->delete();
         });
+    }
+
+    /**
+     * This method prepare a query from the model
+     * and allow to override the `getAll` query
+     * 
+     * @param array $filters
+     * @return \Illuminate\Database\Eloquent\Builder<Model>
+     */
+    protected function query(array $filters = [])
+    {
+        $query = $this->model->newQuery();
+        return $query;
     }
 }
