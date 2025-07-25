@@ -14,8 +14,8 @@ class UsersAndTeamsDatabaseSeeder extends Seeder
     public function run(): void
     {
         $superAdmin = User::create([
-            'name'     => 'Bsher',
-            'email'    => 'superadmin@gmail.com',
+            'name'     => 'Rama',
+            'email'    => 'ramaabdo657@gmail.com',
             'password' => '123456789',
         ]);
         $superAdmin->assignRole('Super Admin');

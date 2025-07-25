@@ -24,6 +24,7 @@ class TestingParameter extends Model
         'maximum_level'
     ];
 
+    protected array $translable = ['name'];
     /**
      * Water sources that use this parameter
      */

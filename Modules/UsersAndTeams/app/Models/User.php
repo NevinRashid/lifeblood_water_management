@@ -33,7 +33,8 @@ class User extends Authenticatable
      * @var list<string>
      */
 
-    protected $guard_name ='web';
+     protected $guard_name ='sanctum';
+     
     protected $fillable = [
         'name',
         'email',

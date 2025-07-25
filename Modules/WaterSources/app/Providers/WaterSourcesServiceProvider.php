@@ -9,6 +9,7 @@ use Illuminate\Support\ServiceProvider;
 use Nwidart\Modules\Traits\PathNamespace;
 use Modules\WaterSources\Services\WaterSourceService;
 
+
 class WaterSourcesServiceProvider extends ServiceProvider
 {
     use PathNamespace;
