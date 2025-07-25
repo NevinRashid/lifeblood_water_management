@@ -6,10 +6,13 @@ use Modules\WaterDistributionOperations\Http\Controllers\TankerUserController;
 use Modules\WaterDistributionOperations\Http\Controllers\DeliveryRouteController;
 use Modules\WaterDistributionOperations\Http\Controllers\RouteDeliveryController;
 use Modules\WaterDistributionOperations\Http\Controllers\ReservoirActivityController;
+use Modules\WaterDistributionOperations\Http\Controllers\ReservoirsActivityController;
 use Modules\WaterDistributionOperations\Http\Controllers\WaterDistributionOperationsController;
 
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('distribution-operations', WaterDistributionOperationsController::class);
+    
+   
     Route::apiResource('tankers', TankerController::class);
     Route::prefix('tankers/{tanker}')->group(function () {
         Route::get('/users', [TankerUserController::class, 'index']);
@@ -23,6 +26,9 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
                     'deliveries' => 'routeDelivered'
                 ])
                 ->shallow();
+
 }
 );
 
+Route::apiResource('reservoire-activity', ReservoirsActivityController::class);
+Route::get('reservoire-activity/{reservoir}/current-level', [ReservoirsActivityController::class, 'getCurrentLevel']);

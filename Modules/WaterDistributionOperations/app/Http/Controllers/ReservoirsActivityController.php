@@ -33,7 +33,12 @@ class ReservoirsActivityController extends Controller
     public function store(StoreReservoirsActivityRequest $request)
     {
         $activity = $this->reservoirsActivityService->store($request->validated());
-        return response()->json(['message' => 'Reservoir activity created successfully.', 'data' => $activity], 201);
+
+        $alert = $this->reservoirsActivityService->checkAndAlertCriticalLevel($request->validated()['reservoir_id']);
+
+        return response()->json(['message' => 'Reservoir activity created successfully.', 
+                                'data' => $activity,
+                                'critical_alert' => $alert], 201);
     }
 
     /**
@@ -51,7 +56,7 @@ class ReservoirsActivityController extends Controller
      */
     public function update(UpdateReservoirsActivityRequest $request, int $id)
     {
-        $activity = $this->reservoirsActivityService->update($id, $request->validated());
+        $activity = $this->reservoirsActivityService->update($request->validated(), $id);
         return response()->json(['message' => 'Reservoir activity updated successfully.', 'data' => $activity]);
     }
     /**
@@ -59,13 +64,13 @@ class ReservoirsActivityController extends Controller
      */
     public function destroy(int $id)
     {
-        $this->reservoirsActivityService->delete($id);
+        $this->reservoirsActivityService->destroy($id);
         return response()->json(['message' => 'Reservoir activity deleted successfully.']);
     }
 
     public function getCurrentLevel($reservoirId) {
 
-        $level = $this->service->calculateCurrentLevel($reservoirId);
+        $level = $this->reservoirsActivityService->calculateCurrentLevel($reservoirId);
 
         return response()->json([
             'reservoir_id' => $reservoirId,

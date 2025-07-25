@@ -15,48 +15,57 @@ class RoleSeeder extends Seeder
     {
         $superAdmin = Role::create([
             'name' => 'Super Admin',
+            'guard_name' => 'sanctum'
         ]);
 
         $authorityManager = Role::create([
             'name' => 'National Water Authority Manager',
+            'guard_name' => 'sanctum'
 
         ]);
 
         $engineer = Role::create([
             'name' => 'Treatment Plant Engineer',
+            'guard_name' => 'sanctum'
 
 
         ]);
 
         $networkManager = Role::create([
             'name' => 'Distribution Network Manager',
+            'guard_name' => 'sanctum'
     
 
         ]);
 
         $reservoirAndTankerSupervisor = Role::create([
             'name' => 'Reservoir And Tanker Supervisor',
+            'guard_name' => 'sanctum'
        
 
         ]);
 
         $fieldMonitoringAgent = Role::create([
             'name' => 'Field Monitoring Agent',
+            'guard_name' => 'sanctum'
 
         ]);
 
         $affectedmember = Role::create([
             'name' => 'Affected Community Member',
+            'guard_name' => 'sanctum'
 
         ]);
 
         $donorAgency = Role::create([
             'name' => 'Donor Agency',
+            'guard_name' => 'sanctum'
 
         ]);
 
         $dataAnalyst = Role::create([
             'name' => 'Enviromental Data Analyst',
+            'guard_name' => 'sanctum'
 
         ]);
 
