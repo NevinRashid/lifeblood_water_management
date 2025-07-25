@@ -2,13 +2,15 @@
 
 namespace Modules\WaterDistributionOperations\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Modules\DistributionNetwork\Models\DistributionPoint;
+use Carbon\Carbon;
 use Spatie\Activitylog\LogOptions;
-use Spatie\Activitylog\Traits\LogsActivity;
+use Illuminate\Database\Eloquent\Model;
 use Spatie\Translatable\HasTranslations;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\DistributionNetwork\Models\DistributionPoint;
 
 // use Modules\WaterDistributionOperations\Database\Factories\RouteDeliveredFactory;
 
@@ -16,6 +18,7 @@ class RouteDelivered extends Model
 {
     use HasFactory,LogsActivity, HasTranslations;
 
+    protected $table = 'route_deliveries';
     /**
      * The attributes that are mass assignable.
      */
@@ -53,6 +56,31 @@ class RouteDelivered extends Model
     {
         return LogOptions::defaults()
         ->logFillable();
-        // Chain fluent methods for configuration options
+
     }
+     protected function waterAmountFormatted(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value, $attributes) => number_format($attributes['water_amount_delivered'], 2) . ' Liters'
+        );
+    }
+
+
+    protected function arrivalTimeHuman(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value, $attributes) => isset($attributes['arrival_time'])
+                ? Carbon::parse($attributes['arrival_time'])->diffForHumans()
+                : null
+        );
+    }
+
+
+    protected function notes(): Attribute
+    {
+        return Attribute::make(
+            set: fn (?string $value) => trim($value)
+        );
+    }
+
 }

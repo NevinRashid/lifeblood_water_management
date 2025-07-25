@@ -9,13 +9,16 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Translatable\HasTranslations;
+use MatanYadaev\EloquentSpatial\Objects\LineString;
+use MatanYadaev\EloquentSpatial\Traits\HasSpatial;
 
 // use Modules\WaterDistributionOperations\Database\Factories\DeliveryRouteFactory;
 
 class DeliveryRoute extends Model
 {
-    use HasFactory,LogsActivity, HasTranslations;
+    use HasFactory,LogsActivity, HasTranslations,HasSpatial;
 
+    
     /**
      * The attributes that are mass assignable.
      */
@@ -30,11 +33,25 @@ class DeliveryRoute extends Model
         'planned_date'
     ];
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
     protected $casts = [
         'start_time' => 'datetime',
         'end_time' => 'datetime',
         'planned_date' => 'date',
-        'path' => 'linestring'
+        'path' => LineString::class,
+    ];
+
+    /**
+     * The attributes that are spatial.
+     *
+     * @var array
+     */
+    protected $spatialFields = [
+        'path',
     ];
 
     /**

@@ -12,7 +12,6 @@ use Modules\WaterDistributionOperations\Models\RouteDelivered;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Translatable\HasTranslations;
-
 // use Modules\DistributionNetwork\Database\Factories\DistributionPointFactory;
 
 class DistributionPoint extends Model
@@ -31,7 +30,9 @@ class DistributionPoint extends Model
     ];
 
     protected $casts = [
-        'location' => Point::class
+        'location' => Point::class,
+        'type' => 'string',
+        'status' => 'string',
     ];
 
     /** The network this point belongs to */

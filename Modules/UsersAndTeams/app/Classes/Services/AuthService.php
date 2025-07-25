@@ -16,7 +16,29 @@ class AuthService
      * @return User
      * @throws Exception
      */
-    public function register(array $data)
+    // public function register(array $data)
+    // {
+    //     try {
+    //         $user = User::create([
+    //             'name' => $data['name'],
+    //             'email' => $data['email'],
+    //             'password' => Hash::make($data['password']),
+    //         ]);
+
+    //         // Attempt to send email verification
+    //         try {
+    //             // $user->sendEmailVerificationNotification();
+    //         } catch (Exception $e) {
+    //             throw new Exception('Failed to send verification email. Please try again.');
+    //         }
+
+    //         return $user;
+    //     } catch (Exception $e) {
+    //         Log::error("Error registering user: " . $e->getMessage());
+    //         throw new Exception('User registration failed.');
+    //     }
+    // }
+    public function register(array $data): User
     {
         try {
             $user = User::create($data);
@@ -33,6 +55,7 @@ class AuthService
             Log::error("Error registering user: " . $e->getMessage());
             throw new Exception('User registration failed.');
         }
+
     }
 
     /**
@@ -55,6 +78,7 @@ class AuthService
         /*if (!$user->hasVerifiedEmail()) {
             throw new Exception('Please verify your email first.');
         }*/
+
 
         $token = $user->createToken('auth_token')->plainTextToken;
 

@@ -2,16 +2,18 @@
 
 namespace Modules\WaterDistributionOperations\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Modules\UsersAndTeams\Models\User;
 use Spatie\Activitylog\LogOptions;
-use Spatie\Activitylog\Traits\LogsActivity;
+use Modules\UsersAndTeams\Models\User;
+use Illuminate\Database\Eloquent\Model;
 use Spatie\Translatable\HasTranslations;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 
 // use Modules\WaterDistributionOperations\Database\Factories\UserTankerFactory;
 
-class UserTanker extends Model
+class UserTanker extends Pivot
 {
     use HasFactory,LogsActivity,HasTranslations;
 

@@ -2,13 +2,18 @@
 
 namespace App\Providers;
 
+use App\Events\WaterSourceCreated;
 use Illuminate\Support\ServiceProvider;
+use App\Listeners\LogWaterSourceCreation;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
+      protected $listen = [
+
+        WaterSourceCreated::class => [
+            LogWaterSourceCreation::class,
+        ],
+    ];
     public function register(): void
     {
         //
