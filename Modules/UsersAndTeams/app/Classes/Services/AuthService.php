@@ -82,7 +82,6 @@ class AuthService
             throw new Exception('Please verify your email first.');
         }*/
 
-
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return [

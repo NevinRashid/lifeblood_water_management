@@ -14,18 +14,6 @@ abstract class BaseService
 
     protected Model $model;
 
-    /**
-     * Handles the execution of a given callback, providing centralized exception handling.
-     *
-     * Catches common exceptions like ModelNotFoundException,
-     * and general Throwable instances, re-throwing them as custom CrudException or the original exception.
-     *
-     * @param Closure $callback The callback function to execute.
-     * @return mixed The result of the executed callback.
-     * @throws CrudException If a resource is not found (404) or an unexpected error occurs (500).
-     * @throws \Throwable For any other unhandled exceptions.
-     */
-
     protected function handle(Closure $callback)
     {
         try {
@@ -74,7 +62,11 @@ abstract class BaseService
 
     /**
      * Get paginated locations
+<<<<<<< HEAD
      *
+=======
+     *
+>>>>>>> Bsher_Mh_Water_Extraction
      * @return LengthAwarePaginator The paginated list of  model
      */
     public function getAll(array $filters = [])
@@ -90,7 +82,11 @@ abstract class BaseService
 
     /**
      * to get one model using id
+<<<<<<< HEAD
      *
+=======
+     *
+>>>>>>> Bsher_Mh_Water_Extraction
      * @param string get model by id
      */
     public function get(string $id)
@@ -102,7 +98,11 @@ abstract class BaseService
 
     /**
      * For store a new model
+<<<<<<< HEAD
      *
+=======
+     *
+>>>>>>> Bsher_Mh_Water_Extraction
      * @param array $data To store the model
      */
     public function store(array $data)
@@ -114,7 +114,11 @@ abstract class BaseService
 
     /**
      * For update a model
+<<<<<<< HEAD
      *
+=======
+     *
+>>>>>>> Bsher_Mh_Water_Extraction
      * @param array $data To Update the model
      * @param string|Model $id get model by id
      */
@@ -135,7 +139,11 @@ abstract class BaseService
 
     /**
      *  Delete the specified model
+<<<<<<< HEAD
      *
+=======
+     *
+>>>>>>> Bsher_Mh_Water_Extraction
      *  @param string $id get model by id
      *  @return bool|null True if the model was deleted, false otherwise
      */
@@ -149,7 +157,11 @@ abstract class BaseService
     /**
      * This method prepare a query from the model
      * and allow to override the `getAll` query
+<<<<<<< HEAD
      *
+=======
+     *
+>>>>>>> Bsher_Mh_Water_Extraction
      * @param array $filters
      * @return \Illuminate\Database\Eloquent\Builder<Model>
      */
