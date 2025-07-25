@@ -2,14 +2,16 @@
 
 namespace Modules\WaterDistributionOperations\Models;
 
+use Spatie\Activitylog\LogOptions;
+use Modules\UsersAndTeams\Models\User;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Translatable\HasTranslations;
+use Spatie\Activitylog\Traits\LogsActivity;
+use MatanYadaev\EloquentSpatial\Objects\Point;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Modules\UsersAndTeams\Models\User;
-use Spatie\Activitylog\LogOptions;
-use Spatie\Activitylog\Traits\LogsActivity;
-use Spatie\Translatable\HasTranslations;
 
 // use Modules\WaterDistributionOperations\Database\Factories\TankerFactory;
 
@@ -24,6 +26,7 @@ class Tanker extends Model
         'license_plate',
         'max_capacity',
         'status',
+        'current_location',
         'last_maintenance_date',
         'next_maintenance_date',
         'note'
@@ -31,6 +34,7 @@ class Tanker extends Model
     protected $casts = [
         'last_maintenance_date' => 'date',
         'next_maintenance_date' => 'date',
+        'current_location' => Point::class,
     ];
     /**
      * Users assigned to this tanker
@@ -55,5 +59,18 @@ class Tanker extends Model
         return LogOptions::defaults()
         ->logFillable();
         // Chain fluent methods for configuration options
+    }
+    protected function isAvailable(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value, $attributes) => $attributes['status'] === 'available',
+        );
+    }
+
+    protected function licensePlate(): Attribute
+    {
+        return Attribute::make(
+            set: fn ($value) => strtoupper(str_replace(' ', '', $value)),
+        );
     }
 }

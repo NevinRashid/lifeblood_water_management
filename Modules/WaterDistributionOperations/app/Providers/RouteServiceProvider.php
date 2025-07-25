@@ -2,12 +2,14 @@
 
 namespace Modules\WaterDistributionOperations\Providers;
 
-use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Route;
+use Modules\WaterDistributionOperations\Models\Tanker;
+use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 
 class RouteServiceProvider extends ServiceProvider
 {
     protected string $name = 'WaterDistributionOperations';
+    // protected string $name = 'tankers,'tankers'';
 
     /**
      * Called before routes are registered.
@@ -17,6 +19,7 @@ class RouteServiceProvider extends ServiceProvider
     public function boot(): void
     {
         parent::boot();
+        //  Route::model('tankers',Tanker::class);
     }
 
     /**

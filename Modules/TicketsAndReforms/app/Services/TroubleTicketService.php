@@ -1,0 +1,183 @@
+<?php
+
+namespace Modules\TicketsAndReforms\Services;
+
+use App\Traits\HandleServiceErrors;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use MatanYadaev\EloquentSpatial\Objects\Point;
+use Modules\TicketsAndReforms\Models\TroubleTicket;
+
+class TroubleTicketService
+{
+    use HandleServiceErrors;
+
+    /**
+     * Get all troubles from database
+     *
+     * @return array $arraydata
+     */
+    public function getAllTroubles(array $filters = [], int $perPage = 10)
+    {
+        try{
+            $query = TroubleTicket::with(['reporter','reform']);
+
+            if (isset($filters['subject'])) {
+                $query->where('subject', $filters['subject']);
+            }
+
+            if (isset($filters['status'])) {
+                $query->where('status', $filters['status']);
+            }
+
+            if (isset($filters['user_id'])) {
+                $query->where('user_id', $filters['user_id']);
+            }
+
+            $troubles = Cache::remember('all_troubles', 3600, function() use($query, $perPage){
+                    $troubles= $query->paginate($perPage);
+                    $troubles = $troubles->map(function($trouble){
+                        return[
+                            'id'        => $trouble->id,
+                            'subject'   => $trouble->subject,
+                            'status'    => $trouble->status,
+                            'body'    => $trouble->body,
+                            'user_id'   => $trouble->user_id,
+                            'location'  => $trouble->location?->toJson(),
+                        ];
+                    });
+                    return $troubles;
+                });
+            return $troubles;
+
+        } catch(\Throwable $th){
+            return $this->error("An error occurred",500, $th->getMessage());
+        }
+    }
+
+    /**
+     * Get a single trouble with its relationships.
+     *
+     * @param  TroubleTicket $trouble
+     *
+     * @return TroubleTicket $trouble
+     */
+    public function showTrouble(TroubleTicket $trouble)
+    {
+        try{
+            return $trouble->load([
+                    'reporter',
+                    'reform'
+                ]);
+
+        } catch(\Throwable $th){
+            return $this->error("An error occurred",500, $th->getMessage());
+        }
+    }
+
+    /**
+     * Add new trouble to the database.
+     *
+     * @param array $arraydata
+     *
+     * @return TroubleTicket $trouble
+     */
+    public function createTrouble(array $data)
+    {
+        try{
+            return DB::transaction(function () use ($data) {
+                $data['user_id']= Auth::user()->id;
+                $data['status']= 'new';
+                $data['location'] = new Point($data['location']['coordinates'][0], $data['location']['coordinates'][1]);
+                $trouble = TroubleTicket::create($data);
+                Cache::forget("all_troubles");
+                return $trouble;
+            });
+
+        } catch(\Throwable $th){
+            return $this->error("An error occurred",500, $th->getMessage());
+        }
+    }
+
+    /**
+     * Update the specified trouble in the database.
+     *
+     * @param array $arraydata
+     * @param TroubleTicket $trouble
+     *
+     * @return TroubleTicket $trouble
+     */
+
+    public function updateTrouble(array $data, TroubleTicket $trouble){
+        try{
+
+            if($trouble->status != 'new'){
+                return $this->error("An error occurred",500, 'Unfortunately, you cannot edit this troubleticket. It is too late...');
+            }
+
+            //Check if the checked user who submitted the report sent a value to status,
+            // then do not modify it because he is not allowed to modify this field and we will take the old value.
+            if(!empty($data['status']) && Auth::user()->id === $trouble->user_id)
+            {
+                $data['status'] =$trouble->status;
+            }
+            $trouble->update(array_filter($data));
+            Cache::forget("all_troubles");
+            return $trouble;
+
+        } catch(\Throwable $th){
+            return $this->error("An error occurred",500, $th->getMessage());
+        }
+    }
+
+    /**
+     * Delete the specified trouble from the database.
+     *
+     * @param TroubleTicket $trouble
+     *
+     */
+    public function deleteTrouble(TroubleTicket $trouble){
+        try{
+            return DB::transaction(function () use ($trouble) {
+                Cache::forget("all_troubles");
+                return $trouble->delete();
+            });
+
+        } catch(\Throwable $th){
+            return $this->error("An error occurred",500, $th->getMessage());
+        }
+    }
+
+    /**
+     * Change the status of the trouble by the distribution and maintenance
+     * network manager and discuss the possibility of change.
+     *
+     * @param array $arraydata
+     * @param TroubleTicket $trouble
+     *
+     * @return TroubleTicket $trouble
+     */
+    public function ChangeStatus(array $data,TroubleTicket $trouble){
+        try{
+            //Check the status you want to change to. If it is one of these statuses,
+            // it is not permissible to change to it before assigning it to the reform team.
+            if(($data['status']==='assigned'
+                || $data['status']==='in_progress'
+                || $data['status']==='fixed')
+                && !$trouble->reform )
+            {
+                return $this->error("An error occurred",500,
+                                    'You cannot change to this status before assigning a repair team to this troubleticket'
+                                    );
+            }
+            $trouble->update(array_filter($data));
+            Cache::forget("all_troubles");
+            return $trouble;
+
+        } catch(\Throwable $th){
+            return $this->error("An error occurred",500, $th->getMessage());
+        }
+    }
+
+}

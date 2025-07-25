@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('teams', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
+            $table->text('description');
+            $table->enum('status', ['available', 'busy', 'offline']);
             $table->timestamps();
         });
     }
