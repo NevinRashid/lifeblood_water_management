@@ -3,12 +3,13 @@
 namespace App\Providers;
 
 use App\Events\WaterSourceCreated;
+use App\Services\LoggerService;
 use Illuminate\Support\ServiceProvider;
 use App\Listeners\LogWaterSourceCreation;
 
 class AppServiceProvider extends ServiceProvider
 {
-      protected $listen = [
+    protected $listen = [
 
         WaterSourceCreated::class => [
             LogWaterSourceCreation::class,
@@ -16,7 +17,9 @@ class AppServiceProvider extends ServiceProvider
     ];
     public function register(): void
     {
-        //
+        $this->app->singleton(LoggerService::class, function () {
+            return new LoggerService();
+        });
     }
 
     /**

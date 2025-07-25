@@ -6,9 +6,11 @@ use App\Facades\Logger;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Validation\Rules\Password;
 
-class LoginRequest extends FormRequest
+class RegistrationRequest extends FormRequest
 {
+
     protected $stopOnFirstFailure = true;
 
     /**
@@ -27,20 +29,45 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'name' => 'required|string|max:255',
             'email' => [
                 'required',
                 'string',
                 'max:255',
                 'email:rfc,dns',
-                'exists:users,email',
+                'unique:users,email',
             ],
-            'password' => 'required|max:128'
+            'password' => [
+                'required',
+                'string',
+                Password::min(8)
+                    ->letters()
+                    ->mixedCase()
+                    ->numbers()
+                    ->symbols()
+                    ->uncompromised(),
+                'max:128',
+                'confirmed',
+            ],
+            'phone' => [
+                'nullable',
+                'string',
+                'min:10',
+                'max:50',
+                'regex:/^\+?[0-9\s\-]{10,50}$/'
+            ],
+            'address' => [
+                'nullable',
+                'string',
+                'max:255',
+            ],
         ];
     }
 
     public function attributes()
     {
         return [
+            'name' => 'Name',
             'email' => 'E-mail',
             'password' => 'Password',
         ];
@@ -49,23 +76,10 @@ class LoginRequest extends FormRequest
     public function messages()
     {
         return [
-            'exists' => ':attribute does not exist',
-            'required' => 'the :attribute require to login, please enter the :attribute!',
-        ];
-    }
-
-
-    /**
-     *  Get the error messages for the defined validation rules.
-     *
-     *  @return array<string, string>
-     */
-    public function messages():array
-    {
-        return[
-            'email.required'      => 'The Email is required please',
-            'email.email'         => 'Please adhere to the email format (example@gmail.com)',
-            'password.required'   => 'The password is required please',
+            'required' => 'the :attribute should not be empty, please add the :attribute!',
+            'max' => 'the :attribute is too long should be at most :max!',
+            'unique' => ':attribute already exists please try another one',
+            'confirmed' => 'Password does not match please try again',
         ];
     }
 
@@ -75,10 +89,10 @@ class LoginRequest extends FormRequest
     protected function failedValidation(Validator $validator)
     {
         Logger::failedValidation(
-            'login-validation-check',
+            'registration-validation-check',
             'Failed Validation',
             [
-                'inputs' => $this->except(['password'])
+                'inputs' => $this->except(['password', 'password_confirmation'])
             ]
         );
 

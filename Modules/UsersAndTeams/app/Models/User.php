@@ -2,7 +2,8 @@
 
 namespace Modules\UsersAndTeams\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\CanResetPassword;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
@@ -22,10 +23,10 @@ use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Translatable\HasTranslations;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
 {
 
-    use HasFactory,HasRoles, HasApiTokens, Notifiable,LogsActivity,HasTranslations;
+    use HasFactory, HasRoles, HasApiTokens, Notifiable, LogsActivity, HasTranslations;
 
     /**
      * The attributes that are mass assignable.
@@ -40,6 +41,8 @@ class User extends Authenticatable
         'email',
         'password',
         'team_id',
+        'phone',
+        'address',
     ];
 
     /**
@@ -63,6 +66,17 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * to prevent password logging 'only name and email will be logged'
+     * @return LogOptions
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['name', 'email'])
+            ->useLogName('User');
     }
 
     /**
@@ -110,12 +124,5 @@ class User extends Authenticatable
         return $this->belongsToMany(Tanker::class, 'user_tanker')
             ->using(UserTanker::class)
             ->withTimestamps();
-    }
-
-    public function getActivitylogOptions(): LogOptions
-    {
-        return LogOptions::defaults()
-        ->logFillable();
-        // Chain fluent methods for configuration options
     }
 }
