@@ -2,14 +2,15 @@
 
 namespace Modules\DistributionNetwork\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Modules\WaterDistributionOperations\Models\RouteDelivered;
 use Spatie\Activitylog\LogOptions;
-use Spatie\Activitylog\Traits\LogsActivity;
+use Illuminate\Database\Eloquent\Model;
 use Spatie\Translatable\HasTranslations;
+use Spatie\Activitylog\Traits\LogsActivity;
+use MatanYadaev\EloquentSpatial\Objects\Point;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\WaterDistributionOperations\Models\RouteDelivered;
 
 // use Modules\DistributionNetwork\Database\Factories\DistributionPointFactory;
 
@@ -28,8 +29,10 @@ class DistributionPoint extends Model
         'distribution_network_id'
     ];
 
-    protected $casts = [
-        'location' => 'point'
+      protected $casts = [
+        'location' => Point::class,
+        'type' => 'string',
+        'status' => 'string',
     ];
 
     /** The network this point belongs to */

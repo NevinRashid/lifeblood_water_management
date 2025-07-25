@@ -6,7 +6,7 @@ use  Exception ;
 use Spatie\MediaLibrary\HasMedia;
 use App\Events\WaterSourceCreated;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log; 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\Eloquent\Model;
 use Modules\WaterSources\Services\Service;
@@ -17,10 +17,10 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class WaterSourceService extends Service
 {
-  
+
 
     /**
-     * 
+     *
      * @param array $filters
      * @return \Illuminate\Pagination\LengthAwarePaginator
      */
@@ -216,7 +216,7 @@ class WaterSourceService extends Service
             'images' => 'water_source_images',
             'videos' => 'water_source_videos',
         ];
-        
+
         foreach ($mediaRequestData as $requestKey => $files) {
             if (isset($collectionMapping[$requestKey])) {
                 $collectionName = $collectionMapping[$requestKey];

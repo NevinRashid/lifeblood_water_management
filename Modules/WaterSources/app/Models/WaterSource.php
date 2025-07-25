@@ -2,6 +2,7 @@
 
 namespace Modules\WaterSources\Models;
 
+use Spatie\MediaLibrary\HasMedia;
 use Spatie\Activitylog\LogOptions;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Translatable\HasTranslations;
@@ -12,10 +13,12 @@ use MatanYadaev\EloquentSpatial\Traits\HasSpatial;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+           // <-- 1. استيراد الواجهة والـ Trait
+
 
 // use Modules\WaterSources\Database\Factories\WaterSourceFactory;
 
-class WaterSource extends Model
+class WaterSource extends Model implements HasMedia
 {
     use HasFactory , HasSpatial, LogsActivity ,HasTranslations,InteractsWithMedia;
 

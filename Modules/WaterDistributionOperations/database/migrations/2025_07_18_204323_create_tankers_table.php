@@ -17,7 +17,6 @@ return new class extends Migration
             $table->decimal('max_capacity', 15, 4);
             $table->enum('status', ['available', 'on_route', 'in_maintenance', 'out_of_service']);
             $table->geometry('current_location', subtype: 'point')->nullable();
-            $table->spatialIndex('current_location');
             $table->date('last_maintenance_date')->nullable();
             $table->date('next_maintenance_date')->nullable();
             $table->text('note')->nullable();
