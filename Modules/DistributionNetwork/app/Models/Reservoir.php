@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\WaterDistributionOperations\Models\ReservoirActivity;
+use Point;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Translatable\HasTranslations;
@@ -31,7 +32,7 @@ class Reservoir extends Model
     ];
 
     protected $casts = [
-        'location' => 'point'
+        'location' => Point::class,
     ];
 
     /** The network this reservoir belongs to */

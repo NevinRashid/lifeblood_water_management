@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Modules\Sensors\Models\Sensor;
 use MatanYadaev\EloquentSpatial\Objects\LineString;
 use MatanYadaev\EloquentSpatial\Traits\HasSpatial;
 use Spatie\Activitylog\LogOptions;
@@ -40,6 +42,16 @@ class Pipe extends Model
         return $this->belongsTo(DistributionNetwork::class,'distribution_network_id');
     }
 
+    public function sensors(): MorphMany
+    {
+        return $this->morphMany(Sensor::class, 'sensorable');
+    }
+
+    // protected static function newFactory(): PipeFactory
+    // {
+    //     // return PipeFactory::new();
+    // }
+
     /**
      * This function ensures that the name is always in a specified format
      *  (the first letter is uppercase when reading, all letters are lowercase when writing)
@@ -55,7 +67,7 @@ class Pipe extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-        ->logFillable();
+            ->logFillable();
         // Chain fluent methods for configuration options
     }
 

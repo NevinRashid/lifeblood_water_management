@@ -2,7 +2,9 @@
 
 namespace Modules\UsersAndTeams\Http\Requests\Auth;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Validation\Rules\Password;
 
 class RegisterRequest extends FormRequest
@@ -59,5 +61,16 @@ class RegisterRequest extends FormRequest
             'password.symbols'         => 'Password must contain at least one character',
             'password.uncompromised'   => 'You should choose a more secure password',
         ];
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(
+            response()->json([
+                'success' => false,
+                'message' => ' Data verification error',
+                'errors' => $validator->errors(),
+            ], 422)
+        );
     }
 }

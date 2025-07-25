@@ -5,15 +5,18 @@ namespace Modules\DistributionNetwork\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Translatable\HasTranslations;
+use MatanYadaev\EloquentSpatial\Objects\Point;
+use Modules\Sensors\Models\Sensor;
 
 // use Modules\DistributionNetwork\Database\Factories\ValveFactory;
 
 class Valve extends Model
 {
-    use HasFactory,LogsActivity ,HasTranslations;
+    use HasFactory, LogsActivity, HasTranslations;
 
     /**
      * The attributes that are mass assignable.
@@ -25,18 +28,24 @@ class Valve extends Model
         'valve_type',
         'status',
         'distribution_network_id',
-        'current_flow'
+        'current_flow',
+        'max_flow',
+        'min_flow'
     ];
 
     protected $casts = [
-        'location' => 'point',
-        'is_open' => 'boolean'
+        'location' => Point::class, // Casts to/from Point object
     ];
 
     /** The network this valve belongs to */
     public function network(): BelongsTo
     {
         return $this->belongsTo(DistributionNetwork::class);
+    }
+
+    public function sensors(): MorphMany
+    {
+        return $this->morphMany(Sensor::class, 'sensorable');
     }
 
     // protected static function newFactory(): ValveFactory
@@ -47,7 +56,7 @@ class Valve extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-        ->logFillable();
+            ->logFillable();
         // Chain fluent methods for configuration options
     }
 }

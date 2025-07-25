@@ -19,6 +19,12 @@ return new class extends Migration
             $table->foreignId('distribution_network_id')->constrained('distribution_networks')->cascadeOnDelete();
             $table->decimal('current_pressure', 10, 4)->nullable();
             $table->decimal('current_flow', 10, 4)->nullable();
+
+            $table->decimal('max_flow', 10, 4)->nullable();
+            $table->decimal('min_flow', 10, 4)->nullable();
+            $table->decimal('max_pressure', 10, 4)->nullable();
+            $table->decimal('min_pressure', 10, 4)->nullable();
+
             $table->spatialIndex('location');
             $table->index('distribution_network_id');
             $table->timestamps();

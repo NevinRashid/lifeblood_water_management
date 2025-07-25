@@ -43,17 +43,19 @@ class AuthService
         try {
             $user = User::create($data);
 
+            /*
             // Attempt to send email verification
             /*try {
                 $user->sendEmailVerificationNotification();
             } catch (Exception $e) {
                 throw new Exception('Failed to send verification email. Please try again.');
+
             }*/
 
             return $user;
         } catch (Exception $e) {
             Log::error("Error registering user: " . $e->getMessage());
-            throw new Exception('User registration failed.');
+            throw new Exception('User registration failed.'. $e->getMessage());
         }
 
     }
@@ -74,6 +76,7 @@ class AuthService
         if (!$user || !Hash::check($password, $user->password)) {
             throw new Exception('Invalid credentials');
         }
+
 
         /*if (!$user->hasVerifiedEmail()) {
             throw new Exception('Please verify your email first.');
