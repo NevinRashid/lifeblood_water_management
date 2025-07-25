@@ -3,6 +3,10 @@
 namespace Modules\TicketsAndReforms\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use Modules\TicketsAndReforms\Events\ReformStatusChangedToCompleted;
+use Modules\TicketsAndReforms\Events\ReformStatusChangedToInProgress;
+use Modules\TicketsAndReforms\Listeners\SetRepairEndTime;
+use Modules\TicketsAndReforms\Listeners\SetRepairStartTime;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -11,7 +15,14 @@ class EventServiceProvider extends ServiceProvider
      *
      * @var array<string, array<int, string>>
      */
-    protected $listen = [];
+    protected $listen = [
+        ReformStatusChangedToInProgress::class => [
+        SetRepairStartTime::class,
+        ],
+        ReformStatusChangedToCompleted::class => [
+        SetRepairEndTime::class,
+        ],
+    ];
 
     /**
      * Indicates if events should be discovered.

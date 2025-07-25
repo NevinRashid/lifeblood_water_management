@@ -26,6 +26,13 @@ abstract class BaseRepository implements BaseRepositoryInterface
      */
     protected Model $model;
 
+    public function __construct(Model $model)
+    {
+        $this->model = $model ;
+    }
+        
+    
+
     /**
      * Retrieve all records from the model, with optional filtering and pagination.
      *

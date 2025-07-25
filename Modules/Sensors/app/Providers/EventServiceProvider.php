@@ -3,6 +3,9 @@
 namespace Modules\Sensors\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use Modules\Sensors\Events\SensorReadingCreated;
+use Modules\Sensors\Listeners\CheckSensorLimits;
+use Modules\Sensors\Listeners\NotifyManagerOnAbnormalReading;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -11,7 +14,12 @@ class EventServiceProvider extends ServiceProvider
      *
      * @var array<string, array<int, string>>
      */
-    protected $listen = [];
+    protected $listen = [
+        SensorReadingCreated::class => [
+            CheckSensorLimits::class,
+            NotifyManagerOnAbnormalReading::class,
+        ],
+    ];
 
     /**
      * Indicates if events should be discovered.

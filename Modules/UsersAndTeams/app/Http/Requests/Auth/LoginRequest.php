@@ -32,6 +32,21 @@ class LoginRequest extends FormRequest
         ];
     }
 
+
+    /**
+     *  Get the error messages for the defined validation rules.
+     *
+     *  @return array<string, string>
+     */
+    public function messages():array
+    {
+        return[
+            'email.required'      => 'The Email is required please',
+            'email.email'         => 'Please adhere to the email format (example@gmail.com)',
+            'password.required'   => 'The password is required please',
+        ];
+    }
+
     /**
      * Attempt to authenticate the request's credentials.
      *

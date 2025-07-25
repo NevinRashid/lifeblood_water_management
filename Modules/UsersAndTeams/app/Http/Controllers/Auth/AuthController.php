@@ -24,18 +24,13 @@ class AuthController extends Controller
      */
     public function register(RegisterRequest $request)
     {
-        // try {
+        try {
             $user = $this->authService->register($request->validated());
 
-            if ($user->profile_photo) {
-                $user->profile_photo_url = asset('storage/' . $user->profile_photo);
-            }
-
-        //     return $this->successResponse($user, 'Registered successfully. Please verify your email.');
-        // } 
-        // catch (\Exception $e) {
-        //     return $this->errorResponse($e->getMessage(), 500);
-        // }
+            return $this->successResponse($user, 'Registered successfully. Please verify your email.');
+        } catch(\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 500);
+        }
     }
 
     /**
@@ -46,7 +41,7 @@ class AuthController extends Controller
     public function login(LoginRequest $request)
     {
         try {
-            $data = $this->authService->login($request->email, $request->password);
+            $data = $this->authService->login($request->validated());
 
             return $this->successResponse($data, 'Login successful');
         } catch (\Exception $e) {
@@ -85,4 +80,5 @@ class AuthController extends Controller
             return $this->errorResponse($e->getMessage(), 500);
         }
     }
+
 }

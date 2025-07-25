@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('route_deliverd', function (Blueprint $table) {
+        Schema::create('route_deliveries', function (Blueprint $table) {
             $table->id();
             $table->decimal('water_amount_delivered', 15, 4);
             $table->dateTime('arrival_time')->nullable();

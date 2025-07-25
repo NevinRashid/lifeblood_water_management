@@ -4,6 +4,7 @@ namespace Modules\TicketsAndReforms\Providers;
 
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Route;
+use Modules\TicketsAndReforms\Models\TroubleTicket;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -17,6 +18,8 @@ class RouteServiceProvider extends ServiceProvider
     public function boot(): void
     {
         parent::boot();
+        Route::model('troubleticket',TroubleTicket::class);
+
     }
 
     /**

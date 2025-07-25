@@ -20,6 +20,10 @@ return new class extends Migration
             $table->enum('status', ['active', 'inactive', 'damaged', 'under_repair']);
             $table->foreignId('distribution_network_id')->constrained('distribution_networks')->cascadeOnDelete();
             $table->decimal('current_flow', 10, 4)->nullable();
+            
+            $table->decimal('max_flow', 10, 4)->nullable();
+            $table->decimal('min_flow', 10, 4)->nullable();
+
             $table->spatialIndex('location');
             $table->index('distribution_network_id');
             $table->timestamps();

@@ -4,53 +4,99 @@ namespace Modules\DistributionNetwork\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\DistributionNetwork\Http\Requests\DistributionNetwork\SotreDistributionNetworkRequest;
+use Modules\DistributionNetwork\Http\Requests\DistributionNetwork\UpdateDistributionNetworkRequest;
+use Modules\DistributionNetwork\Models\DistributionNetwork;
+use Modules\DistributionNetwork\Services\DistributionNetworkService;
 
 class DistributionNetworkController extends Controller
 {
+    protected DistributionNetworkService $networkService;
+
     /**
-     * Display a listing of the resource.
+     * Constructor for the DistributionNetworkController class.
+     * Initializes the $networkService property via dependency injection.
+     *
+     * @param DistributionNetworkService $networkService
+     */
+    public function __construct(DistributionNetworkService $networkService)
+    {
+        $this->networkService =$networkService;
+    }
+
+    /**
+     * This method return all networks from database.
      */
     public function index()
     {
-        return view('distributionnetwork::index');
+        return $this->successResponse(
+                            'Operation succcessful'
+                            ,$this->networkService->getAllNetworks()
+                            ,200);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Add a new network in the database using the networkService via the createNetwork method
+     * passes the validated request data to createNetwork.
+     *
+     * @param SotreDistributionNetworkRequest $request
+     *
+     * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function store(SotreDistributionNetworkRequest $request)
     {
-        return view('distributionnetwork::create');
+        return $this->successResponse(
+                            'Created succcessful'
+                            ,$this->networkService->createNetwork($request->validated())
+                            ,201);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Get network from database.
+     * using the networkService via the showNetwork method
+     *
+     * @param DistributionNetwork $network
+     *
+     * @return \Illuminate\Http\Response
      */
-    public function store(Request $request) {}
-
-    /**
-     * Show the specified resource.
-     */
-    public function show($id)
+    public function show(DistributionNetwork $network)
     {
-        return view('distributionnetwork::show');
+        return $this->successResponse(
+                            'Operation succcessful'
+                            ,$this->networkService->showNetwork($network)
+                            ,200);
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Update a network in the database using the networkService via the updateNetwork method.
+     * passes the validated request data to updateNetwork.
+     *
+     * @param UpdateDistributionNetworkRequest $request
+     *
+     * @param DistributionNetwork $network
+     *
+     * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function update(UpdateDistributionNetworkRequest  $request, DistributionNetwork $network)
     {
-        return view('distributionnetwork::edit');
+        return $this->successResponse(
+                            'Updated succcessful'
+                            ,$this->networkService->updateNetwork($request->validated(),$network));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Remove the specified network from database.
+     * using the networkService via the deleteNetwork method
+     *
+     * @param DistributionNetwork $network
+     *
+     * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id) {}
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id) {}
+    public function destroy(DistributionNetwork $network)
+    {
+        $this->networkService->deleteNetwork($network);
+        return $this->successResponse(
+                    'Deleted succcessful'
+                    ,null);
+    }
 }

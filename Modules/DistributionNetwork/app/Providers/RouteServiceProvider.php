@@ -4,6 +4,8 @@ namespace Modules\DistributionNetwork\Providers;
 
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Route;
+use Modules\DistributionNetwork\Models\DistributionNetwork;
+use Modules\DistributionNetwork\Models\DistributionPoint;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -17,6 +19,8 @@ class RouteServiceProvider extends ServiceProvider
     public function boot(): void
     {
         parent::boot();
+        Route::model('distributionnetwork',DistributionNetwork::class);
+        Route::model('distributionpoint',DistributionPoint::class);
     }
 
     /**

@@ -7,6 +7,7 @@ namespace Modules\UsersAndTeams\Models;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -38,6 +39,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'team_id',
     ];
 
     /**
@@ -64,11 +66,11 @@ class User extends Authenticatable
     }
 
     /**
-     * Teams the user belongs to (Many-to-Many)
+     * The team this user belongs to (one-to-many)
      */
-    public function teams(): BelongsToMany
+    public function team(): BelongsTo
     {
-        return $this->belongsToMany(Team::class, 'user_team');
+        return $this->belongsTo(Team::class);
     }
 
     /**
