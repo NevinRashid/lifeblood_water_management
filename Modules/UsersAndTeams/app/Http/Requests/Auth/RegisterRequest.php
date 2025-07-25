@@ -2,7 +2,9 @@
 
 namespace Modules\UsersAndTeams\Http\Requests\Auth;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class RegisterRequest extends FormRequest
 {
@@ -28,5 +30,16 @@ class RegisterRequest extends FormRequest
             'profile_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
 
         ];
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(
+            response()->json([
+                'success' => false,
+                'message' => ' Data verification error',
+                'errors' => $validator->errors(),
+            ], 422)
+        );
     }
 }

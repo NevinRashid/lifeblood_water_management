@@ -5,6 +5,8 @@ namespace Modules\DistributionNetwork\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Modules\Sensors\Models\Sensor;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Translatable\HasTranslations;
@@ -13,7 +15,7 @@ use Spatie\Translatable\HasTranslations;
 
 class Pipe extends Model
 {
-    use HasFactory,LogsActivity, HasTranslations;
+    use HasFactory, LogsActivity, HasTranslations;
 
     /**
      * The attributes that are mass assignable.
@@ -37,6 +39,11 @@ class Pipe extends Model
         return $this->belongsTo(DistributionNetwork::class);
     }
 
+    public function sensors(): MorphMany
+    {
+        return $this->morphMany(Sensor::class, 'sensorable');
+    }
+
     // protected static function newFactory(): PipeFactory
     // {
     //     // return PipeFactory::new();
@@ -45,7 +52,7 @@ class Pipe extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-        ->logFillable();
+            ->logFillable();
         // Chain fluent methods for configuration options
     }
 }

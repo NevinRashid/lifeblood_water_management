@@ -6,6 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use MatanYadaev\EloquentSpatial\Objects\Point;
+use Modules\DistributionNetwork\Models\Pipe;
+use Modules\DistributionNetwork\Models\PumpingStation;
+use Modules\DistributionNetwork\Models\Valve;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Translatable\HasTranslations;
@@ -14,7 +18,7 @@ use Spatie\Translatable\HasTranslations;
 
 class Sensor extends Model
 {
-    use HasFactory,LogsActivity,HasTranslations;
+    use HasFactory, LogsActivity, HasTranslations;
 
     /**
      * The attributes that are mass assignable.
@@ -28,10 +32,41 @@ class Sensor extends Model
         'sensorable_id',
         'sensorable_type'
     ];
-
+    /*
+     -This allows easy interaction with the location as a Point object
+     - while storing it properly in the database.
+    **/
     protected $casts = [
-        'location' => 'point'
+        'location' => Point::class,
     ];
+
+    /**
+     * Mapping of sensorable types to their corresponding model classes
+     */
+    protected static $sensorableMap = [
+        'valve' => Valve::class,
+        'pipe' => Pipe::class,
+        'pumpingstation' => PumpingStation::class,
+    ];
+
+    /**
+     * Resolve a sensorable type to its corresponding model class
+     */
+    public static function getSensorableClass(string $type): ?string
+    {
+        $type = strtolower($type);
+
+        // Handle both short type names and full class names
+        if (class_exists($type)) {
+            foreach (static::$sensorableMap as $mappedType => $class) {
+                if ($class === $type) {
+                    return $class;
+                }
+            }
+        }
+
+        return static::$sensorableMap[$type] ?? null;
+    }
 
     /**
      * Get all readings from this sensor
@@ -58,7 +93,7 @@ class Sensor extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-        ->logFillable();
+            ->logFillable();
         // Chain fluent methods for configuration options
     }
 }

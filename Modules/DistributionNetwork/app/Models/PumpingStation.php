@@ -5,6 +5,9 @@ namespace Modules\DistributionNetwork\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use MatanYadaev\EloquentSpatial\Objects\Point;
+use Modules\Sensors\Models\Sensor;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Translatable\HasTranslations;
@@ -13,7 +16,7 @@ use Spatie\Translatable\HasTranslations;
 
 class PumpingStation extends Model
 {
-    use HasFactory,LogsActivity, HasTranslations;
+    use HasFactory, LogsActivity, HasTranslations;
 
     /**
      * The attributes that are mass assignable.
@@ -24,17 +27,27 @@ class PumpingStation extends Model
         'status',
         'distribution_network_id',
         'current_pressure',
-        'current_flow'
+        'current_flow',
+        'max_flow',
+        'min_flow',
+        'max_pressure',
+        'min_pressure',
+
     ];
 
     protected $casts = [
-        'location' => 'point'
+        'location' => Point::class,
     ];
 
     /** The network this station belongs to */
     public function network(): BelongsTo
     {
         return $this->belongsTo(DistributionNetwork::class);
+    }
+
+    public function sensors(): MorphMany
+    {
+        return $this->morphMany(Sensor::class, 'sensorable');
     }
 
     // protected static function newFactory(): PumpingStationFactory
@@ -45,7 +58,7 @@ class PumpingStation extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-        ->logFillable();
+            ->logFillable();
         // Chain fluent methods for configuration options
     }
 }
