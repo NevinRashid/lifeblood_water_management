@@ -26,6 +26,7 @@ class DistributionNetworkService
                             'id'      => $network->id,
                             'name'    => $network->name,
                             'address' => $network->address,
+                            'mamager' => $network->manager->name ,
                             'zone'    => $network->zone?->toJson(),
                         ];
                     });

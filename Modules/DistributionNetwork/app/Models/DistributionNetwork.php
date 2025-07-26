@@ -5,8 +5,10 @@ namespace Modules\DistributionNetwork\Models;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use MatanYadaev\EloquentSpatial\Objects\Polygon;
+use Modules\UsersAndTeams\Models\User;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Translatable\HasTranslations;
@@ -23,7 +25,8 @@ class DistributionNetwork extends Model
     protected $fillable = [
         'name',
         'address',
-        'zone'
+        'zone',
+        'manager_id',
     ];
 
     protected $casts = [
@@ -58,6 +61,14 @@ class DistributionNetwork extends Model
     public function pipes(): HasMany
     {
         return $this->hasMany(Pipe::class,'distribution_network_id');
+    }
+
+    /**
+     * Get the manager of this network
+     */
+    public function manager():BelongsTo
+    {
+        return $this->belongsTo(User::class,'manager_id');
     }
 
     /**
