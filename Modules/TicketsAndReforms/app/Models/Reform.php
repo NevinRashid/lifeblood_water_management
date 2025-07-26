@@ -9,12 +9,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Modules\UsersAndTeams\Models\Team;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Translatable\HasTranslations;
 
 // use Modules\TicketsAndReforms\Database\Factories\ReformFactory;
 
-class Reform extends Model
+class Reform extends Model implements HasMedia
 {
     use HasFactory,LogsActivity, HasTranslations,InteractsWithMedia;
 

@@ -117,6 +117,7 @@ class ReformController extends Controller
      */
     public function addImage(UploadImageReformRequest $request, Reform $reform)
     {
+        dd($request);
         return $this->successResponse(
                         'added images succcessful'
                         ,$this->reformService->addReformImages($request->validated(),$reform));

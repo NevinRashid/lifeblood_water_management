@@ -78,7 +78,6 @@ abstract class BaseService
 
     /**
      * to get one model using id
-     *
      * @param string get model by id
      */
     public function get(string $id)
