@@ -74,7 +74,7 @@ class DistributionNetworkService
         try{
             return DB::transaction(function () use ($data) {
                 $network = DistributionNetwork::create($data);
-                Cache::forget("all_network");
+                Cache::forget("all_networks");
                 return $network;
             });
 

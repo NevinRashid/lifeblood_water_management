@@ -5,8 +5,10 @@ namespace Modules\DistributionNetwork\Models;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use MatanYadaev\EloquentSpatial\Objects\Polygon;
+use Modules\WaterSources\Models\WaterSource;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Translatable\HasTranslations;
@@ -23,7 +25,8 @@ class DistributionNetwork extends Model
     protected $fillable = [
         'name',
         'address',
-        'zone'
+        'zone',
+        'water_source_id'
     ];
 
     protected $casts = [
@@ -60,6 +63,11 @@ class DistributionNetwork extends Model
         return $this->hasMany(Pipe::class,'distribution_network_id');
     }
 
+    /** The source this network belongs to */
+    public function source(): BelongsTo
+    {
+        return $this->belongsTo(WaterSource::class,'water_source_id');
+    }
     /**
      * This function ensures that the name is always in a specified format
      *  (the first letter is uppercase when reading, all letters are lowercase when writing)

@@ -82,10 +82,16 @@ class ReformService
     public function showReform(Reform $reform)
     {
         try{
-            return $reform->load([
-                    'team',
-                    'ticket'
-                ]);
+            $reform = $reform->load([
+                        'team',
+                        'ticket'
+                    ]);
+            $images = $this->getImagesUrl($reform);
+
+            return [
+                $reform,
+                $images
+            ];
 
         } catch(\Throwable $th){
             return $this->error("An error occurred",500, $th->getMessage());
@@ -183,10 +189,7 @@ class ReformService
             $this->uploadImagesToCollection($reform, $beforeImages, 'before_repair');
             $this->uploadImagesToCollection($reform, $afterImages, 'after_repair');
 
-            return [
-                'before_images' => $reform->getMedia('before_repair')->map->getUrl(),
-                'after_images'  => $reform->getMedia('after_repair')->map->getUrl(),
-            ];
+            return $this->getImagesUrl($reform);
 
         } catch(\Throwable $th){
             return $this->error("An error occurred",500, $th->getMessage());
@@ -215,6 +218,29 @@ class ReformService
             foreach ($images as $image) {
                 $reform->addMedia($image)->toMediaCollection($collection);
             }
+
+        } catch(\Throwable $th){
+            return $this->error("An error occurred",500, $th->getMessage());
+        }
+    }
+
+    /**
+     * Get all images related to this reform.
+     *
+     * @param Reform $reform
+
+     * @return array $images
+     */
+    public function getImagesUrl(Reform $reform)
+    {
+        try{
+            $before_images_url=  $reform->getMedia('before_repair')->map(function($media) { return $media->getUrl();});
+            $after_images_url=  $reform->getMedia('after_repair')->map(function($media) { return $media->getUrl();});
+
+            return [
+                'before_images' => $before_images_url,
+                'after_images'  => $after_images_url,
+            ];
 
         } catch(\Throwable $th){
             return $this->error("An error occurred",500, $th->getMessage());

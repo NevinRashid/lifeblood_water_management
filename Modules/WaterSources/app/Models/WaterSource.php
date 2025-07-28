@@ -13,8 +13,7 @@ use MatanYadaev\EloquentSpatial\Traits\HasSpatial;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-           // <-- 1. استيراد الواجهة والـ Trait
-
+use Modules\DistributionNetwork\Models\DistributionNetwork;
 
 // use Modules\WaterSources\Database\Factories\WaterSourceFactory;
 
@@ -47,6 +46,7 @@ class WaterSource extends Model implements HasMedia
         $this->addMediaCollection('water_source_images');
         $this->addMediaCollection('water_source_videos');
     }
+
     /**
      * Get all extractions from this source
      */
@@ -74,19 +74,23 @@ class WaterSource extends Model implements HasMedia
         );
     }
 
-    // protected static function newFactory(): WaterSourceFactory
-    // {
-    //     // return WaterSourceFactory::new();
-    // }
+    /**
+     * Get all distribution networks from this source
+     */
+    public function networks(): HasMany
+    {
+        return $this->hasMany(DistributionNetwork::class,'water_source_id');
+    }
 
-   public function getActivitylogOptions(): LogOptions
-{
-    return LogOptions::defaults()
-        ->logOnly(['name', 'source', 'status', 'operating_date'])
-        ->logOnlyDirty()
-        ->dontSubmitEmptyLogs();
-}
-     public function setNameAttribute($value)
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['name', 'source', 'status', 'operating_date'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
+    }
+
+    public function setNameAttribute($value)
     {
         $this->attributes['name'] = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
     }
