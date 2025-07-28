@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Modules\Beneficiaries\Models\Beneficiary;
 use Modules\TicketsAndReforms\Models\Reform;
 use Modules\TicketsAndReforms\Models\TroubleTicket;
 use Modules\WaterDistributionOperations\Models\DeliveryRoute;
@@ -34,7 +35,7 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
      * @var list<string>
      */
 
-    protected $guard_name ='sanctum';
+    protected $guard_name = 'sanctum';
 
     protected $fillable = [
         'name',
@@ -124,5 +125,10 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
         return $this->belongsToMany(Tanker::class, 'user_tanker')
             ->using(UserTanker::class)
             ->withTimestamps();
+    }
+
+    public function beneficiary()
+    {
+        return $this->hasOne(Beneficiary::class);
     }
 }

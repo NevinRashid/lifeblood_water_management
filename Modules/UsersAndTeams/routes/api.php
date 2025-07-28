@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\UsersAndTeams\Http\Controllers\Auth\AuthController;
+use Modules\UsersAndTeams\Http\Controllers\Api\AuthController;
 use Modules\UsersAndTeams\Http\Controllers\TeamController;
 use Modules\UsersAndTeams\Http\Controllers\UsersAndTeamsController;
 use Modules\UsersAndTeams\Http\Controllers\Api\VerificationController;
@@ -16,5 +16,4 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('teams', TeamController::class)->names('teams');
     Route::post('teams/{team}/assign_members', [TeamController::class, 'assignMembers']);
     Route::post('teams/{team}/remove_members', [TeamController::class, 'removeMembers']);
-
 });
