@@ -13,14 +13,26 @@ return new class extends Migration
     {
         Schema::create('beneficiaries', function (Blueprint $table) {
             $table->id();
-            $table->string('family_name')->nullable();
-            $table->string('contact_phone', 50)->nullable();
-            $table->geometry('location', subtype: 'point')->nullable();
-            $table->integer('number_of_individuals')->nullable();
-            $table->enum('benefit_type', ['network', 'tanker']);
+
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+
+            $table->unsignedInteger('household_size');
+            $table->unsignedInteger('children_count')->nullable()->default(0);
+            $table->unsignedInteger('elderly_count')->nullable()->default(0);
+            $table->unsignedInteger('disabled_count')->nullable()->default(0);
+
+            $table->enum('benefit_type', ['network', 'tanker', 'other'])->default('network');
+
             $table->foreignId('distribution_point_id')->constrained('distribution_points')->cascadeOnDelete();
-            $table->enum('status', ['active', 'inactive', 'relocated']);
+
+            $table->geometry('location', subtype: 'point');
+            $table->string('address');
+
+            $table->enum('status', ['active', 'inactive', 'suspended', 'relocated'])->default('active');
+
+            $table->json('additional_data')->nullable();
             $table->text('notes')->nullable();
+
             $table->index(['benefit_type', 'distribution_point_id']);
             $table->timestamps();
         });
