@@ -8,5 +8,6 @@
     "TicketsAndReforms": true,
     "WaterDistributionOperations": true,
     "Notification": true,
-    "Notifications": true
+    "Notifications": true,
+    "ActivityLog": true
 }
