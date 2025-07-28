@@ -6,7 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use MatanYadaev\EloquentSpatial\Objects\Point;
+use MatanYadaev\EloquentSpatial\Traits\HasSpatial;
 use Modules\DistributionNetwork\Models\DistributionPoint;
+use Modules\UsersAndTeams\Models\User;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Translatable\HasTranslations;
@@ -15,25 +18,28 @@ use Spatie\Translatable\HasTranslations;
 
 class Beneficiary extends Model
 {
-    use HasFactory,LogsActivity, HasTranslations;
+    use HasFactory, LogsActivity, HasTranslations, HasSpatial;
 
     /**
      * The attributes that are mass assignable.
      */
-        protected $fillable = [
-        'family_name',
-        'contact_phone',
+    protected $fillable = [
+        'household_size',
+        'children_count',
+        'elderly_count',
+        'disabled_count',
         'location',
-        'number_of_individuals',
+        'address',
         'benefit_type',
         'distribution_point_id',
         'status',
-        'notes'
+        'notes',
+        'additional_data',
+        'user_id',
     ];
 
     protected $casts = [
-        'location' => 'point',
-        'allocation_date' => 'datetime'
+        'location' => Point::class,
     ];
 
     /**
@@ -52,6 +58,11 @@ class Beneficiary extends Model
         return $this->hasMany(WaterQuota::class);
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     // protected static function newFactory(): BeneficiaryFactory
     // {
     //     // return BeneficiaryFactory::new();
@@ -60,7 +71,7 @@ class Beneficiary extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-        ->logFillable();
+            ->logFillable();
         // Chain fluent methods for configuration options
     }
 }
