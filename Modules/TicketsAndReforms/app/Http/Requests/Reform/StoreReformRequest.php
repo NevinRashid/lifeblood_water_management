@@ -5,6 +5,7 @@ namespace Modules\TicketsAndReforms\Http\Requests\Reform;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Modules\TicketsAndReforms\Rules\TroubleTicketNotRejected;
 
 class StoreReformRequest extends FormRequest
 {
@@ -21,7 +22,7 @@ class StoreReformRequest extends FormRequest
         return [
             'description'       => ['required','string','max:1000'],
             'team_id'           => ['required', 'integer','exists:teams,id'],
-            'trouble_ticket_id' => ['required', 'integer','exists:trouble_tickets,id'],
+            'trouble_ticket_id' => ['required', 'integer','unique:reforms','exists:trouble_tickets,id',new TroubleTicketNotRejected()],
             'before_images'     => ['nullable','array'],
             'before_images.*'   => ['image','mimes:jpg,jpeg,png','mimetypes:image/jpg,image/jpeg,image/png','max:5120'],
             'after_images'      => ['nullable','array'],
@@ -42,6 +43,7 @@ class StoreReformRequest extends FormRequest
             'team_id.required'            => 'The reform must be related to a specific team.',
             'team_id.exists'              => 'The team does not exist.',
             'trouble_ticket_id.required'  => 'The reform must be related to a specific troubleTicket.',
+            'trouble_ticket_id.unique'    => 'The reform is already set for this trouble ticket. Please choose anothor troubleTicket.',
             'trouble_ticket_id.exists'    => 'The troubleTicket does not exist.',
             'before_images.array'         => 'The before images must be an array.',
             'before_images.*.image'       => 'The before_images must be an image',

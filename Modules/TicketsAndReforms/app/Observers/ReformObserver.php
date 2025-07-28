@@ -11,7 +11,12 @@ class ReformObserver
     /**
      * Handle the Reform "created" event.
      */
-    public function created(Reform $reform): void {}
+    public function created(Reform $reform): void
+    {
+        if($reform->wasRecentlyCreated){
+            $reform->ticket()->update(['status' => 'assigned']);
+        }
+    }
 
     /**
      * Handle the Reform "updated" event.

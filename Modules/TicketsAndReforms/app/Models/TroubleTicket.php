@@ -29,7 +29,8 @@ class TroubleTicket extends Model
         'body',
         'location',
         'status',
-        'user_id'
+        'user_id',
+        'type',
     ];
 
     protected $casts = [

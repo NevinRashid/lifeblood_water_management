@@ -106,7 +106,7 @@ class TroubleTicketController extends Controller
     }
 
     /**
-     * Remove the specified troubleTicket from database.
+     * Change the status of the troubleTicket.
      *
      * @param TroubleTicket $troubleTicket
      *
@@ -116,6 +116,48 @@ class TroubleTicketController extends Controller
     {
         return $this->successResponse(
                         'Updated succcessful'
-                        , $this->troubleTicketService->ChangeStatus($request->validated(),$troubleTicket));
+                        , $this->troubleTicketService->changeStatus($request->validated(),$troubleTicket));
+    }
+
+    /**
+     * .
+     *
+     * @param TroubleTicket $troubleTicket
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function approveTrouble(TroubleTicket $troubleTicket)
+    {
+        return $this->successResponse(
+                        'The complaint has been confirmed and has become a troubleTicket awaiting reform'
+                        , $this->troubleTicketService->approveTrouble($troubleTicket));
+    }
+
+    /**
+     * .
+     *
+     * @param TroubleTicket $troubleTicket
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function approveComplaint(TroubleTicket $troubleTicket)
+    {
+        return $this->successResponse(
+                        'The complaint has been confirmed and has become a troubleTicket awaiting reform'
+                        , $this->troubleTicketService->approveComplaint($troubleTicket));
+    }
+
+    /**
+     *
+     *
+     * @param TroubleTicket $troubleTicket
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function reject(TroubleTicket $troubleTicket)
+    {
+        return $this->successResponse(
+                        'The report was rejected'
+                        , $this->troubleTicketService->rejectTrouble($troubleTicket));
     }
 }

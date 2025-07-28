@@ -7,6 +7,8 @@ use Modules\TicketsAndReforms\Events\ReformStatusChangedToCompleted;
 use Modules\TicketsAndReforms\Events\ReformStatusChangedToInProgress;
 use Modules\TicketsAndReforms\Listeners\SetRepairEndTime;
 use Modules\TicketsAndReforms\Listeners\SetRepairStartTime;
+use Modules\TicketsAndReforms\Listeners\SetTroubleTicketStatusFixed;
+use Modules\TicketsAndReforms\Listeners\SetTroubleTicketStatusInProgress;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -18,9 +20,12 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         ReformStatusChangedToInProgress::class => [
         SetRepairStartTime::class,
+        SetTroubleTicketStatusInProgress::class
         ],
+
         ReformStatusChangedToCompleted::class => [
         SetRepairEndTime::class,
+        SetTroubleTicketStatusFixed::class
         ],
     ];
 

@@ -22,6 +22,7 @@ class StoreTroubleTicketRequest extends FormRequest
         return [
             'subject'                   => ['required','string','in:leak,pipe_breaks, water_outages, low_pressure, overflow, sensor_failure, other'],
             'body'                      => ['required','string','max:1000'],
+            'type'                      => ['in:complaint,trouble'],
             'location.type'             => ['required', 'in:Point'],
             'location.coordinates'      => ['required','array','size:2'],
             'location.coordinates.0'    => ['numeric'],//lng
@@ -41,6 +42,7 @@ class StoreTroubleTicketRequest extends FormRequest
             'subject.in'                        => 'The subject must be one of (leak,pipe_breaks, water_outages, low_pressure, overflow, sensor_failure, other)',
             'body.required'                     => 'The body is required please.',
             'body.max'                          => 'The length of the body may not be more than 1000 characters.',
+            'type.in'                           => 'The type must be one of (complaint,trouble)',
             'location.type.required'            => 'The location is required please.',
             'location.type.in'                  => 'The location type must be "Point".',
             'location.coordinates.array'        => 'The coordinates must be an array.',

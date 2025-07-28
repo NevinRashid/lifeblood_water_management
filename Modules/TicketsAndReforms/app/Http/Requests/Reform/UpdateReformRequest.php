@@ -26,7 +26,7 @@ class UpdateReformRequest extends FormRequest
             'end_date'          => ['nullable','date'],
             'status'            => ['nullable','in:pending,in_progress,completed,failed'],
             'team_id'           => ['nullable', 'integer','exists:teams,id'],
-            'trouble_ticket_id' => ['nullable', 'integer','exists:trouble_tickets,id'],
+            'trouble_ticket_id' => ['nullable', 'integer','unique:reforms','exists:trouble_tickets,id'],
             'before_images'     => ['nullable','array'],
             'before_images.*'   => ['image','mimes:jpg,jpeg,png','mimetypes:image/jpg,image/jpeg,image/png','max:5120'],
             'after_images'      => ['nullable','array'],

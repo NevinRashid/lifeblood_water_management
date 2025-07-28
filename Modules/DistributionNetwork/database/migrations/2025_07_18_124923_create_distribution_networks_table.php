@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('address', 255)->nullable();
-            $table->geometry('zone', subtype: 'polygon')->nullable();   
+            $table->geometry('zone', subtype: 'polygon')->nullable();
+            $table->foreignId('water_source_id')->constrained('water_sources')->cascadeOnDelete();
             $table->index('name');
             $table->timestamps();
         });
