@@ -78,6 +78,7 @@ class SensorService
 
             // Get the mapped class from sensorableMap
             $modelClass = Sensor::getSensorableClass($data['sensorable_type']);
+            $data['sensorable_type']=$modelClass; 
 
             if (!$modelClass) {
                 throw new \Exception('Invalid sensorable_type provided', 400);

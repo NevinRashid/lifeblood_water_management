@@ -87,7 +87,6 @@ class SensorReadingService
             DB::beginTransaction();
 
             $reading = SensorReading::create($data);
-
             // Dispatch event
             SensorReadingCreated::dispatch($reading);
 

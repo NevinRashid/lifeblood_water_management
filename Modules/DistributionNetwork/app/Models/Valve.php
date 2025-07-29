@@ -40,7 +40,7 @@ class Valve extends Model
     /** The network this valve belongs to */
     public function network(): BelongsTo
     {
-        return $this->belongsTo(DistributionNetwork::class);
+        return $this->belongsTo(DistributionNetwork::class,'distribution_network_id');
     }
 
     public function sensors(): MorphMany

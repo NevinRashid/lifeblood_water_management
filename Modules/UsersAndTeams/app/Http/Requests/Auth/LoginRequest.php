@@ -46,23 +46,14 @@ class LoginRequest extends FormRequest
         ];
     }
 
-    public function messages()
-    {
-        return [
-            'exists' => ':attribute does not exist',
-            'required' => 'the :attribute require to login, please enter the :attribute!',
-        ];
-    }
-
-
     /**
      *  Get the error messages for the defined validation rules.
      *
      *  @return array<string, string>
      */
-    public function messages():array
+    public function messages(): array
     {
-        return[
+        return [
             'email.required'      => 'The Email is required please',
             'email.email'         => 'Please adhere to the email format (example@gmail.com)',
             'password.required'   => 'The password is required please',

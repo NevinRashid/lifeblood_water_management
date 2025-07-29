@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\UsersAndTeams\Http\Controllers\Api\Auth\AuthController;
+use Modules\UsersAndTeams\Http\Controllers\Api\AuthController;
 use Modules\UsersAndTeams\Http\Controllers\TeamController;
 use Modules\UsersAndTeams\Http\Controllers\UsersAndTeamsController;
 use Modules\UsersAndTeams\Http\Controllers\Api\VerificationController;
