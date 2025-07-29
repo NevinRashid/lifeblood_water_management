@@ -20,10 +20,13 @@ class BeneficiaryService extends BaseService
         return $this->handle(
             function () use ($filters) {
                 if (!$filters) {
-                    return Cache::remember('beneficiaries', now()->addDay(), function () {
+                    return Cache::remember('beneficiaries_' . app()->getLocale(), now()->addDay(), function () {
                         $beneficiaries = parent::getAll();
                         return $beneficiaries->through(function ($beneficiary) {
-                            return $beneficiary->toArray();
+                            return [
+                                ...$beneficiary->toArray(),
+                                'address' => $beneficiary->localized_address,
+                            ];
                         });
                     });
                 }
@@ -37,7 +40,9 @@ class BeneficiaryService extends BaseService
     {
         return $this->handle(function () use ($data) {
             $beneficiaries = parent::store($data);
-            Cache::forget('beneficiaries');
+            foreach (config('translatable.locales') as $locale) {
+                Cache::forget("beneficiaries_{$locale}");
+            }
             return $beneficiaries;
         });
     }
@@ -46,7 +51,9 @@ class BeneficiaryService extends BaseService
     {
         return $this->handle(function () use ($data, $modelOrId) {
             $updatedBeneficiaries = parent::update($data, $modelOrId);
-            Cache::forget('beneficiaries');
+            foreach (config('translatable.locales') as $locale) {
+                Cache::forget("beneficiaries_{$locale}");
+            }
             return $updatedBeneficiaries;
         });
     }
@@ -55,7 +62,9 @@ class BeneficiaryService extends BaseService
     {
         return $this->handle(function () use ($id,) {
             $deletedBeneficiaries = parent::destroy($id);
-            Cache::forget('beneficiaries');
+            foreach (config('translatable.locales') as $locale) {
+                Cache::forget("beneficiaries_{$locale}");
+            }
             return $deletedBeneficiaries;
         });
     }

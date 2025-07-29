@@ -10,6 +10,7 @@ use MatanYadaev\EloquentSpatial\Objects\Point;
 use MatanYadaev\EloquentSpatial\Traits\HasSpatial;
 use Modules\DistributionNetwork\Models\DistributionPoint;
 use Modules\UsersAndTeams\Models\User;
+use PhpParser\Node\Expr\Cast\Array_;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Translatable\HasTranslations;
@@ -40,7 +41,10 @@ class Beneficiary extends Model
 
     protected $casts = [
         'location' => Point::class,
+        'additional_data' => 'array',
     ];
+
+    public array $translatable = ['address'];
 
     /**
      * The distribution point where beneficiary receives water
@@ -73,5 +77,10 @@ class Beneficiary extends Model
         return LogOptions::defaults()
             ->logFillable();
         // Chain fluent methods for configuration options
+    }
+
+    public function getLocalizedAddressAttribute(): string|null
+    {
+        return $this->translate('address', app()->getLocale());
     }
 }

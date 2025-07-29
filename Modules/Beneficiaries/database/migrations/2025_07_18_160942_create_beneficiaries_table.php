@@ -26,7 +26,7 @@ return new class extends Migration
             $table->foreignId('distribution_point_id')->constrained('distribution_points')->cascadeOnDelete();
 
             $table->geometry('location', subtype: 'point');
-            $table->string('address');
+            $table->json('address');
 
             $table->enum('status', ['active', 'inactive', 'suspended', 'relocated'])->default('active');
 
