@@ -73,15 +73,15 @@ class RegistrationRequest extends FormRequest
         ];
     }
 
-    public function messages()
-    {
-        return [
-            'required' => 'the :attribute should not be empty, please add the :attribute!',
-            'max' => 'the :attribute is too long should be at most :max!',
-            'unique' => ':attribute already exists please try another one',
-            'confirmed' => 'Password does not match please try again',
-        ];
-    }
+    // public function messages()
+    // {
+    //     return [
+    //         'required' => 'the :attribute should not be empty, please add the :attribute!',
+    //         'max' => 'the :attribute is too long should be at most :max!',
+    //         'unique' => ':attribute already exists please try another one',
+    //         'confirmed' => 'Password does not match please try again',
+    //     ];
+    // }
 
     /**
      * if the validation failed it return a json response
