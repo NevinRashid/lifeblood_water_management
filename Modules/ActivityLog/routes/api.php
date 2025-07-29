@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\ActivityLog\Http\Controllers\ActivityLogController;
+use Modules\ActivityLog\Http\Controllers\Api\ActivityLogController;
 
-Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
+Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('activitylogs', ActivityLogController::class)->names('activitylog');
 });
