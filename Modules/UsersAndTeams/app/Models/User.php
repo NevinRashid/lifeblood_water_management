@@ -15,6 +15,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Modules\Beneficiaries\Models\Beneficiary;
 use Modules\TicketsAndReforms\Models\Reform;
 use Modules\TicketsAndReforms\Models\TroubleTicket;
+use Modules\UsersAndTeams\Notifications\QueuedResetPassword;
+use Modules\UsersAndTeams\Notifications\QueuedVerifyEmail;
 use Modules\WaterDistributionOperations\Models\DeliveryRoute;
 use Modules\WaterDistributionOperations\Models\ReservoirActivity;
 use Modules\WaterDistributionOperations\Models\Tanker;
@@ -78,6 +80,16 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
         return LogOptions::defaults()
             ->logOnly(['name', 'email'])
             ->useLogName('User');
+    }
+
+    public function sendEmailVerificationNotification()
+    {
+        $this->notify(new QueuedVerifyEmail);
+    }
+
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new QueuedResetPassword($token));
     }
 
     /**

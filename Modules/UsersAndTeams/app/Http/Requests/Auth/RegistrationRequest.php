@@ -44,8 +44,8 @@ class RegistrationRequest extends FormRequest
                     ->letters()
                     ->mixedCase()
                     ->numbers()
-                    ->symbols()
-                    ->uncompromised(),
+                    ->symbols(),
+                    
                 'max:128',
                 'confirmed',
             ],

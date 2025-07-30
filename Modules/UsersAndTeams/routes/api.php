@@ -7,7 +7,7 @@ use Modules\UsersAndTeams\Http\Controllers\UsersAndTeamsController;
 use Modules\UsersAndTeams\Http\Controllers\Api\VerificationController;
 
 
-Route::post('register', [AuthController::class, 'register'])->middleware('throttle:5,5')->middleware('set_locale_lang');
+Route::post('register', [AuthController::class, 'register'])->middleware(['throttle:5,5', 'set_locale_lang']);
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,5');
 
 Route::middleware(['auth:sanctum'])->group(function () {
