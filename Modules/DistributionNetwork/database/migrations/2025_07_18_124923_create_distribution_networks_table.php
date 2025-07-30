@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('distribution_networks', function (Blueprint $table) {
             $table->id();
+             $table->unsignedBigInteger('manager_id')->nullable();
+            $table->foreign('manager_id')->references('id')->on('users')->nullOnDelete();
             $table->string('name');
             $table->string('address', 255)->nullable();
             $table->geometry('zone', subtype: 'polygon')->nullable();

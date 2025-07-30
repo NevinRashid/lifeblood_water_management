@@ -26,6 +26,7 @@ class UpdateDistributionNetworkRequest extends FormRequest
             'zone.coordinates.0.*'    => ['array','size:2'],
             'zone.coordinates.0.*.0'  => ['numeric'],//lng
             'zone.coordinates.0.*.1'  => ['numeric'],//lat
+            'manager_id'              => ['sometimes','integer','exists:users,id']
         ];
     }
 

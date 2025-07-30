@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use MatanYadaev\EloquentSpatial\Objects\Polygon;
 use Modules\WaterSources\Models\WaterSource;
+use Modules\UsersAndTeams\Models\User;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Translatable\HasTranslations;
@@ -26,7 +27,8 @@ class DistributionNetwork extends Model
         'name',
         'address',
         'zone',
-        'water_source_id'
+        'water_source_id',
+        'manager_id',
     ];
 
     protected $casts = [
@@ -68,6 +70,14 @@ class DistributionNetwork extends Model
     {
         return $this->belongsTo(WaterSource::class,'water_source_id');
     }
+    /**
+     * Get the manager of this network
+     */
+    public function manager():BelongsTo
+    {
+        return $this->belongsTo(User::class,'manager_id');
+    }
+
     /**
      * This function ensures that the name is always in a specified format
      *  (the first letter is uppercase when reading, all letters are lowercase when writing)
