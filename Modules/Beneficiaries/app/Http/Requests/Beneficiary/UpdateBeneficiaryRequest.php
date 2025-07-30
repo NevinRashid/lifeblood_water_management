@@ -43,7 +43,10 @@ class UpdateBeneficiaryRequest extends FormRequest
             'location.latitude' => 'sometimes|numeric',
             'location.longitude' => 'sometimes|numeric',
 
-            'address' => 'sometimes|string|max:255',
+            'address' => 'required|array',
+            'address.ar' => 'nullable|string|max:255',
+            'address.en' => 'nullable|string|max:255',
+
             'additional_data' => 'nullable|array',
             'notes' => 'nullable|string|max:1000',
         ];
