@@ -140,7 +140,7 @@ class AuthService
 
             $user = auth()->user();
 
-            Logger::auth('failed-login', 'An user has been logged out successfully', [
+            Logger::auth('logout', 'An user has been logged out successfully', [
                 'user' => $user,
             ]);
 

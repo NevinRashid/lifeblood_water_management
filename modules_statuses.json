@@ -10,5 +10,6 @@
     "Notification": true,
     "Notifications": true,
     "Rule": true,
-    "TroubleTicketNotRejected": true
+    "TroubleTicketNotRejected": true,
+    "ActivityLog": true
 }
