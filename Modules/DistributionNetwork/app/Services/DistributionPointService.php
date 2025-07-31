@@ -5,6 +5,7 @@ namespace Modules\DistributionNetwork\Services;
 use App\Traits\HandleServiceErrors;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use MatanYadaev\EloquentSpatial\Objects\Point;
 use Modules\DistributionNetwork\Models\DistributionPoint;
 
 class DistributionPointService
@@ -48,8 +49,10 @@ class DistributionPointService
                             'status'                    => $point->status,
                             'type'                      => $point->type,
                             'distribution_network_id'   => $point->distribution_network_id,
-                            'location'                  => $point->location?->toJson(),
+                            'location'                  => $point->location,
                             'network'                   => $network,
+                            'created_at'                => $point->created_at,
+                            'updated_at'                => $point->updated_at,
                         ];
                     });
                     return $points;
@@ -92,6 +95,9 @@ class DistributionPointService
     {
         try{
             return DB::transaction(function () use ($data) {
+                if (isset($data['location']) && is_array($data['location'])) {
+                    $data['location'] = new Point($data['location']['lat'], $data['location']['lng']);
+                }
                 $point = DistributionPoint::create($data);
                 Cache::forget("all_points");
                 return $point;

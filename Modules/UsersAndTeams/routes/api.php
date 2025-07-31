@@ -7,7 +7,7 @@ use Modules\UsersAndTeams\Http\Controllers\UsersAndTeamsController;
 use Modules\UsersAndTeams\Http\Controllers\Api\VerificationController;
 
 
-Route::post('register', [AuthController::class, 'register'])->middleware('throttle:5,5');
+Route::post('register', [AuthController::class, 'register'])->middleware(['throttle:5,5', 'set_locale_lang']);
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,5');
 
 Route::middleware(['auth:sanctum'])->group(function () {
@@ -16,5 +16,4 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('teams', TeamController::class)->names('teams');
     Route::post('teams/{team}/assign_members', [TeamController::class, 'assignMembers']);
     Route::post('teams/{team}/remove_members', [TeamController::class, 'removeMembers']);
-
 });

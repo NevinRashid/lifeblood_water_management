@@ -45,10 +45,13 @@ class WaterQualityTest extends Model
         return $this->belongsTo(WaterSource::class);
     }
 
-    // protected static function newFactory(): WaterQualityTestFactory
-    // {
-    //     // return WaterQualityTestFactory::new();
-    // }
+    /**
+     * Scope a query to return records for the last N days..
+     */
+    public function scopeLastNDays($query,$days)
+    {
+        return $query->whereBetween('test_date',[now()->subDays($days),now()]);
+    }
 
     public function getActivitylogOptions(): LogOptions
     {

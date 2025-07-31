@@ -47,8 +47,10 @@ class PipeService
                             'distribution_network_id'   => $pipe->distribution_network_id,
                             'current_pressure'          => $pipe->current_pressure,
                             'current_flow'              => $pipe->current_flow,
-                            'path'                      => $pipe->path?->toJson(),
+                            'path'                      => $pipe->path,
                             'network'                   => $network,
+                            'created_at'                => $pipe->created_at,
+                            'updated_at'                => $pipe->updated_at,
                         ];
                     });
                     return $pipes;
@@ -90,6 +92,10 @@ class PipeService
     {
         try{
             return DB::transaction(function () use ($data) {
+                $points = collect($data['path'])
+                    ->map(fn($coord) => new Point($coord['lat'], $coord['lng']));
+
+                $data['path'] = new LineString($points);
                 $pipe = Pipe::create($data);
                 Cache::forget("all_pipes");
                 return $pipe;

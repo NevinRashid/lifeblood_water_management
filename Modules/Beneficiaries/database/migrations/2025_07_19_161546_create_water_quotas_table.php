@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('water_quotas', function (Blueprint $table) {
             $table->id();
-            $table->decimal('received_volume', 15, 4)->nullable();
+            $table->decimal('received_volume', 15, 4);
             $table->dateTime('allocation_date');
             $table->enum('status', ['allocated', 'delivered', 'pending', 'cancelled']);
             $table->text('notes')->nullable();

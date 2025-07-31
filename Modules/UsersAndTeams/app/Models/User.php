@@ -12,8 +12,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Modules\Beneficiaries\Models\Beneficiary;
 use Modules\TicketsAndReforms\Models\Reform;
 use Modules\TicketsAndReforms\Models\TroubleTicket;
+use Modules\UsersAndTeams\Notifications\QueuedResetPassword;
+use Modules\UsersAndTeams\Notifications\QueuedVerifyEmail;
 use Modules\WaterDistributionOperations\Models\DeliveryRoute;
 use Modules\WaterDistributionOperations\Models\ReservoirActivity;
 use Modules\WaterDistributionOperations\Models\Tanker;
@@ -34,7 +37,7 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
      * @var list<string>
      */
 
-    protected $guard_name ='sanctum';
+    protected $guard_name = 'sanctum';
 
     protected $fillable = [
         'name',
@@ -77,6 +80,16 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
         return LogOptions::defaults()
             ->logOnly(['name', 'email'])
             ->useLogName('User');
+    }
+
+    public function sendEmailVerificationNotification()
+    {
+        $this->notify(new QueuedVerifyEmail);
+    }
+
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new QueuedResetPassword($token));
     }
 
     /**
@@ -124,5 +137,10 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
         return $this->belongsToMany(Tanker::class, 'user_tanker')
             ->using(UserTanker::class)
             ->withTimestamps();
+    }
+
+    public function beneficiary()
+    {
+        return $this->hasOne(Beneficiary::class);
     }
 }

@@ -21,10 +21,9 @@ class UpdateDistributionPointRequest extends FormRequest
             'status'                    => ['in:active,inactive, damaged, under_repair'],
             'type'                      => ['in:tanker,water tap'],
             'distribution_network_id'   => ['nullable', 'integer','exists:distribution_networks,id'],
-            'location.type'             => ['nullable','in:Point'],
-            'location.coordinates'      => ['nullable','array','size:2'],
-            'location.coordinates.0'    => ['numeric'],//lng
-            'location.coordinates.1'    => ['numeric'],//lat
+            'location'                  => ['required','array'],
+            'location.lat'              => ['required','numeric','between:-90,90'],
+            'location.lng'              => ['required','numeric','between:-180,180'],
         ];
     }
 
@@ -41,11 +40,9 @@ class UpdateDistributionPointRequest extends FormRequest
             'status.in'                         => 'The status must be one of (active,inactive,damaged,under_repair)',
             'type.in'                           => 'The type must be one of (tanker,water tap)',
             'distribution_network_id.exists'    => 'The network you are trying to connect this distribution point to does not exist.',
-            'location.type.in'                  => 'The location type must be "Point".',
-            'location.coordinates.array'        => 'The coordinates must be an array.',
-            'location.coordinates.size'         => 'Each point must contain exactly two values.',
-            'location.coordinates.0.numeric'    => 'The longitude must be a numeric value.',
-            'location.coordinates.1.numeric'    => 'The latitude must be a numeric value.',
+            'location.array'                    => 'The location must be an array.',
+            'location.lat.numeric'              => 'The longitude must be a numeric value.',
+            'location.lng.numeric'              => 'The latitude must be a numeric value.',
         ];
     }
 

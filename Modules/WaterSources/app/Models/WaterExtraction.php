@@ -30,10 +30,14 @@ class WaterExtraction extends Model
     {
         return $this->belongsTo(WaterSource::class);
     }
-    // protected static function newFactory(): WaterExtractionFactory
-    // {
-    //     // return WaterExtractionFactory::new();
-    // }
+
+    /**
+     * Scope a query to return records for the last N days..
+     */
+    public function scopeLastNDays($query,$days)
+    {
+        return $query->whereBetween('extraction_date',[now()->subDays($days),now()]);
+    }
 
     public function getActivitylogOptions(): LogOptions
     {
