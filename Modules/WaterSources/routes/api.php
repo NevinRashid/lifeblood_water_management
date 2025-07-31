@@ -13,7 +13,7 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('water-extractions', WaterExtractionController::class)->names('water-extractions');
     Route::apiResource('testing-parameters', TestingParameterController::class);
     Route::apiResource('water-quality-tests', WaterQualityTestController::class);
-    Route::gey('heatmap', [HeatmapController::class, 'index']);
+    Route::get('heatmap', [HeatmapController::class, 'index']);
 });
 
 

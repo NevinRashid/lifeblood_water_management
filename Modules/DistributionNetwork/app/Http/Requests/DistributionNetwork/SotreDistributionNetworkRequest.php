@@ -21,13 +21,16 @@ class SotreDistributionNetworkRequest extends FormRequest
             'name'                    => ['required', 'string','unique:distribution_networks', 'max:255'],
             'address'                 => ['nullable', 'string','max:255'],
             'water_source_id'         => ['required', 'integer','exists:water_sources,id'],
-            'zone.type'               => ['nullable','in:Polygon'],
+            /*'zone.type'               => ['nullable','in:Polygon'],
             'zone.coordinates'        => ['array','size:1'],
             'zone.coordinates.0'      => ['array','min:4',new VaildPolygon()],
             'zone.coordinates.0.*'    => ['array','size:2'],
             'zone.coordinates.0.*.0'  => ['numeric'],//lng
-            'zone.coordinates.0.*.1'  => ['numeric'],//lat
-            'manager_id'              => ['required','integer','exists:users,id']
+            'zone.coordinates.0.*.1'  => ['numeric'],//lat*/
+            'manager_id'              => ['required','integer','exists:users,id'],
+            'zone'                    => ['required','array',new VaildPolygon()],
+            'zone.*.lat'              => ['required_with:zone','numeric','between:-90,90'],
+            'zone.*.lng'              => ['required_with:zone','numeric','between:-180,180'],
         ];
     }
 
@@ -45,7 +48,7 @@ class SotreDistributionNetworkRequest extends FormRequest
             'address.max'                    => 'The length of the address may not be more than 255 characters.',
             'water_source_id.required'       => 'This distribution network must be connected to a specific water source.',
             'water_source_id.exists'         => 'The water source you are trying to connect this distribution network to does not exist.',
-            'zone.type.in'                   => 'The zone type must be "Polygon".',
+            /*'zone.type.in'                   => 'The zone type must be "Polygon".',
             'zone.coordinates.array'         => 'The coordinates must be an array.',
             'zone.coordinates.size'          => 'Only one set of coordinates (outer ring) is allowed.',
             'zone.coordinates.0.array'       => 'The outer ring must be an array of points.',
@@ -53,7 +56,13 @@ class SotreDistributionNetworkRequest extends FormRequest
             'zone.coordinates.0.*.array'     => 'Each point in the outer ring must be an array.',
             'zone.coordinates.0.*.size'      => 'Each point must have exactly 2 values (longitude and latitude).',
             'zone.coordinates.0.*.0.numeric' => 'Longitude (x) must be a number.',
-            'zone.coordinates.0.*.1.numeric' => 'Latitude (y) must be a number.',
+            'zone.coordinates.0.*.1.numeric' => 'Latitude (y) must be a number.',*/
+            'zone.required'                  => 'The zone is required please.',
+            'zone.array'                     => 'The zone must be an array of points.',
+            'zone.*.lat.required'            => 'The latitude is required please.',
+            'zone.*.lng.required'            => 'The longitude is required please.',
+            'zone.*.lat.numeric'             => 'The latitude must be a numeric value.',
+            'zone.*.lng.numeric'             => 'The longitude must be a numeric value.',
         ];
     }
 

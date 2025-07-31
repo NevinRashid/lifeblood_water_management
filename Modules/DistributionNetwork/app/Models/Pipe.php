@@ -29,7 +29,11 @@ class Pipe extends Model
         'path',
         'distribution_network_id',
         'current_pressure',
-        'current_flow'
+        'current_flow',
+        'max_flow',
+        'min_flow',
+        'max_pressure',
+        'min_pressure'
     ];
 
     protected $casts = [
@@ -63,7 +67,7 @@ class Pipe extends Model
             set: fn (string $value) => strtolower($value),
         );
     }
-    
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()

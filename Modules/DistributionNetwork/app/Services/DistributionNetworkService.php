@@ -6,7 +6,9 @@ use App\Traits\HandleServiceErrors;
 use Illuminate\Support\Facades\Cache;
 use Modules\DistributionNetwork\Models\DistributionNetwork;
 use Illuminate\Support\Facades\DB;
-
+use MatanYadaev\EloquentSpatial\Objects\LineString;
+use MatanYadaev\EloquentSpatial\Objects\Point;
+use MatanYadaev\EloquentSpatial\Objects\Polygon;
 
 class DistributionNetworkService
 {
@@ -23,11 +25,14 @@ class DistributionNetworkService
                     $networks= DistributionNetwork::all();
                     $networks = $networks->map(function($network){
                         return[
-                            'id'      => $network->id,
-                            'name'    => $network->name,
-                            'address' => $network->address,
-                            'mamager' => $network->manager->name ,
-                            'zone'    => $network->zone?->toJson(),
+                            'id'              => $network->id,
+                            'name'            => $network->name,
+                            'address'         => $network->address,
+                            'mamager'         => $network->manager->name ,
+                            'water_source_id' => $network->water_source_id ,
+                            'zone'            => $network->zone,
+                            'created_at'      => $network->created_at,
+                            'updated_at'      => $network->updated_at,
                         ];
                     });
                     return $networks;
@@ -74,6 +79,13 @@ class DistributionNetworkService
     {
         try{
             return DB::transaction(function () use ($data) {
+
+                $points = collect($data['zone'])
+                    ->map(fn($coord) => new Point($coord['lat'], $coord['lng']));
+
+                $linestring = new LineString($points);
+                $data['zone']=new Polygon([$linestring]);
+
                 $network = DistributionNetwork::create($data);
                 Cache::forget("all_networks");
                 return $network;
