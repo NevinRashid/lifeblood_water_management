@@ -23,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
             'verified.api' => Modules\UsersAndTeams\Http\Middleware\EnsureEmailIsVerifiedApi::class,
+            'set_locale_lang' =>  App\Http\Middleware\SetLocaleLang::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

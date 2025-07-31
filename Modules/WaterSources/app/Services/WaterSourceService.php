@@ -2,7 +2,7 @@
 
 namespace Modules\WaterSources\Services;
 
-use  Exception ;
+use  Exception;
 use Spatie\MediaLibrary\HasMedia;
 use App\Events\WaterSourceCreated;
 use Illuminate\Support\Facades\DB;
@@ -53,7 +53,7 @@ class WaterSourceService extends Service
         return $query->paginate($perPage);
     }
 
-     /**
+    /**
      * Retrieve a single water source by its model instance or ID.
      *
      * @param string|Model $modelOrId
