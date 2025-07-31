@@ -3,6 +3,8 @@
 namespace Modules\DistributionNetwork\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Modules\DistributionNetwork\Http\Requests\DistributionNetwork\SotreDistributionNetworkRequest;
 use Modules\DistributionNetwork\Http\Requests\DistributionNetwork\UpdateDistributionNetworkRequest;
@@ -21,7 +23,7 @@ class DistributionNetworkController extends Controller
      */
     public function __construct(DistributionNetworkService $networkService)
     {
-        $this->networkService =$networkService;
+        $this->networkService = $networkService;
     }
 
     /**
@@ -30,9 +32,10 @@ class DistributionNetworkController extends Controller
     public function index()
     {
         return $this->successResponse(
-                            'Operation succcessful'
-                            ,$this->networkService->getAllNetworks()
-                            ,200);
+            'Operation succcessful',
+            $this->networkService->getAllNetworks(),
+            200
+        );
     }
 
     /**
@@ -46,9 +49,10 @@ class DistributionNetworkController extends Controller
     public function store(SotreDistributionNetworkRequest $request)
     {
         return $this->successResponse(
-                            'Created succcessful'
-                            ,$this->networkService->createNetwork($request->validated())
-                            ,201);
+            'Created succcessful',
+            $this->networkService->createNetwork($request->validated()),
+            201
+        );
     }
 
     /**
@@ -62,9 +66,10 @@ class DistributionNetworkController extends Controller
     public function show(DistributionNetwork $network)
     {
         return $this->successResponse(
-                            'Operation succcessful'
-                            ,$this->networkService->showNetwork($network)
-                            ,200);
+            'Operation succcessful',
+            $this->networkService->showNetwork($network),
+            200
+        );
     }
 
     /**
@@ -80,8 +85,9 @@ class DistributionNetworkController extends Controller
     public function update(UpdateDistributionNetworkRequest  $request, DistributionNetwork $network)
     {
         return $this->successResponse(
-                            'Updated succcessful'
-                            ,$this->networkService->updateNetwork($request->validated(),$network));
+            'Updated succcessful',
+            $this->networkService->updateNetwork($request->validated(), $network)
+        );
     }
 
     /**
@@ -96,7 +102,21 @@ class DistributionNetworkController extends Controller
     {
         $this->networkService->deleteNetwork($network);
         return $this->successResponse(
-                    'Deleted succcessful'
-                    ,null);
+            'Deleted succcessful',
+            null
+        );
+    }
+
+    /**
+     * Review distribution network tickets.
+     */
+    public function review(): JsonResponse
+    {
+        try {
+            $tickets = $this->networkService->review();
+            return $this->successResponse('Tickets retrieved successfully', $tickets);
+        } catch (\Throwable $e) {
+            return $this->errorResponse($e->getMessage(), null, $e->getCode() ?: 500);
+        }
     }
 }

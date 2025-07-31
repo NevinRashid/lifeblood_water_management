@@ -9,6 +9,7 @@ use Modules\DistributionNetwork\Http\Controllers\DistributionPointController;
 use Modules\DistributionNetwork\Http\Controllers\PipeController;
 
 Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/trouble-tickets', [DistributionNetworkController::class, 'review']);
     Route::apiResource('distributionnetworks', DistributionNetworkController::class)->names('distributionnetwork');
     Route::apiResource('valves',ValvesController::class)->names('valve');
     Route::apiResource('pumping_stations',PumpingStationsController::class)->names('pumping_station');

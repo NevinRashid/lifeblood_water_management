@@ -51,14 +51,15 @@ class LoginRequest extends FormRequest
      *
      *  @return array<string, string>
      */
-    // public function messages(): array
-    // {
-    //     return [
-    //         'email.required'      => 'The Email is required please',
-    //         'email.email'         => 'Please adhere to the email format (example@gmail.com)',
-    //         'password.required'   => 'The password is required please',
-    //     ];
-    // }
+
+    public function messages(): array
+    {
+        return [
+            'email.required'      => 'The Email is required please',
+            'email.email'         => 'Please adhere to the email format (example@gmail.com)',
+            'password.required'   => 'The password is required please',
+        ];
+    }
 
     /**
      * if the validation failed it return a json response

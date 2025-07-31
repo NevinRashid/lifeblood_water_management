@@ -14,6 +14,7 @@ use Modules\WaterSources\Models\WaterSource;
 use MatanYadaev\EloquentSpatial\Objects\Point;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\QueryException;
 
 class WaterSourceService extends Service
 {
@@ -229,6 +230,56 @@ class WaterSourceService extends Service
                     }
                 }
             }
+        }
+    }
+
+    public function overview()
+    {
+        // Eager load all relationships with optimized queries
+        try {
+            $waterSources = WaterSource::with([
+                'networks' => function ($query) {
+                    $query->whereHas('source', function ($q) {
+                        $q->where('status', 'active');
+                    });
+                },
+                'networks.reservoirs' => function ($query) {
+                    $query->select([
+                        'id',
+                        'name',
+                        'location',
+                        'tank_type',
+                        'maximum_capacity',
+                        'minimum_critical_level',
+                        'status',
+                        'distribution_network_id'
+                    ])->where('status', 'active');
+                },
+                'networks.distributionPoints' => function ($query) {
+                    $query->select([
+                        'id',
+                        'name',
+                        'location',
+                        'type',
+                        'status',
+                        'distribution_network_id'
+                    ]);
+                }
+            ])->where('status', 'active')
+                ->get([
+                    'id',
+                    'name',
+                    'source',
+                    'location',
+                    'capacity_per_day',
+                    'capacity_per_hour',
+                    'status'
+                ]);
+            return $waterSources;
+        } catch (QueryException $e) {
+            throw new \Exception('Database error while fetched watersource review :', 500);
+        } catch (\Exception $e) {
+            throw new \Exception('Database error while fetched watersource review: ' . $e->getMessage(), 400);
         }
     }
 }
