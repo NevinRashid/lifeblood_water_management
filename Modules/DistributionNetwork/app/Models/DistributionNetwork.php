@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use MatanYadaev\EloquentSpatial\Objects\Polygon;
+use Modules\WaterSources\Models\WaterSource;
 use Modules\UsersAndTeams\Models\User;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -26,6 +27,7 @@ class DistributionNetwork extends Model
         'name',
         'address',
         'zone',
+        'water_source_id',
         'manager_id',
     ];
 
@@ -63,6 +65,11 @@ class DistributionNetwork extends Model
         return $this->hasMany(Pipe::class,'distribution_network_id');
     }
 
+    /** The source this network belongs to */
+    public function source(): BelongsTo
+    {
+        return $this->belongsTo(WaterSource::class,'water_source_id');
+    }
     /**
      * Get the manager of this network
      */

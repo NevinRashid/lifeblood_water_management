@@ -20,6 +20,7 @@ class SotreDistributionNetworkRequest extends FormRequest
         return [
             'name'                    => ['required', 'string','unique:distribution_networks', 'max:255'],
             'address'                 => ['nullable', 'string','max:255'],
+            'water_source_id'         => ['required', 'integer','exists:water_sources,id'],
             'zone.type'               => ['nullable','in:Polygon'],
             'zone.coordinates'        => ['array','size:1'],
             'zone.coordinates.0'      => ['array','min:4',new VaildPolygon()],
@@ -42,6 +43,8 @@ class SotreDistributionNetworkRequest extends FormRequest
             'name.max'                       => 'The length of the name may not be more than 255 characters.',
             'name.unique'                    => 'The name must be unique and not duplicate. Please use another name',
             'address.max'                    => 'The length of the address may not be more than 255 characters.',
+            'water_source_id.required'       => 'This distribution network must be connected to a specific water source.',
+            'water_source_id.exists'         => 'The water source you are trying to connect this distribution network to does not exist.',
             'zone.type.in'                   => 'The zone type must be "Polygon".',
             'zone.coordinates.array'         => 'The coordinates must be an array.',
             'zone.coordinates.size'          => 'Only one set of coordinates (outer ring) is allowed.',

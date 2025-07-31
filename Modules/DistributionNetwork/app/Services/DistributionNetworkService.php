@@ -6,7 +6,7 @@ use App\Traits\HandleServiceErrors;
 use Illuminate\Support\Facades\Cache;
 use Modules\DistributionNetwork\Models\DistributionNetwork;
 use Illuminate\Support\Facades\DB;
-
+use Modules\TicketsAndReforms\Models\TroubleTicket;
 
 class DistributionNetworkService
 {
@@ -18,24 +18,23 @@ class DistributionNetworkService
      */
     public function getAllNetworks()
     {
-        try{
-            $networks = Cache::remember('all_networks', 3600, function(){
-                    $networks= DistributionNetwork::all();
-                    $networks = $networks->map(function($network){
-                        return[
-                            'id'      => $network->id,
-                            'name'    => $network->name,
-                            'address' => $network->address,
-                            'mamager' => $network->manager->name ,
-                            'zone'    => $network->zone?->toJson(),
-                        ];
-                    });
-                    return $networks;
+        try {
+            $networks = Cache::remember('all_networks', 3600, function () {
+                $networks = DistributionNetwork::all();
+                $networks = $networks->map(function ($network) {
+                    return [
+                        'id'      => $network->id,
+                        'name'    => $network->name,
+                        'address' => $network->address,
+                        'mamager' => $network->manager->name,
+                        'zone'    => $network->zone?->toJson(),
+                    ];
                 });
+                return $networks;
+            });
             return $networks;
-
-        } catch(\Throwable $th){
-            return $this->error("An error occurred",500, $th->getMessage());
+        } catch (\Throwable $th) {
+            return $this->error("An error occurred", 500, $th->getMessage());
         }
     }
 
@@ -48,18 +47,22 @@ class DistributionNetworkService
      */
     public function showNetwork(DistributionNetwork $network)
     {
-        try{
+        try {
             return $network->load([
-                    'reservoirs',
-                    'distributionPoints',
-                    'pumpingStations',
-                    'valves',
-                    'pipes',
-                ])->loadCount(['reservoirs','distributionPoints','pumpingStations',
-                                'valves','pipes',]);
-
-        } catch(\Throwable $th){
-            return $this->error("An error occurred",500, $th->getMessage());
+                'reservoirs',
+                'distributionPoints',
+                'pumpingStations',
+                'valves',
+                'pipes',
+            ])->loadCount([
+                'reservoirs',
+                'distributionPoints',
+                'pumpingStations',
+                'valves',
+                'pipes',
+            ]);
+        } catch (\Throwable $th) {
+            return $this->error("An error occurred", 500, $th->getMessage());
         }
     }
 
@@ -72,15 +75,14 @@ class DistributionNetworkService
      */
     public function createNetwork(array $data)
     {
-        try{
+        try {
             return DB::transaction(function () use ($data) {
                 $network = DistributionNetwork::create($data);
-                Cache::forget("all_network");
+                Cache::forget("all_networks");
                 return $network;
             });
-
-        } catch(\Throwable $th){
-            return $this->error("An error occurred",500, $th->getMessage());
+        } catch (\Throwable $th) {
+            return $this->error("An error occurred", 500, $th->getMessage());
         }
     }
 
@@ -93,14 +95,14 @@ class DistributionNetworkService
      * @return DistributionNetwork $network
      */
 
-    public function updateNetwork(array $data, DistributionNetwork $network){
-        try{
+    public function updateNetwork(array $data, DistributionNetwork $network)
+    {
+        try {
             $network->update(array_filter($data));
             Cache::forget("all_networks");
             return $network;
-
-        } catch(\Throwable $th){
-            return $this->error("An error occurred",500, $th->getMessage());
+        } catch (\Throwable $th) {
+            return $this->error("An error occurred", 500, $th->getMessage());
         }
     }
 
@@ -111,8 +113,9 @@ class DistributionNetworkService
      *
      */
 
-    public function deleteNetwork(DistributionNetwork $network){
-        try{
+    public function deleteNetwork(DistributionNetwork $network)
+    {
+        try {
             return DB::transaction(function () use ($network) {
                 $network->reservoirs()->delete();
                 $network->distributionPoints()->delete();
@@ -122,10 +125,36 @@ class DistributionNetworkService
                 Cache::forget("all_networks");
                 return $network->delete();
             });
-
-        } catch(\Throwable $th){
-            return $this->error("An error occurred",500, $th->getMessage());
+        } catch (\Throwable $th) {
+            return $this->error("An error occurred", 500, $th->getMessage());
         }
     }
 
+    /**
+     * Retrieve all trouble tickets with their network.
+     */
+    public function review()
+    {
+        try {
+            // Fetch all tickets and transform into simplified array
+            $tickets = TroubleTicket::all()->load(['reporter', 'reform'])->map(function ($ticket) {
+                return [
+                    'id'       => $ticket->id,
+                    'subject'  => $ticket->subject,
+                    'status'   => $ticket->status,
+                    'type'     => $ticket->type,
+                    'body'     => $ticket->body,
+                    'reporter' => $ticket->reporter->name,
+                    'network'  => $ticket->network, // the distribution name
+                    'reform' =>[
+                        'info' => $ticket->reform,
+                    ]
+                ];
+
+            });
+            return $tickets;
+        } catch (\Throwable $th) {
+            return $this->error("An error occurred", 500, $th->getMessage());
+        }
+    }
 }

@@ -3,6 +3,7 @@
 namespace Modules\TicketsAndReforms\Services;
 
 use App\Traits\HandleServiceErrors;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -88,8 +89,24 @@ class TroubleTicketService
         try{
             return DB::transaction(function () use ($data) {
                 $data['user_id']= Auth::user()->id;
-                $data['status']= 'new';
-                $data['location'] = new Point($data['location']['coordinates'][0], $data['location']['coordinates'][1]);
+
+                if(Auth::user()->hasRole('Affected Community Member')){
+                    $data['status'] = 'new';
+                    if($data['type'] === 'complaint'){
+                        $data['subject'] = 'other';
+                    }
+                }
+                else
+                    $data['status']= 'waiting_assignment';
+
+                if(Auth::user()->hasRole('Field Monitoring Agent')){
+                    $data['type']= "failure";
+                }
+
+                if(isset($data['location'])){
+                    $data['location'] = new Point($data['location']['coordinates'][0], $data['location']['coordinates'][1]);
+                }
+
                 $trouble = TroubleTicket::create($data);
                 Cache::forget("all_troubles");
                 return $trouble;
@@ -158,7 +175,7 @@ class TroubleTicketService
      *
      * @return TroubleTicket $trouble
      */
-    public function ChangeStatus(array $data,TroubleTicket $trouble){
+    public function changeStatus(array $data,TroubleTicket $trouble){
         try{
             //Check the status you want to change to. If it is one of these statuses,
             // it is not permissible to change to it before assigning it to the reform team.
@@ -172,6 +189,83 @@ class TroubleTicketService
                                     );
             }
             $trouble->update(array_filter($data));
+            Cache::forget("all_troubles");
+            return $trouble;
+
+        } catch(\Throwable $th){
+            return $this->error("An error occurred",500, $th->getMessage());
+        }
+    }
+
+    /**
+     *Approves a trouble-type trouble ticket by updating its status to 'waiting_assignment'.
+     * This method should be used only for tickets where the type is 'trouble'.
+     * It is typically called by technicians or supervisors to confirm a reported
+     * technical issue and initiate the assignment process.
+     *
+     * @param TroubleTicket $trouble
+     *
+     * @return TroubleTicket $trouble
+     */
+    public function approveTrouble(TroubleTicket $trouble){
+        try{
+            if($trouble->type === 'trouble'){
+                $trouble ->update([
+                    'status' => 'waiting_assignment',
+                ]);
+            }
+
+            Cache::forget("all_troubles");
+            return $trouble;
+
+        } catch(\Throwable $th){
+            return $this->error("An error occurred",500, $th->getMessage());
+        }
+    }
+
+    /**
+     * Resolves a service-type complaint by updating its status to 'resolved'.
+     * This method should be used only for tickets where the type is 'complaint'.
+     * It is typically called by support or administrative staff to close non-technical
+     * issues after review or resolution.
+     *
+     * @param TroubleTicket $trouble
+     *
+     * @return TroubleTicket $trouble
+     */
+    public function approveComplaint(TroubleTicket $trouble){
+        try{
+                $trouble ->update([
+                    'status' => 'resolved',
+                ]);
+
+            Cache::forget("all_troubles");
+            return $trouble;
+
+        } catch(\Throwable $th){
+            return $this->error("An error occurred",500, $th->getMessage());
+        }
+    }
+
+    /**
+     * Rejects a trouble ticket if its current status allows rejection.
+     *
+     * This method is intended to be used when a ticket is being evaluated and the reviewer
+     * decides it should be rejected. Only tickets with status 'new'
+     * can be rejected. If the status is not allowed, an Exception will be thrown.
+     *
+     * @param TroubleTicket $trouble
+     *
+     * @return TroubleTicket $trouble
+     */
+    public function rejectTrouble(TroubleTicket $trouble){
+        try{
+            if($trouble->status !== 'new'){
+                throw new \Exception('Only new trouble tickets can be rejected');
+            }
+            $trouble ->update([
+                'status' => 'rejected',
+            ]);
             Cache::forget("all_troubles");
             return $trouble;
 

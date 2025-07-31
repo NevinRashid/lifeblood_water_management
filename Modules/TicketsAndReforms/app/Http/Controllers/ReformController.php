@@ -117,9 +117,22 @@ class ReformController extends Controller
      */
     public function addImage(UploadImageReformRequest $request, Reform $reform)
     {
-        dd($request);
         return $this->successResponse(
                         'added images succcessful'
                         ,$this->reformService->addReformImages($request->validated(),$reform));
+    }
+
+    /**
+     * Get all before and after reform images from the database using the reformService via the getImagesUrl method.
+     *
+     * @param Reform $reform
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getImagesUrl( Reform $reform)
+    {
+        return $this->successResponse(
+                        'Operation succcessful'
+                        ,$this->reformService->getImagesUrl($reform));
     }
 }

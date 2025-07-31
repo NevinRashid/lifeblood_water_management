@@ -16,7 +16,8 @@ return new class extends Migration
             $table->enum('subject', ['leak','pipe_breaks','water_outages','low_pressure', 'overflow', 'sensor_failure', 'other']);
             $table->text('body');
             $table->geometry('location', subtype: 'point')->nullable();
-            $table->enum('status', ['new', 'waiting_assignment', 'assigned', 'in_progress', 'fixed', 'rejected']);
+            $table->enum('status', ['new', 'waiting_assignment', 'assigned', 'in_progress', 'fixed', 'resolved', 'rejected']);
+            $table->enum('type', ['complaint', 'trouble']);
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->index(['user_id', 'status']);
             $table->timestamps();

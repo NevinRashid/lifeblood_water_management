@@ -17,7 +17,8 @@ return new class extends Migration
             $table->foreign('manager_id')->references('id')->on('users')->nullOnDelete();
             $table->string('name');
             $table->string('address', 255)->nullable();
-            $table->geometry('zone', subtype: 'polygon')->nullable();   
+            $table->geometry('zone', subtype: 'polygon')->nullable();
+            $table->foreignId('water_source_id')->constrained('water_sources')->cascadeOnDelete();
             $table->index('name');
             $table->timestamps();
         });

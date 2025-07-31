@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
+use Exception;
 use Modules\WaterSources\Models\WaterSource;
 use Modules\WaterSources\Http\Requests\AddMediaRequest;
 use Modules\WaterSources\Http\Resources\WaterSourceResource;
@@ -30,15 +31,15 @@ class WaterSourcesController extends Controller
      */
 
 
-public function index(Request $request): JsonResponse
-{
-    $waterSources = $this->waterSourceService->getAll($request->all());
+    public function index(Request $request): JsonResponse
+    {
+        $waterSources = $this->waterSourceService->getAll($request->all());
 
 
-    $data = WaterSourceResource::collection($waterSources);
+        $data = WaterSourceResource::collection($waterSources);
 
-    return $this->successResponse('Water sources retrieved successfully.', $data);
-}
+        return $this->successResponse('Water sources retrieved successfully.', $data);
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -107,7 +108,7 @@ public function index(Request $request): JsonResponse
             Response::HTTP_OK // We can use 200 OK or 204 No Content
         );
     }
-     /**
+    /**
      *
      *
      * @param AddMediaRequest $request
@@ -118,7 +119,25 @@ public function index(Request $request): JsonResponse
     {
 
         $updatedWaterSource = $this->waterSourceService->addMedia($request->validated(), $waterSource);
-   
-       return new WaterSourceResource($updatedWaterSource);
-}
+
+        return new WaterSourceResource($updatedWaterSource);
+    }
+
+    /**
+     * Get an overview of the water situation
+     * 
+     * Returns all active water sources with their associated networks,
+     * reservoirs, and distribution points.
+     * 
+     * @return JsonResponse
+     */
+    public function overview(): JsonResponse
+    {
+        try {
+            $overview = $this->waterSourceService->overview();
+            return $this->successResponse('review of water sources retrieved successfully', $overview);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), null, $e->getCode());
+        }
+    }
 }
