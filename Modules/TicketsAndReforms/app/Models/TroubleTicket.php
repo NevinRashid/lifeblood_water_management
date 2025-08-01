@@ -2,6 +2,7 @@
 
 namespace Modules\TicketsAndReforms\Models;
 
+use App\Traits\AutoTranslatesAttributes;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -19,7 +20,7 @@ use Spatie\Translatable\HasTranslations;
 
 class TroubleTicket extends Model
 {
-    use HasFactory,LogsActivity, HasTranslations,HasSpatial;
+    use HasFactory,LogsActivity, HasTranslations,HasSpatial, AutoTranslatesAttributes;
 
     /**
      * The attributes that are mass assignable.
@@ -36,6 +37,8 @@ class TroubleTicket extends Model
     protected $casts = [
         'location' => Point::class,
     ];
+
+    public array $translatable = ['body'];
 
     /**
      * The user who created this ticket

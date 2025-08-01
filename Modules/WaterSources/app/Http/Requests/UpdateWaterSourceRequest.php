@@ -16,7 +16,6 @@ class UpdateWaterSourceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'sometimes|required|string|max:255',
             'source' => ['sometimes', 'required', Rule::in(['well', 'river', 'lake', 'dam', 'spring', 'desalination', 'imported'])],
             'location.latitude' => 'sometimes|required|numeric|between:-90,90',
             'location.longitude' => 'sometimes|required|numeric|between:-180,180',
@@ -30,6 +29,9 @@ class UpdateWaterSourceRequest extends FormRequest
             'images.*' => 'image|max:10240',
             'videos' => 'nullable|array|max:3',
             'videos.*' => 'file|mimes:mp4,mov,avi,qt|max:102400',
+
+            'name' => 'sometimes|array|min:1',
+            'name.*' => 'sometimes|string|max:255',
         ];
     }
 

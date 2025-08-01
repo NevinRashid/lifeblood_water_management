@@ -35,7 +35,8 @@ class UpdateWaterQuotaRequest extends FormRequest
                 Rule::in(WaterQuotaStatus::all()),
             ],
 
-            'notes' => 'nullable|string|max:5000',
+            'notes' => 'nullable|array',
+            'notes.*' => 'nullable|string|max:1000',
 
             'beneficiary_id' => 'sometimes|exists:beneficiaries,id',
 
@@ -52,17 +53,6 @@ class UpdateWaterQuotaRequest extends FormRequest
             'notes' => 'Notes',
             'beneficiary_id' => 'Beneficiary',
             'delivery_route_id' => 'Delivery Route',
-        ];
-    }
-
-    public function messages(): array
-    {
-        return [
-            'numeric' => 'The :attribute must be a valid decimal number',
-            'min' => 'The :attribute cannot be negative, must be at least :min',
-            'after_or_equal' => 'The :attribute must be in the future or now',
-            'status.in' => 'The status must be one of ' . implode(', ', WaterQuotaStatus::all()),
-            'exists' => 'The selected :attribute does not exist',
         ];
     }
 

@@ -2,6 +2,7 @@
 
 namespace Modules\DistributionNetwork\Models;
 
+use App\Traits\AutoTranslatesAttributes;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -16,7 +17,7 @@ use Spatie\Translatable\HasTranslations;
 
 class DistributionPoint extends Model
 {
-    use HasFactory,LogsActivity, HasTranslations;
+    use HasFactory, LogsActivity, HasTranslations, AutoTranslatesAttributes;
 
     /**
      * The attributes that are mass assignable.
@@ -35,10 +36,12 @@ class DistributionPoint extends Model
         'status' => 'string',
     ];
 
+    public array $translatable = ['name'];
+
     /** The network this point belongs to */
     public function network(): BelongsTo
     {
-        return $this->belongsTo(DistributionNetwork::class,'distribution_network_id');
+        return $this->belongsTo(DistributionNetwork::class, 'distribution_network_id');
     }
 
     /** All water deliveries to this point */
@@ -54,15 +57,15 @@ class DistributionPoint extends Model
     protected function name(): Attribute
     {
         return Attribute::make(
-            get: fn (string $value) => ucfirst($value),
-            set: fn (string $value) => strtolower($value),
+            get: fn(string $value) => ucfirst($value),
+            set: fn(string $value) => strtolower($value),
         );
     }
 
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-        ->logFillable();
+            ->logFillable();
         // Chain fluent methods for configuration options
     }
 }

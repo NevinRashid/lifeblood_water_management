@@ -8,7 +8,7 @@ use Modules\WaterDistributionOperations\Http\Controllers\RouteDeliveryController
 use Modules\WaterDistributionOperations\Http\Controllers\ReservoirActivityController;
 use Modules\WaterDistributionOperations\Http\Controllers\WaterDistributionOperationsController;
 
-Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
+Route::middleware(['auth:sanctum','set_locale_lang'])->prefix('v1')->group(function () {
     Route::apiResource('distribution-operations', WaterDistributionOperationsController::class);
     Route::apiResource('tankers', TankerController::class);
     Route::prefix('tankers/{tanker}')->group(function () {

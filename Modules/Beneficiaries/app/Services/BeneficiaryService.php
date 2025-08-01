@@ -19,19 +19,15 @@ class BeneficiaryService extends BaseService
     {
         return $this->handle(
             function () use ($filters) {
+
                 if (!$filters) {
+
                     return Cache::remember('beneficiaries_' . app()->getLocale(), now()->addDay(), function () {
-                        $beneficiaries = parent::getAll();
-                        return $beneficiaries->through(function ($beneficiary) {
-                            return [
-                                ...$beneficiary->toArray(),
-                                'address' => $beneficiary->localized_address,
-                            ];
-                        });
+                        return parent::getAll()->toArray();
                     });
                 }
 
-                return parent::getAll($filters);
+                return parent::getAll($filters)->toArray();
             }
         );
     }

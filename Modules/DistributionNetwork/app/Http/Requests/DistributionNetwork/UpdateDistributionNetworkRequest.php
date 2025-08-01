@@ -18,15 +18,19 @@ class UpdateDistributionNetworkRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'                    => ['nullable', 'string','unique:distribution_networks', 'max:255'],
-            'address'                 => ['nullable', 'string','max:255'],
             'zone.type'               => ['nullable','in:Polygon'],
             'zone.coordinates'        => ['array','size:1'],
             'zone.coordinates.0'      => ['array','min:4',new VaildPolygon()],
             'zone.coordinates.0.*'    => ['array','size:2'],
             'zone.coordinates.0.*.0'  => ['numeric'],//lng
             'zone.coordinates.0.*.1'  => ['numeric'],//lat
-            'manager_id'              => ['sometimes','integer','exists:users,id']
+            'manager_id'              => ['sometimes','integer','exists:users,id'],
+
+            'address' => 'sometimes|array|min:1',
+            'address.*' => 'sometimes|string|max:255',
+
+            'name' => 'sometimes|array|min:1',
+            'name.*' => 'sometimes|string|unique:distribution_networks,name->*|max:255',
         ];
     }
 

@@ -2,6 +2,7 @@
 
 namespace Modules\WaterDistributionOperations\Models;
 
+use App\Traits\AutoTranslatesAttributes;
 use Carbon\Carbon;
 use Spatie\Activitylog\LogOptions;
 use Illuminate\Database\Eloquent\Model;
@@ -16,7 +17,7 @@ use Modules\DistributionNetwork\Models\DistributionPoint;
 
 class RouteDelivered extends Model
 {
-    use HasFactory,LogsActivity, HasTranslations;
+    use HasFactory,LogsActivity, HasTranslations, AutoTranslatesAttributes;
 
     protected $table = 'route_deliveries';
     /**
@@ -34,8 +35,7 @@ class RouteDelivered extends Model
         'arrival_time' => 'datetime'
     ];
 
-    protected $table = 'route_deliverd';
-
+    public array $translatable = ['notes'];
     /**
      * The parent delivery route
      */

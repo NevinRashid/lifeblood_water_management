@@ -2,6 +2,7 @@
 
 namespace Modules\DistributionNetwork\Models;
 
+use App\Traits\AutoTranslatesAttributes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -16,7 +17,7 @@ use Spatie\Translatable\HasTranslations;
 
 class PumpingStation extends Model
 {
-    use HasFactory, LogsActivity, HasTranslations;
+    use HasFactory, LogsActivity, HasTranslations, AutoTranslatesAttributes;
 
     /**
      * The attributes that are mass assignable.
@@ -38,6 +39,8 @@ class PumpingStation extends Model
     protected $casts = [
         'location' => Point::class,
     ];
+
+    public array $translatable = ['name'];
 
     /** The network this station belongs to */
     public function network(): BelongsTo

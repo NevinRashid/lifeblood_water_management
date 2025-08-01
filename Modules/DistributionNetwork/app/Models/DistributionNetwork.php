@@ -2,6 +2,7 @@
 
 namespace Modules\DistributionNetwork\Models;
 
+use App\Traits\AutoTranslatesAttributes;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -18,7 +19,7 @@ use Spatie\Translatable\HasTranslations;
 
 class DistributionNetwork extends Model
 {
-    use HasFactory,LogsActivity, HasTranslations;
+    use HasFactory, LogsActivity, HasTranslations, AutoTranslatesAttributes;
 
     /**
      * The attributes that are mass assignable.
@@ -35,6 +36,8 @@ class DistributionNetwork extends Model
         'zone' => Polygon::class
     ];
 
+    public array $translatable = ['name', 'address'];
+
     /** Get all reservoirs in this network */
     public function reservoirs(): HasMany
     {
@@ -44,7 +47,7 @@ class DistributionNetwork extends Model
     /** Get all distribution points in this network */
     public function distributionPoints(): HasMany
     {
-        return $this->hasMany(DistributionPoint::class,'distribution_network_id');
+        return $this->hasMany(DistributionPoint::class, 'distribution_network_id');
     }
 
     /** Get all pumping stations in this network */
@@ -62,20 +65,20 @@ class DistributionNetwork extends Model
     /** Get all pipes in this network */
     public function pipes(): HasMany
     {
-        return $this->hasMany(Pipe::class,'distribution_network_id');
+        return $this->hasMany(Pipe::class, 'distribution_network_id');
     }
 
     /** The source this network belongs to */
     public function source(): BelongsTo
     {
-        return $this->belongsTo(WaterSource::class,'water_source_id');
+        return $this->belongsTo(WaterSource::class, 'water_source_id');
     }
     /**
      * Get the manager of this network
      */
-    public function manager():BelongsTo
+    public function manager(): BelongsTo
     {
-        return $this->belongsTo(User::class,'manager_id');
+        return $this->belongsTo(User::class, 'manager_id');
     }
 
     /**
@@ -85,15 +88,15 @@ class DistributionNetwork extends Model
     protected function name(): Attribute
     {
         return Attribute::make(
-            get: fn (string $value) => ucfirst($value),
-            set: fn (string $value) => strtolower($value),
+            get: fn(string $value) => ucfirst($value),
+            set: fn(string $value) => strtolower($value),
         );
     }
 
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-        ->logFillable();
+            ->logFillable();
         // Chain fluent methods for configuration options
     }
 }

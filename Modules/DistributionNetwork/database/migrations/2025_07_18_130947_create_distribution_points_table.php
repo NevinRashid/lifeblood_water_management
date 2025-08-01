@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('distribution_points', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->json('name');
             $table->geometry('location', subtype: 'point');
             $table->enum('type', ['tanker', 'water tap']);
             $table->enum('status', ['active', 'inactive', 'damaged', 'under_repair']);

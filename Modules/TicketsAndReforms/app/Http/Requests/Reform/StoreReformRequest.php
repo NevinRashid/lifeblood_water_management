@@ -20,13 +20,18 @@ class StoreReformRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'description'       => ['required','string','max:1000'],
             'team_id'           => ['required', 'integer','exists:teams,id'],
             'trouble_ticket_id' => ['required', 'integer','unique:reforms','exists:trouble_tickets,id',new TroubleTicketNotRejected()],
             'before_images'     => ['nullable','array'],
             'before_images.*'   => ['image','mimes:jpg,jpeg,png','mimetypes:image/jpg,image/jpeg,image/png','max:5120'],
             'after_images'      => ['nullable','array'],
             'after_images.*'    => ['image','mimes:jpg,jpeg,png','mimetypes:image/jpg,image/jpeg,image/png','max:5120'],
+
+            'description' => 'required|array|min:1',
+            'description.*' => 'required|string|max:1000',
+
+            'materials_used' => 'required|array|min:1',
+            'materials_used.*' => 'required|string|max:1000',
         ];
     }
 

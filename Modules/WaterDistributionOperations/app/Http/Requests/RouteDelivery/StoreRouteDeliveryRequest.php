@@ -1,5 +1,7 @@
 <?php
+
 namespace Modules\WaterDistributionOperations\Http\Requests\RouteDelivery;
+
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreRouteDeliveryRequest extends FormRequest
@@ -21,8 +23,10 @@ class StoreRouteDeliveryRequest extends FormRequest
         return [
             'water_amount_delivered' => 'required|numeric|min:0',
             'arrival_time' => 'nullable|date',
-            'notes' => 'nullable|string',
             'distribution_point_id' => 'required|integer|exists:distribution_points,id',
+
+            'notes' => 'nullable|array',
+            'notes.*' => 'nullable|string',
         ];
     }
 }

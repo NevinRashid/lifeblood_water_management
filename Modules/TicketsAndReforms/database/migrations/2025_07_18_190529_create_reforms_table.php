@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('reforms', function (Blueprint $table) {
             $table->id();
             $table->foreignId('trouble_ticket_id')->constrained('trouble_tickets')->cascadeOnDelete();
-            $table->text('description');
+            $table->json('description');
             $table->enum('status', ['pending', 'in_progress', 'completed', 'failed']);
             $table->decimal('reform_cost', 15, 4)->nullable();
-            $table->text('materials_used')->nullable();
+            $table->json('materials_used')->nullable();
             $table->foreignId('team_id')->constrained('teams')->cascadeOnDelete();
             $table->dateTime('start_date')->nullable();
             $table->dateTime('end_date')->nullable();

@@ -17,16 +17,18 @@ class StorePipeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'                      => ['required', 'string','unique:pipes', 'max:255'],
             'status'                    => ['in:active,inactive, damaged, under_repair'],
-            'path.type'                 => ['required','in:LineString'],
-            'path.coordinates'          => ['required','array','min:2'],
-            'path.coordinates.*'        => ['array','size:2'],
-            'path.coordinates.*.0'      => ['numeric'],//lng
-            'path.coordinates.*.1'      => ['numeric'],//lat
-            'distribution_network_id'   => ['required', 'integer','exists:distribution_networks,id'],
+            'path.type'                 => ['required', 'in:LineString'],
+            'path.coordinates'          => ['required', 'array', 'min:2'],
+            'path.coordinates.*'        => ['array', 'size:2'],
+            'path.coordinates.*.0'      => ['numeric'], //lng
+            'path.coordinates.*.1'      => ['numeric'], //lat
+            'distribution_network_id'   => ['required', 'integer', 'exists:distribution_networks,id'],
             'current_pressure'          => ['nullable', 'numeric'],
             'current_flow'              => ['nullable', 'numeric'],
+
+            'name' => 'required|array|min:1',
+            'name.*' => 'required|string|unique:pipes,name->*|max:255',
 
         ];
     }
@@ -36,9 +38,9 @@ class StorePipeRequest extends FormRequest
      *
      *  @return array<string, string>
      */
-    public function messages():array
+    public function messages(): array
     {
-        return[
+        return [
             'name.required'                     => 'The name is required please.',
             'name.max'                          => 'The length of the name may not be more than 255 characters.',
             'name.unique'                       => 'The name must be unique and not duplicate. Please use another name',
@@ -58,5 +60,4 @@ class StorePipeRequest extends FormRequest
 
         ];
     }
-
 }

@@ -2,6 +2,7 @@
 
 namespace Modules\DistributionNetwork\Models;
 
+use App\Traits\AutoTranslatesAttributes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -16,7 +17,7 @@ use Spatie\Translatable\HasTranslations;
 
 class Reservoir extends Model
 {
-    use HasFactory,LogsActivity, HasTranslations;
+    use HasFactory, LogsActivity, HasTranslations, AutoTranslatesAttributes;
 
     /**
      * The attributes that are mass assignable.
@@ -34,6 +35,8 @@ class Reservoir extends Model
     protected $casts = [
         'location' => Point::class,
     ];
+
+    public array $translatable = ['name'];
 
     /** The network this reservoir belongs to */
     public function network(): BelongsTo
@@ -55,7 +58,7 @@ class Reservoir extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-        ->logFillable();
+            ->logFillable();
         // Chain fluent methods for configuration options
     }
 }

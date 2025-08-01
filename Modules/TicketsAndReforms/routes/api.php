@@ -5,7 +5,7 @@ use Modules\TicketsAndReforms\Http\Controllers\ReformController;
 use Modules\TicketsAndReforms\Http\Controllers\TicketsAndReformsController;
 use Modules\TicketsAndReforms\Http\Controllers\TroubleTicketController;
 
-Route::middleware(['auth:sanctum'])->group(function () {
+Route::middleware(['auth:sanctum','set_locale_lang'])->group(function () {
     Route::apiResource('troubletickets', TroubleTicketController::class)->names('troubletickets');
     Route::patch('troubletickets/{troubleticket}/changeTroubleStatus', [TroubleTicketController::class, 'changeTroubleStatus']);
     Route::post('troubletickets/{troubleticket}/approve_trouble', [TroubleTicketController::class, 'approveTrouble']);

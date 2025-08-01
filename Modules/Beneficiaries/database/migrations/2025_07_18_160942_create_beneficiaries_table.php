@@ -31,7 +31,7 @@ return new class extends Migration
             $table->enum('status', ['active', 'inactive', 'suspended', 'relocated'])->default('active');
 
             $table->json('additional_data')->nullable();
-            $table->text('notes')->nullable();
+            $table->json('notes')->nullable();
 
             $table->index(['benefit_type', 'distribution_point_id']);
             $table->timestamps();

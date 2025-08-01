@@ -19,13 +19,15 @@ class UpdateTroubleTicketRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'subject'                   => ['nullable','string','in:leak,pipe_breaks, water_outages, low_pressure, overflow, sensor_failure, other'],
+            'subject'                   => ['nullable', 'string', 'in:leak,pipe_breaks, water_outages, low_pressure, overflow, sensor_failure, other'],
             //'status'                    => ['in:new, waiting_assignment, assigned, in_progress, fixed, rejected'],
-            'body'                      => ['nullable','string','max:1000'],
             'location.type'             => ['nullable', 'in:Point'],
-            'location.coordinates'      => ['nullable','array','size:2'],
-            'location.coordinates.0'    => ['numeric'],//lng
-            'location.coordinates.1'    => ['numeric'],//lat
+            'location.coordinates'      => ['nullable', 'array', 'size:2'],
+            'location.coordinates.0'    => ['numeric'], //lng
+            'location.coordinates.1'    => ['numeric'], //lat
+
+            'body' => 'sometimes|array|min:1',
+            'body.*' => 'sometimes|string|max:1000',
         ];
     }
 
@@ -34,9 +36,9 @@ class UpdateTroubleTicketRequest extends FormRequest
      *
      *  @return array<string, string>
      */
-    public function messages():array
+    public function messages(): array
     {
-        return[
+        return [
             'subject.in'                        => 'The subject must be one of (leak,pipe_breaks, water_outages, low_pressure, overflow, sensor_failure, other)',
             'status.in'                         => 'The status must be one of (new, waiting_assignment, assigned, in_progress, fixed, rejected)',
             'body.max'                          => 'The length of the body may not be more than 1000 characters.',
@@ -55,15 +57,12 @@ class UpdateTroubleTicketRequest extends FormRequest
      *
      * @return void
      */
-    protected function failedValidation(Validator $validator){
-        throw new HttpResponseException(response()->json
-            ([
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(response()->json([
                 'success' => false,
                 'message' => 'Data validation error',
                 'errors'  => $validator->errors()
-            ] , 422));
+            ], 422));
     }
-
 }
-
-

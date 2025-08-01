@@ -15,7 +15,6 @@ class StoreValveFormRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
             'location' => 'required|array',
             'location.lat' => 'required|numeric',
             'location.lng' => 'required|numeric',
@@ -26,6 +25,9 @@ class StoreValveFormRequest extends FormRequest
             'current_flow' => 'nullable|numeric',
             'max_flow' => 'nullable|numeric',
             'min_flow' => 'nullable|numeric',
+
+            'name' => 'required|array|min:1',
+            'name.*' => 'required|string|unique:valves,name->*|max:255',
         ];
     }
 

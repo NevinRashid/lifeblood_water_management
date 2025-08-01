@@ -21,12 +21,15 @@ class StoreTroubleTicketRequest extends FormRequest
     {
         return [
             'subject'                   => ['required','string','in:leak,pipe_breaks, water_outages, low_pressure, overflow, sensor_failure, other'],
-            'body'                      => ['required','string','max:1000'],
             'type'                      => ['in:complaint,trouble'],
             'location.type'             => ['required', 'in:Point'],
             'location.coordinates'      => ['required','array','size:2'],
             'location.coordinates.0'    => ['numeric'],//lng
             'location.coordinates.1'    => ['numeric'],//lat
+
+            'body' => 'required|array|min:1',
+            'body.*' => 'required|string|max:1000',
+
         ];
     }
 

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('reservoirs', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->json('name');
             $table->geometry('location', subtype: 'point');
             $table->enum('tank_type', ['main', 'sub']);
             $table->decimal('maximum_capacity', 15, 4);

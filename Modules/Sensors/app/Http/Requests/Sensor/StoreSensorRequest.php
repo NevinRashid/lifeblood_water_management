@@ -18,7 +18,6 @@ class StoreSensorRequest extends FormRequest
     {
         return [
             'device_id' => 'required|string|unique:sensors,device_id',
-            'name' => 'required|string|max:255',
             'location' => 'nullable|array',
             'location.lat' => 'required_with:location|numeric|between:-90,90',
             'location.lng' => 'required_with:location|numeric|between:-180,180',
@@ -36,6 +35,10 @@ class StoreSensorRequest extends FormRequest
             ],
             'sensorable_id' => 'required|string',
             'sensorable_type' => 'required|string|in:valve,pipe,pumpingstation',
+
+            'name' => 'required|array|min:1',
+            'name.*' => 'required|string|max:255',
+
         ];
     }
 

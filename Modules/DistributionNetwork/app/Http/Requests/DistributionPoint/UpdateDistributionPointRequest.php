@@ -17,14 +17,16 @@ class UpdateDistributionPointRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'                      => ['nullable', 'string','unique:distribution_points', 'max:255'],
             'status'                    => ['in:active,inactive, damaged, under_repair'],
             'type'                      => ['in:tanker,water tap'],
-            'distribution_network_id'   => ['nullable', 'integer','exists:distribution_networks,id'],
-            'location.type'             => ['nullable','in:Point'],
-            'location.coordinates'      => ['nullable','array','size:2'],
-            'location.coordinates.0'    => ['numeric'],//lng
-            'location.coordinates.1'    => ['numeric'],//lat
+            'distribution_network_id'   => ['nullable', 'integer', 'exists:distribution_networks,id'],
+            'location.type'             => ['nullable', 'in:Point'],
+            'location.coordinates'      => ['nullable', 'array', 'size:2'],
+            'location.coordinates.0'    => ['numeric'], //lng
+            'location.coordinates.1'    => ['numeric'], //lat
+
+            'name' => 'sometimes|array|min:1',
+            'name.*' => 'sometimes|string|unique:distribution_points,name->*|max:255',
         ];
     }
 
@@ -33,9 +35,9 @@ class UpdateDistributionPointRequest extends FormRequest
      *
      *  @return array<string, string>
      */
-    public function messages():array
+    public function messages(): array
     {
-        return[
+        return [
             'name.max'                          => 'The length of the name may not be more than 255 characters.',
             'name.unique'                       => 'The name must be unique and not duplicate. Please use another name',
             'status.in'                         => 'The status must be one of (active,inactive,damaged,under_repair)',
@@ -48,6 +50,4 @@ class UpdateDistributionPointRequest extends FormRequest
             'location.coordinates.1.numeric'    => 'The latitude must be a numeric value.',
         ];
     }
-
 }
-

@@ -17,14 +17,16 @@ class StoreDistributionPointRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'                      => ['required', 'string','unique:distribution_points', 'max:255'],
             'status'                    => ['in:active,inactive, damaged, under_repair'],
             'type'                      => ['in:tanker,water tap'],
-            'distribution_network_id'   => ['required', 'integer','exists:distribution_networks,id'],
-            'location.type'             => ['required','in:Point'],
-            'location.coordinates'      => ['required','array','size:2'],
-            'location.coordinates.0'    => ['numeric'],//lng
-            'location.coordinates.1'    => ['numeric'],//lat
+            'distribution_network_id'   => ['required', 'integer', 'exists:distribution_networks,id'],
+            'location.type'             => ['required', 'in:Point'],
+            'location.coordinates'      => ['required', 'array', 'size:2'],
+            'location.coordinates.0'    => ['numeric'], //lng
+            'location.coordinates.1'    => ['numeric'], //lat
+
+            'name' => 'required|array|min:1',
+            'name.*' => 'required|string|unique:distribution_points,name->*|max:255',
 
         ];
     }
@@ -34,9 +36,9 @@ class StoreDistributionPointRequest extends FormRequest
      *
      *  @return array<string, string>
      */
-    public function messages():array
+    public function messages(): array
     {
-        return[
+        return [
             'name.required'                     => 'The name is required please.',
             'name.max'                          => 'The length of the name may not be more than 255 characters.',
             'name.unique'                       => 'The name must be unique and not duplicate. Please use another name',
@@ -52,6 +54,4 @@ class StoreDistributionPointRequest extends FormRequest
             'location.coordinates.1.numeric'    => 'The latitude must be a numeric value.',
         ];
     }
-
 }
-
