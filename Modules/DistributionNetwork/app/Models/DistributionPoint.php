@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use MatanYadaev\EloquentSpatial\Objects\Point;
+use Modules\Beneficiaries\Models\Beneficiary;
 use Modules\WaterDistributionOperations\Models\RouteDelivered;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -36,6 +37,8 @@ class DistributionPoint extends Model
         'status' => 'string',
     ];
 
+    protected $withCount = ['beneficiaries'];
+
     public array $translatable = ['name'];
 
     /** The network this point belongs to */
@@ -48,6 +51,11 @@ class DistributionPoint extends Model
     public function deliveries(): HasMany
     {
         return $this->hasMany(RouteDelivered::class);
+    }
+
+    public function beneficiaries()
+    {
+        return $this->hasMany(Beneficiary::class);
     }
 
     /**

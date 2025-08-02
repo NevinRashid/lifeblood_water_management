@@ -33,6 +33,12 @@ class WaterQuota extends Model
         'allocation_date' => 'datetime'
     ];
 
+    /**
+     * The model attributes that should be automatically translated
+     *
+     * Used by a translation trait (like AutoTranslatesAttributes) to know
+     * which fields to process when the model is converted to an array
+     */
     public array $translatable = ['notes'];
 
     /**
