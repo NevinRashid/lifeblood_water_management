@@ -11,6 +11,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 use MatanYadaev\EloquentSpatial\Objects\Point;
 use MatanYadaev\EloquentSpatial\Traits\HasSpatial;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Modules\DistributionNetwork\Models\DistributionNetwork;
@@ -47,6 +48,7 @@ class WaterSource extends Model implements HasMedia
         $this->addMediaCollection('water_source_videos');
     }
 
+ 
     /**
      * Get all extractions from this source
      */
@@ -55,9 +57,9 @@ class WaterSource extends Model implements HasMedia
         return $this->hasMany(WaterExtraction::class);
     }
 
-    /**
-     * Get all quality tests for this source
-     */
+    // /**
+    //  * Get all quality tests for this source
+    //  */
     public function qualityTests(): HasMany
     {
         return $this->hasMany(WaterQualityTest::class);
