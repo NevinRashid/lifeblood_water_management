@@ -28,7 +28,7 @@ class StoreBeneficiaryRequest extends FormRequest
     {
         return [
             'distribution_point_id' => 'required|exists:distribution_points,id',
-            'user_id' => 'required|exists:users,id',
+            'user_id' => 'required|exists:users,id|unique:beneficiaries,user_id',
 
             'household_size' => 'required|integer|min:1|max:50',
             'children_count' => 'nullable|integer|min:0|max:20',
@@ -58,13 +58,6 @@ class StoreBeneficiaryRequest extends FormRequest
         $data = parent::validated();
         $data['location'] = new Point($data['location']['latitude'], $data['location']['longitude']);
         return $data;
-    }
-
-    protected function prepareForValidation()
-    {
-        $this->merge([
-            'user_id' => auth()->id(),
-        ]);
     }
 
     /**

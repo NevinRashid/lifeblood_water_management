@@ -2,6 +2,8 @@
 
 namespace Modules\TicketsAndReforms\Observers;
 
+use Modules\TicketsAndReforms\Events\NewReformCreated;
+use Modules\TicketsAndReforms\Events\ReformScheduleUpdated;
 use Modules\TicketsAndReforms\Events\ReformStatusChangedToCompleted;
 use Modules\TicketsAndReforms\Events\ReformStatusChangedToInProgress;
 use Modules\TicketsAndReforms\Models\Reform;
@@ -15,6 +17,7 @@ class ReformObserver
     {
         if($reform->wasRecentlyCreated){
             $reform->ticket()->update(['status' => 'assigned']);
+            event(new NewReformCreated($reform));
         }
     }
 
@@ -30,7 +33,16 @@ class ReformObserver
             elseif($reform->status === 'completed'){
                 event(new ReformStatusChangedToCompleted($reform));
             }
+        }
 
+        $dirty = $reform->getDirty();
+        $changedFields = array_intersect(
+        ['expected_start_date', 'expected_end_date'],
+        array_keys($dirty)
+        );
+
+        if (!empty($changedFields)) {
+            event(new ReformScheduleUpdated($reform, $changedFields));
         }
     }
 

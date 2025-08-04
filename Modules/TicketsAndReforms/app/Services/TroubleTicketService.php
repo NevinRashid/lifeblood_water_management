@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use MatanYadaev\EloquentSpatial\Objects\Point;
+use Modules\TicketsAndReforms\Events\NewTroubleTicketCreated;
 use Modules\TicketsAndReforms\Models\TroubleTicket;
 
 class TroubleTicketService
@@ -43,7 +44,7 @@ class TroubleTicketService
                             'id'        => $trouble->id,
                             'subject'   => $trouble->subject,
                             'status'    => $trouble->status,
-                            'body'    => $trouble->body,
+                            'body'      => $trouble->body,
                             'user_id'   => $trouble->user_id,
                             'location'  => $trouble->location?->toJson(),
                         ];
@@ -96,8 +97,9 @@ class TroubleTicketService
                         $data['subject'] = 'other';
                     }
                 }
-                else
+                else{
                     $data['status']= 'waiting_assignment';
+                }
 
                 if(Auth::user()->hasRole('Field Monitoring Agent')){
                     $data['type']= "failure";

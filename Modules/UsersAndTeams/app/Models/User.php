@@ -143,4 +143,13 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
     {
         return $this->hasOne(Beneficiary::class);
     }
+
+
+    public function scopeServedByNetwork($query, $networkId)
+    {
+        return $query->whereHas('beneficiary.distributionPoint', function ($q) use ($networkId) {
+            $q->where('type','water tap')
+            ->where('distribution_network_id', $networkId);
+        });
+    }
 }

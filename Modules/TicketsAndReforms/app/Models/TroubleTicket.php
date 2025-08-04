@@ -39,7 +39,7 @@ class TroubleTicket extends Model
     ];
 
     /**
-     * This is accessor to get the distributionNetwork name 
+     * This is accessor to get the distributionNetwork name
      */
     public function getNetworkAttribute()
     {
@@ -74,7 +74,7 @@ class TroubleTicket extends Model
             ->whereRaw('ST_Contains(zone, ST_GeomFromText(?))', [
                 "POINT({$this->location->latitude} {$this->location->longitude})"
             ]);
-            
+
         if ($user->hasRole('manager')) {
             $query->where('manager_id', $user->id);
         }

@@ -56,6 +56,8 @@ class ReformService
                             'team_id'            => $reform->team_id,
                             'reform_cost'        => $reform->reform_cost,
                             'materials_used'     => $reform->materials_used,
+                            'expected_start_date'=> $reform->expected_start_date,
+                            'expected_end_date'  => $reform->expected_end_date,
                             'start_date'         => $reform->start_date,
                             'end_date'           => $reform->end_date,
                             'created_at'         => $reform->created_at,
@@ -110,7 +112,6 @@ class ReformService
         try{
             return DB::transaction(function () use ($data) {
                 $data['status']= 'pending';
-                //TroubleTicket::whereIn('id',($data['trouble_ticket_id']))->update(['status'=>'assigned']);
                 $reform = Reform::create($data);
                 Cache::forget("all_reforms");
                 return $reform;
@@ -144,11 +145,6 @@ class ReformService
                     throw new HttpException(409, 'You cannot edit the troubleTicket for this reform because the status of the reform is '.$reform->status);
                 }
             }
-            /*if($data['status']=== 'in_progress')
-            event(new ReformStatusChangedToInProgress($reform));
-
-            if($data['status']=== 'completed')
-            event(new ReformStatusChangedToCompleted($reform));*/
 
             $reform->update(array_filter($data));
             Cache::forget("all_reforms");

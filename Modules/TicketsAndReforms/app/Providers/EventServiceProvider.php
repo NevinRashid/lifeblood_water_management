@@ -3,8 +3,17 @@
 namespace Modules\TicketsAndReforms\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use Modules\TicketsAndReforms\Events\NewReformCreated;
+use Modules\TicketsAndReforms\Events\NewTroubleTicketCreated;
+use Modules\TicketsAndReforms\Events\ReformScheduleUpdated;
 use Modules\TicketsAndReforms\Events\ReformStatusChangedToCompleted;
 use Modules\TicketsAndReforms\Events\ReformStatusChangedToInProgress;
+use Modules\TicketsAndReforms\Events\WaterSupplyRestored;
+use Modules\TicketsAndReforms\Listeners\NotifyCitizenAboutInterruption;
+use Modules\TicketsAndReforms\Listeners\NotifyCitizenAboutRestoration;
+use Modules\TicketsAndReforms\Listeners\NotifyNetworkManagerAboutNewTrouble;
+use Modules\TicketsAndReforms\Listeners\NotifyRepairTeamOfScheduleUpdate;
+use Modules\TicketsAndReforms\Listeners\SendReformNotification;
 use Modules\TicketsAndReforms\Listeners\SetRepairEndTime;
 use Modules\TicketsAndReforms\Listeners\SetRepairStartTime;
 use Modules\TicketsAndReforms\Listeners\SetTroubleTicketStatusFixed;
@@ -26,6 +35,23 @@ class EventServiceProvider extends ServiceProvider
         ReformStatusChangedToCompleted::class => [
         SetRepairEndTime::class,
         SetTroubleTicketStatusFixed::class
+        ],
+
+        NewTroubleTicketCreated::class => [
+        NotifyNetworkManagerAboutNewTrouble::class,
+        NotifyCitizenAboutInterruption::class,
+        ],
+
+        NewReformCreated::class => [
+        SendReformNotification::class,
+        ],
+
+        WaterSupplyRestored::class => [
+        NotifyCitizenAboutRestoration::class,
+        ],
+
+        ReformScheduleUpdated::class => [
+        NotifyRepairTeamOfScheduleUpdate::class,
         ],
     ];
 

@@ -29,6 +29,8 @@ class Reform extends Model implements HasMedia
         'team_id',
         'reform_cost',
         'materials_used',
+        'expected_start_date',
+        'expected_end_date',
         'start_date',
         'end_date'
     ];

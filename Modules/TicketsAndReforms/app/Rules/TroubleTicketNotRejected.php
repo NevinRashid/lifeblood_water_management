@@ -20,7 +20,7 @@ class TroubleTicketNotRejected implements Rule
     public function passes($attribute, $value)
     {
         $ticket = TroubleTicket::find($value);
-        return $ticket && $ticket->status !== 'rejected';
+        return  $ticket?->status !== 'rejected';
     }
 
         public function message(): string

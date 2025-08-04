@@ -19,6 +19,8 @@ return new class extends Migration
             $table->decimal('reform_cost', 15, 4)->nullable();
             $table->text('materials_used')->nullable();
             $table->foreignId('team_id')->constrained('teams')->cascadeOnDelete();
+            $table->dateTime('expected_start_date');
+            $table->dateTime('expected_end_date');
             $table->dateTime('start_date')->nullable();
             $table->dateTime('end_date')->nullable();
             $table->index(['trouble_ticket_id', 'team_id', 'status']);

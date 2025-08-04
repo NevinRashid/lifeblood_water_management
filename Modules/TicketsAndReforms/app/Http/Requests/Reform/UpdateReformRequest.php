@@ -19,18 +19,20 @@ class UpdateReformRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'description'       => ['nullable','string','max:1000'],
-            'materials_used'    => ['nullable','string','max:500'],
-            'reform_cost'       => ['nullable','numeric'],
-            'start_date'        => ['nullable','date'],
-            'end_date'          => ['nullable','date'],
-            'status'            => ['nullable','in:pending,in_progress,completed,failed'],
-            'team_id'           => ['nullable', 'integer','exists:teams,id'],
-            'trouble_ticket_id' => ['nullable', 'integer','unique:reforms','exists:trouble_tickets,id'],
-            'before_images'     => ['nullable','array'],
-            'before_images.*'   => ['image','mimes:jpg,jpeg,png','mimetypes:image/jpg,image/jpeg,image/png','max:5120'],
-            'after_images'      => ['nullable','array'],
-            'after_images.*'    => ['image','mimes:jpg,jpeg,png','mimetypes:image/jpg,image/jpeg,image/png','max:5120'],
+            'description'         => ['nullable','string','max:1000'],
+            'materials_used'      => ['nullable','string','max:500'],
+            'reform_cost'         => ['nullable','numeric'],
+            'start_date'          => ['nullable','date'],
+            'end_date'            => ['nullable','date'],
+            'expected_start_date' => ['nullable','date','after_or_equal:today'],
+            'expected_end_date'   => ['nullable','date','after_or_equal:expected_start_date'],
+            'status'              => ['nullable','in:pending,in_progress,completed,failed'],
+            'team_id'             => ['nullable', 'integer','exists:teams,id'],
+            'trouble_ticket_id'   => ['nullable', 'integer','unique:reforms','exists:trouble_tickets,id'],
+            'before_images'       => ['nullable','array'],
+            'before_images.*'     => ['image','mimes:jpg,jpeg,png','mimetypes:image/jpg,image/jpeg,image/png','max:5120'],
+            'after_images'        => ['nullable','array'],
+            'after_images.*'      => ['image','mimes:jpg,jpeg,png','mimetypes:image/jpg,image/jpeg,image/png','max:5120'],
         ];
     }
 
