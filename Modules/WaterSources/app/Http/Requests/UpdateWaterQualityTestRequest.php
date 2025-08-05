@@ -20,7 +20,7 @@ class UpdateWaterQualityTestRequest extends FormRequest
             'chlorine' => 'nullable|numeric',
             'nitrate' => 'nullable|numeric',
             'total_coliform_bacteria' => 'nullable|numeric',
-            'test_date' => 'required|date',
+            'test_date' => 'sometimes|date_format:Y-m-d H:i:s',
             'meets_standard_parameters' => 'nullable|boolean',
         ];
     }

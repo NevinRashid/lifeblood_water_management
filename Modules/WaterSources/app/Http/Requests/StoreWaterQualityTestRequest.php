@@ -21,8 +21,8 @@ class StoreWaterQualityTestRequest extends FormRequest
             'chlorine' => 'nullable|numeric',
             'nitrate' => 'nullable|numeric',
             'total_coliform_bacteria' => 'nullable|numeric',
-            'test_date' => 'required|date',
-            'meets_standard_parameters' => 'nullable|boolean',
+            'test_date' => 'required|date_format:Y-m-d H:i:s',
+        
         ];
     }
 

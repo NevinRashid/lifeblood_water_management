@@ -8,15 +8,15 @@ class UpdateTestingParameterRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true; 
+        return true;
     }
 
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255|unique:testing_parameters,name,' . $this->route('id'),          
+            'name' => 'required|string|max:255|unique:testing_parameters,name,' . $this->route('id'),
             'minimum_level' => 'nullable|numeric',
-            'maximum_level' => 'nullable|numeric|gt:minimum_level',
+            'maximum_level' => 'nullable|numeric',
         ];
     }
 }

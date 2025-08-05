@@ -2,12 +2,13 @@
 
 namespace Modules\WaterSources\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\Activitylog\LogOptions;
-use Spatie\Activitylog\Traits\LogsActivity;
+use Illuminate\Database\Eloquent\Model;
 use Spatie\Translatable\HasTranslations;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 // use Modules\WaterSources\Database\Factories\WaterQualityTestFactory;
 
@@ -37,13 +38,14 @@ class WaterQualityTest extends Model
         'meets_standard_parameters' => 'boolean'
     ];
 
-    /**
-     * The water source this test belongs to
-     */
+    // /**
+    //  * The water source this test belongs to
+    //  */
     public function waterSource(): BelongsTo
     {
         return $this->belongsTo(WaterSource::class);
     }
+
 
     /**
      * Scope a query to return records for the last N days..
@@ -59,4 +61,8 @@ class WaterQualityTest extends Model
         ->logFillable();
         // Chain fluent methods for configuration options
     }
+
+ 
+
+
 }

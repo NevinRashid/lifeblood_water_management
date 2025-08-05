@@ -2,16 +2,18 @@
 
 namespace Modules\DistributionNetwork\Models;
 
-use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use MatanYadaev\EloquentSpatial\Objects\Point;
-use Modules\WaterDistributionOperations\Models\RouteDelivered;
 use Spatie\Activitylog\LogOptions;
-use Spatie\Activitylog\Traits\LogsActivity;
+use Illuminate\Database\Eloquent\Model;
 use Spatie\Translatable\HasTranslations;
+use Spatie\Activitylog\Traits\LogsActivity;
+use MatanYadaev\EloquentSpatial\Objects\Point;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Modules\WaterSources\Models\WaterQualityTest;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\WaterDistributionOperations\Models\RouteDelivered;
 // use Modules\DistributionNetwork\Database\Factories\DistributionPointFactory;
 
 class DistributionPoint extends Model
@@ -34,6 +36,7 @@ class DistributionPoint extends Model
         'type' => 'string',
         'status' => 'string',
     ];
+
 
     /** The network this point belongs to */
     public function network(): BelongsTo

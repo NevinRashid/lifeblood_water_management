@@ -1,10 +1,12 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Jobs\SendPeriodicWaterReportJob;
 use Modules\UsersAndTeams\Http\Controllers\Api\VerificationController;
-use Modules\UsersAndTeams\Http\Controllers\Api\ForgotPasswordController;
 use Modules\UsersAndTeams\Http\Controllers\Api\ResetPasswordController;
+use Modules\UsersAndTeams\Http\Controllers\Api\ForgotPasswordController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -27,3 +29,13 @@ Route::post('/password/email', [ForgotPasswordController::class, 'sendResetLinkE
 
 Route::post('/password/reset', [ResetPasswordController::class, 'reset'])
     ->name('password.reset');
+
+Route::middleware('auth:sanctum')->post('/send-water-report', function () {
+    $user = Auth::user();
+
+    SendPeriodicWaterReportJob::dispatch($user);
+
+    return response()->json([
+        'message' => '✅ تم جدولة إرسال التقرير للمستخدم الحالي.',
+    ]);
+});
