@@ -101,7 +101,7 @@ class ReservoirService
             if (array_key_exists('location', $data)) {
                 $reservoir->location = $data['location'];
             }
-            
+
             $reservoir->update($data);
             DB::commit();
 

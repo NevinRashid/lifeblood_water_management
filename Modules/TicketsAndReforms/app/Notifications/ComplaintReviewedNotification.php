@@ -8,16 +8,16 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Modules\TicketsAndReforms\Models\TroubleTicket;
 
-class WaterInterruptionNotification extends Notification
+class ComplaintReviewedNotification extends Notification
 {
     use Queueable;
-    public $troubleTicket;
+    public $trouble;
     /**
      * Create a new notification instance.
      */
-    public function __construct(TroubleTicket $troubleTicket)
+    public function __construct(TroubleTicket $trouble)
     {
-        $this->troubleTicket = $troubleTicket;
+        $this->trouble = $trouble;
     }
 
     /**
@@ -34,10 +34,11 @@ class WaterInterruptionNotification extends Notification
     public function toMail($notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('ًWater Supply Interruption')
-            ->line("Dear Citizen,")
-            ->line("We Would like to inform you that the water supply in your area, served by the {$this->troubleTicket->network} distribution network")
-            ->line('Lifeblood Water Management!');
+            ->subject('Your Complaint Has Been Reviewed')
+            ->line("Dear {$this->trouble->reporter->name}")
+            ->line("Thank you for your feedback.")
+            ->line("Your complaint has been reviewed by our team and taken into consideratuon.")
+            ->line('We appreciate your effort in helping us improve the quality of water services');
     }
 
     /**
@@ -46,9 +47,9 @@ class WaterInterruptionNotification extends Notification
     public function toArray($notifiable): array
     {
         return [
-            'network'   => $this->troubleTicket->network,
-            'location'  => $this->troubleTicket->location,
-            'subject'   => $this->troubleTicket->subject,
+            'trouble_ticket_id' => $this->trouble->id,
+            'reporter'          => $this->trouble->reporter,
+            'status'            => $this->trouble->status,
         ];
     }
 }

@@ -10,7 +10,9 @@ use Illuminate\Support\Facades\DB;
 use LogicException;
 use MatanYadaev\EloquentSpatial\Objects\Point;
 use Modules\TicketsAndReforms\Events\CitizenReportOfTroubleAccepted;
+use Modules\TicketsAndReforms\Events\ComplaintReviewed;
 use Modules\TicketsAndReforms\Events\NewTroubleTicketCreated;
+use Modules\TicketsAndReforms\Events\TroubleRejected;
 use Modules\TicketsAndReforms\Models\TroubleTicket;
 
 class TroubleTicketService
@@ -282,6 +284,7 @@ class TroubleTicketService
                 $trouble ->update([
                     'status' => 'reviewed',
                 ]);
+            event(new ComplaintReviewed($trouble));
 
             Cache::forget("all_troubles");
             return $trouble;
@@ -307,9 +310,16 @@ class TroubleTicketService
             if($trouble->status !== 'new'){
                 throw new \Exception('Only trouble tickets reported by citizens can be rejected');
             }
+            if($trouble->type !== 'trouble'){
+                throw new \Exception('Rejection is not allowed for citizen complaints.
+                                    Only citizen-submitted trouble reports are eligible for rejection.');
+            }
+
             $trouble ->update([
                 'status' => 'rejected',
             ]);
+
+            event(new TroubleRejected($trouble));
             Cache::forget("all_troubles");
             return $trouble;
 

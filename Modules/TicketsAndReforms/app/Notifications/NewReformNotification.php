@@ -39,7 +39,8 @@ class NewReformNotification extends Notification
             ->line("There is a new reform assigned for your team {$this->reform->team->name}")
             ->line("The trouble ticket in the distribution network {$this->reform->ticket->network}")
             ->line("The location of the trouble that needs to be reformed is ({$this->reform->ticket->location?->latitude} , {$this->reform->ticket->location?->longitude})")
-            ->line("The trouble is a {$this->reform->ticket->subject}");
+            ->line("The trouble is a {$this->reform->ticket->subject}")
+            ->line('Lifeblood Water Management!');
             //->action('Notification Action', 'https://laravel.com');
     }
 
