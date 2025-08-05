@@ -40,12 +40,12 @@ class RegistrationRequest extends FormRequest
             'password' => [
                 'required',
                 'string',
-                Password::min(8)
-                    ->letters()
-                    ->mixedCase()
-                    ->numbers()
-                    ->symbols(),
-                    
+                // Password::min(8)
+                //     ->letters()
+                //     ->mixedCase()
+                //     ->numbers()
+                //     ->symbols(),
+
                 'max:128',
                 'confirmed',
             ],

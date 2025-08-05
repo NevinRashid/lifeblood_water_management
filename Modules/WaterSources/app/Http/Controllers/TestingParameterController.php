@@ -16,16 +16,16 @@ class TestingParameterController extends Controller
     public function __construct(TestingParameterService $service)
     {   $this->service = $service;
 
-        $this->middleware('permission:create_water_quality_test')->only('store');
-        $this->middleware('permission:update_water_quality_test')->only('update');
-        $this->middleware('permission:view water quality reports')->only(['index', 'show']);
-        $this->middleware('permission:delete water quality test')->only('destroy');
+        // $this->middleware('permission:create_water_quality_test')->only('store');
+        // $this->middleware('permission:update_water_quality_test')->only('update');
+        // $this->middleware('permission:view water quality reports')->only(['index', 'show']);
+        // $this->middleware('permission:delete water quality test')->only('destroy');
     }
 
     /**
      * Display a listing of the resource.
      */
-    public function index(): JsonResponse
+    public function index()
     {
         $parameters = $this->service->index();
         return response()->json(['success' => true, 'data' => $parameters]);

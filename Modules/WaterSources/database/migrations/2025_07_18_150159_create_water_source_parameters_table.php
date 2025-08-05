@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('water_source_parameters', function (Blueprint $table) {
             $table->id();
             $table->foreignId('water_source_id')->constrained('water_sources')->cascadeOnDelete();
-            $table->foreignId('testing_parameters_id')->constrained('testing_parameters')->cascadeOnDelete();
+            $table->foreignId('testing_parameter_id')->constrained('testing_parameters')->cascadeOnDelete();
             // $table->unique(['water_source_id', 'testing_parameters_id']);
             $table->timestamps();
         });

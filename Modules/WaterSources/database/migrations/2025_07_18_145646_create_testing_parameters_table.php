@@ -13,10 +13,19 @@ return new class extends Migration
     {
         Schema::create('testing_parameters', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->enum('name', [
+                'ph_level',
+                'dissolved_oxygen',
+                'total_dissolved_solids',
+                'turbidity',
+                'temperature',
+                'chlorine',
+                'nitrate',
+                'total_coliform_bacteria',
+            ]);
             $table->decimal('minimum_level', 10, 4)->nullable();
             $table->decimal('maximum_level', 10, 4)->nullable();
-            $table->index('name');
+            $table->unique('name');
             $table->timestamps();
         });
     }

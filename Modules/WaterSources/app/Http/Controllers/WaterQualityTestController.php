@@ -13,8 +13,8 @@ class WaterQualityTestController extends Controller
 
     public function __construct(protected WaterQualityTestService $service) {
 
-        $this->middleware('permission:record water quality analysis')->only('store' , 'update');
-        $this->middleware('permission:view water quality reports')->only(['index', 'show']);
+        // $this->middleware('permission:record water quality analysis')->only('store' , 'update');
+        // $this->middleware('permission:view water quality reports')->only(['index', 'show']);
     }
 
     /**
@@ -37,10 +37,16 @@ class WaterQualityTestController extends Controller
      */
     public function store(StoreWaterQualityTestRequest $request)
     {
-        $test = $this->service->store($request->validated());
-        return response()->json(['message' => 'saved successfuly', 'data' => $test], 201);
-    }
+        $result  = $this->service->store($request->validated());
+        $test = $result['test'];
+        $failedParameters = $result['failed_parameters'];
 
+        return response()->json([
+            'message' => 'Saved successfully',
+            'data' => $test,
+            'debug_failures' => $failedParameters
+        ], 201);
+    }
     /**
      * Show the specified resource.
      */
@@ -58,8 +64,16 @@ class WaterQualityTestController extends Controller
      */
     public function update(UpdateWaterQualityTestRequest $request, int $id)
     {
-        $test = $this->service->update($id, $request->validated());
-        return response()->json(['message' => 'updated successfully', 'data' => $test]);
+
+        $result = $this->service->update($id, $request->validated());
+        $test = $result['test'];
+        $failedParameters = $result['failed_parameters'];
+
+        return response()->json([
+            'message' => 'Updated successfully',
+            'data' => $test,
+            'debug_failures' => $failedParameters
+        ]);
     }
 
     /**
@@ -70,4 +84,21 @@ class WaterQualityTestController extends Controller
         $this->service->destroy($id);
         return response()->json(['message' => 'Deleted successfully']);
     }
+
+
+        /**
+         * Generate and return a specific water quality report.
+         *
+         * @param int $id
+         * @return \Illuminate\Http\JsonResponse
+         */
+        public function generateReport(int $id)
+        {
+            $reportData = $this->service->getReportAndDispatchEmail($id);
+            return response()->json([
+                'message' => 'Report data retrieved. The email is being sent in the background.',
+                'data' => $reportData
+            ]);
+        }
+
 }
