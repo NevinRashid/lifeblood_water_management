@@ -20,7 +20,22 @@ class WaterSourcesController extends Controller
 
     public function __construct(WaterSourceService $waterSourceService)
     {
+
         $this->waterSourceService = $waterSourceService;
+
+        //  $this->middleware('permission:view water source')->only('index', 'show', 'overview');
+
+        // // Only users with 'create water source' permission can store a new one
+        // $this->middleware('permission:create water source')->only('store');
+
+        // // Only users with 'update water source' permission can update
+        // $this->middleware('permission:update water source')->only('update');
+
+        // // Only users with 'delete water source' permission can destroy
+        // $this->middleware('permission:delete water source')->only('destroy');
+
+        // // Only users with 'attach documents to water source' permission can add media
+        // $this->middleware('permission:attach documents to water source')->only('addMedia');
     }
 
     /**
@@ -125,10 +140,10 @@ class WaterSourcesController extends Controller
 
     /**
      * Get an overview of the water situation
-     * 
+     *
      * Returns all active water sources with their associated networks,
      * reservoirs, and distribution points.
-     * 
+     *
      * @return JsonResponse
      */
     public function overview(): JsonResponse

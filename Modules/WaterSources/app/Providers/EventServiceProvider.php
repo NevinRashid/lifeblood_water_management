@@ -2,17 +2,24 @@
 
 namespace Modules\WaterSources\Providers;
 
+use Modules\WaterSources\Events\WaterTestFailed;
+use Modules\WaterSources\Models\WaterQualityTest;
+use Modules\WaterSources\Observers\WaterQualityTestObserver;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider
 {
+
+
     /**
      * The event handler mappings for the application.
      *
      * @var array<string, array<int, string>>
      */
     protected $listen = [];
-
+ protected $observers = [
+        WaterQualityTest::class => [WaterQualityTestObserver::class],
+    ];
     /**
      * Indicates if events should be discovered.
      *

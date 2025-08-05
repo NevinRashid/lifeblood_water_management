@@ -65,23 +65,36 @@ class ReservoirService
      * @param array $data Validated reservoir data
      * @return Reservoir Newly created reservoir
      */
-    public function store(array $data): Reservoir
-    {
-        try {
+public function store(array $data): Reservoir
+{
+    try {
+        DB::beginTransaction();
 
-            DB::beginTransaction();
-            $reservoir =  Reservoir::create($data);
-            DB::commit();
-            return $reservoir;
-        } catch (QueryException $e) {
-            DB::rollBack();
-            throw new \Exception('Database error while creating valve', 500);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            throw new \Exception('Error creating valve: ' . $e->getMessage(), 400);
-        }
+        // اطبع البيانات قبل الإنشاء للتأكد منها
+        // \Log::info('Data before creating reservoir:', $data);
+
+        $reservoir = Reservoir::create($data);
+        DB::commit();
+        return $reservoir;
+
+    } catch (QueryException $e) {
+        DB::rollBack();
+
+        // هذا هو الجزء الأهم: اعرض الخطأ الأصلي
+        throw new \Exception(
+            'Database Query Error: ' . $e->getMessage(), // <-- رسالة الخطأ الأصلية من قاعدة البيانات
+            500
+        );
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        // وهذا أيضًا
+        throw new \Exception(
+            'General Error: ' . $e->getMessage(), // <-- رسالة الخطأ الأصلية
+            400
+        );
     }
-
+}
     /**
      * Update existing reservoir
      *
@@ -101,7 +114,7 @@ class ReservoirService
             if (array_key_exists('location', $data)) {
                 $reservoir->location = $data['location'];
             }
-            
+
             $reservoir->update($data);
             DB::commit();
 

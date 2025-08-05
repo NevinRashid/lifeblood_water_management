@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Events\ReportGenerationRequested;
 use Illuminate\Database\Eloquent\Collection;
 use Modules\WaterSources\Models\WaterSource;
+use Modules\WaterSources\Events\WaterTestFailed;
 use Modules\WaterSources\Models\WaterQualityTest;
 use Modules\DistributionNetwork\Models\DistributionPoint;
 
@@ -51,7 +52,6 @@ class WaterQualityTestService
         $data['meets_standard_parameters'] = $evaluationResult['meets_standards'];
 
         $test = WaterQualityTest::create($data);
-
         Cache::forget('water_quality_tests_' . md5(json_encode([])));
         return [
             'test' => $test,
@@ -72,7 +72,6 @@ class WaterQualityTestService
         $data['meets_standard_parameters'] = $evaluationResult['meets_standards'];
 
         $test->update($data);
-
         Cache::forget("water_quality_test_{$id}");
         Cache::forget('water_quality_tests_' . md5(json_encode([])));
 
