@@ -17,9 +17,18 @@ class PipeService
      *
      * @return array $arraydata
      */
-    public function getAllPipes(array $filters = [], int $perPage = 10)
+    public function getAllPipes(array $filters = [])
     {
         try{
+            if (!$filters) {
+                return Cache::remember('all_pipes_'. app()->getLocale(), now()->addDay(), function(){
+                    $pipes= Pipe::with('network')->paginate(15);
+                    return $pipes->through(function ($pipe) {
+                            return $pipe->toArray();
+                    });
+                });
+            }
+
             $query = Pipe::with('network');
 
             if (isset($filters['status'])) {
@@ -30,33 +39,8 @@ class PipeService
                 $query->where('distribution_network_id', $filters['distribution_network_id']);
             }
 
-            $pipes = Cache::remember('all_pipes', 3600, function() use($query, $perPage){
-                    $pipes= $query->paginate($perPage);
-                    $pipes = $pipes->map(function($pipe){
-                        $network = [
-                            'id'      =>$pipe->network->id,
-                            'name'    =>$pipe->network->name,
-                            'address' =>$pipe->network->address,
-                            'zone'    =>$pipe->network->zone->toJson(),
-                        ];
-
-                        return[
-                            'id'                        => $pipe->id,
-                            'name'                      => $pipe->name,
-                            'status'                    => $pipe->status,
-                            'distribution_network_id'   => $pipe->distribution_network_id,
-                            'current_pressure'          => $pipe->current_pressure,
-                            'current_flow'              => $pipe->current_flow,
-                            'path'                      => $pipe->path,
-                            'network'                   => $network,
-                            'created_at'                => $pipe->created_at,
-                            'updated_at'                => $pipe->updated_at,
-                        ];
-                    });
-                    return $pipes;
-                });
+            $pipes= $query->paginate($filters['per_page'] ?? 15);
             return $pipes;
-
         } catch(\Throwable $th){
             return $this->error("An error occurred",500, $th->getMessage());
         }
@@ -97,7 +81,10 @@ class PipeService
 
                 $data['path'] = new LineString($points);
                 $pipe = Pipe::create($data);
-                Cache::forget("all_pipes");
+
+                foreach (config('translatable.locales') as $locale) {
+                    Cache::forget("all_pipes_{$locale}");
+                }
                 return $pipe;
             });
 
@@ -115,10 +102,14 @@ class PipeService
      * @return Pipe $pipe
      */
 
-    public function updatePipe(array $data, Pipe $pipe){
+    public function updatePipe(array $data, Pipe $pipe)
+    {
         try{
             $pipe->update(array_filter($data));
-            Cache::forget("all_pipes");
+
+            foreach (config('translatable.locales') as $locale) {
+                Cache::forget("all_pipes_{$locale}");
+            }
             return $pipe;
 
         } catch(\Throwable $th){
@@ -132,13 +123,14 @@ class PipeService
      * @param Pipe $pipe
      *
      */
-
-    public function deletePipe(Pipe $pipe){
+    public function deletePipe(Pipe $pipe)
+    {
         try{
-            return DB::transaction(function () use ($pipe) {
-                Cache::forget("all_pipes");
-                return $pipe->delete();
-            });
+            $deletedPipe= $pipe->delete();
+            foreach (config('translatable.locales') as $locale) {
+                Cache::forget("all_pipes_{$locale}");
+            }
+            return $deletedPipe;
 
         } catch(\Throwable $th){
             return $this->error("An error occurred",500, $th->getMessage());

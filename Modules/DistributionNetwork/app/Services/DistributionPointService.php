@@ -16,9 +16,18 @@ class DistributionPointService
      *
      * @return array $arraydata
      */
-    public function getAllPoints(array $filters = [], int $perPage = 10)
+    public function getAllPoints(array $filters = [])
     {
         try{
+            if (!$filters) {
+                return Cache::remember('all_points_'. app()->getLocale(), now()->addDay(), function(){
+                    $points= DistributionPoint::with('network')->paginate(15);
+                    return $points->through(function ($point) {
+                            return $point->toArray();
+                    });
+                });
+            }
+
             $query = DistributionPoint::with('network');
 
             if (isset($filters['status'])) {
@@ -32,31 +41,7 @@ class DistributionPointService
             if (isset($filters['distribution_network_id'])) {
                 $query->where('distribution_network_id', $filters['distribution_network_id']);
             }
-
-            $points = Cache::remember('all_points', 3600, function() use($query, $perPage){
-                    $points= $query->paginate($perPage);
-                    $points = $points->map(function($point){
-                        $network = [
-                            'id'      =>$point->network->id,
-                            'name'    =>$point->network->name,
-                            'address' =>$point->network->address,
-                            'zone'    =>$point->network->zone->toJson(),
-                        ];
-
-                        return[
-                            'id'                        => $point->id,
-                            'name'                      => $point->name,
-                            'status'                    => $point->status,
-                            'type'                      => $point->type,
-                            'distribution_network_id'   => $point->distribution_network_id,
-                            'location'                  => $point->location,
-                            'network'                   => $network,
-                            'created_at'                => $point->created_at,
-                            'updated_at'                => $point->updated_at,
-                        ];
-                    });
-                    return $points;
-                });
+            $points= $query->paginate($filters['per_page'] ?? 15);
             return $points;
 
         } catch(\Throwable $th){
@@ -99,7 +84,10 @@ class DistributionPointService
                     $data['location'] = new Point($data['location']['lat'], $data['location']['lng']);
                 }
                 $point = DistributionPoint::create($data);
-                Cache::forget("all_points");
+                
+                foreach (config('translatable.locales') as $locale) {
+                    Cache::forget("all_points_{$locale}");
+                }
                 return $point;
             });
 
@@ -120,7 +108,9 @@ class DistributionPointService
     public function updatePoint(array $data, DistributionPoint $point){
         try{
             $point->update(array_filter($data));
-            Cache::forget("all_points");
+            foreach (config('translatable.locales') as $locale) {
+                Cache::forget("all_points_{$locale}");
+            }
             return $point;
 
         } catch(\Throwable $th){
@@ -137,7 +127,9 @@ class DistributionPointService
     public function deletePoint(DistributionPoint $point){
         try{
             return DB::transaction(function () use ($point) {
-                Cache::forget("all_points");
+                foreach (config('translatable.locales') as $locale) {
+                    Cache::forget("all_points_{$locale}");
+                }
                 return $point->delete();
             });
 

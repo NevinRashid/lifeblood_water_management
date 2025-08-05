@@ -66,10 +66,9 @@ class DistributionNetworkController extends Controller
     public function show(DistributionNetwork $network)
     {
         return $this->successResponse(
-            'Operation succcessful',
-            $this->networkService->showNetwork($network),
-            200
-        );
+                        'Operation succcessful'
+                        ,$this->networkService->showNetwork($network)
+                        ,200);
     }
 
     /**
@@ -85,9 +84,8 @@ class DistributionNetworkController extends Controller
     public function update(UpdateDistributionNetworkRequest  $request, DistributionNetwork $network)
     {
         return $this->successResponse(
-            'Updated succcessful',
-            $this->networkService->updateNetwork($request->validated(), $network)
-        );
+                        'Updated succcessful'
+                        ,$this->networkService->updateNetwork($request->validated(), $network));
     }
 
     /**
@@ -102,9 +100,8 @@ class DistributionNetworkController extends Controller
     {
         $this->networkService->deleteNetwork($network);
         return $this->successResponse(
-            'Deleted succcessful',
-            null
-        );
+                        'Deleted succcessful'
+                        ,null);
     }
 
     /**

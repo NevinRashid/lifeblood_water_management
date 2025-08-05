@@ -11,7 +11,6 @@ use LogicException;
 use MatanYadaev\EloquentSpatial\Objects\Point;
 use Modules\TicketsAndReforms\Events\CitizenReportOfTroubleAccepted;
 use Modules\TicketsAndReforms\Events\ComplaintReviewed;
-use Modules\TicketsAndReforms\Events\NewTroubleTicketCreated;
 use Modules\TicketsAndReforms\Events\TroubleRejected;
 use Modules\TicketsAndReforms\Models\TroubleTicket;
 
@@ -20,16 +19,25 @@ class TroubleTicketService
     use HandleServiceErrors;
 
     /**
-     * Get all troubles from database
+     * Get all troubles from database with optional filtering.
+     * If no filters are applied, results are cached per locale for one day.
      *
      * @param array $filters
-     * @param int $perPage
      *
-     * @return array $arraydata
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function getAllTroubles(array $filters = [], int $perPage = 10)
+    public function getAllTroubles(array $filters = [])
     {
         try{
+            if (!$filters) {
+                return Cache::remember('all_troubles_'. app()->getLocale(), now()->addDay(), function(){
+                    $troubles= TroubleTicket::with(['reporter','reform'])->paginate(15);
+                    return $troubles->through(function ($trouble) {
+                            return $trouble->toArray();
+                    });
+                });
+            }
+
             $query = TroubleTicket::with(['reporter','reform']);
 
             if (isset($filters['subject'])) {
@@ -44,20 +52,7 @@ class TroubleTicketService
                 $query->where('user_id', $filters['user_id']);
             }
 
-            $troubles = Cache::remember('all_troubles', 3600, function() use($query, $perPage){
-                    $troubles= $query->paginate($perPage);
-                    $troubles = $troubles->map(function($trouble){
-                        return[
-                            'id'        => $trouble->id,
-                            'subject'   => $trouble->subject,
-                            'status'    => $trouble->status,
-                            'body'      => $trouble->body,
-                            'user_id'   => $trouble->user_id,
-                            'location'  => $trouble->location?->toJson(),
-                        ];
-                    });
-                    return $troubles;
-                });
+            $troubles= $query->paginate($filters['per_page'] ?? 15);
             return $troubles;
 
         } catch(\Throwable $th){
@@ -68,7 +63,7 @@ class TroubleTicketService
     /**
      * Get a single trouble with its relationships.
      *
-     * @param  TroubleTicket $trouble
+     * @param  TroubleTicket $trouble The trouble ticket instance to retrieve.
      *
      * @return TroubleTicket $trouble
      */
@@ -86,9 +81,20 @@ class TroubleTicketService
     }
 
     /**
-     * Add new trouble to the database.
+     * Create a new trouble ticket within a database transaction.
+     * Automatically assigns the authenticated user as the reporter.
+     * Sets the ticket status and subject based on the user's role and ticket type:
+     * - If the user is an Affected Community Member:
+     *     - Status is set to 'new'.
+     *     - If type is 'complaint', subject is set to 'other'.
+     * - If the user is a Field Monitoring Agent:
+     *     - Status is set to 'waiting_assignment'.
+     *     - Type is forced to 'trouble'.
      *
-     * @param array $arraydata
+     * If a location is provided, it is converted to a spatial Point object.
+     * Clears cached trouble tickets for all supported locales.
+     *
+     * @param array $data Associative array of trouble ticket attributes.
      *
      * @return TroubleTicket $trouble
      */
@@ -118,7 +124,9 @@ class TroubleTicketService
                 }
 
                 $trouble = TroubleTicket::create($data);
-                Cache::forget("all_troubles");
+                foreach (config('translatable.locales') as $locale) {
+                    Cache::forget("all_troubles_{$locale}");
+                }
                 return $trouble;
             });
 
@@ -129,28 +137,29 @@ class TroubleTicketService
 
     /**
      * Update the specified trouble in the database.
+     * Field Monitoring Agents are only allowed to update tickets with status 'waiting_assignment'.
+     * The 'status' field is always ignored and cannot be updated via this method.
+     * Clears cached trouble ticket data for all supported locales after update.
      *
-     * @param array $arraydata
-     * @param TroubleTicket $trouble
+     * @param array $data The data to update the trouble ticket with.
+     * @param TroubleTicket $trouble The trouble ticket instance to be updated.
      *
      * @return TroubleTicket $trouble
      */
-
-    public function updateTrouble(array $data, TroubleTicket $trouble){
+    public function updateTrouble(array $data, TroubleTicket $trouble)
+    {
         try{
-
-            if($trouble->status != 'new'){
-                return $this->error("An error occurred",500, 'Unfortunately, you cannot edit this troubleticket. It is too late...');
-            }
-
-            //Check if the checked user who submitted the report sent a value to status,
-            // then do not modify it because he is not allowed to modify this field and we will take the old value.
-            if(!empty($data['status']) && Auth::user()->id === $trouble->user_id)
+            if(Auth::user()->hasRole('Field Monitoring Agent') && $trouble->status != 'waiting_assignment')
             {
-                $data['status'] =$trouble->status;
+                return $this->error("An error occurred",500, 'Unfortunately, you cannot update this troubleticket after it has been processed.');
             }
+
+            unset($data['status']);
+
             $trouble->update(array_filter($data));
-            Cache::forget("all_troubles");
+            foreach (config('translatable.locales') as $locale) {
+                Cache::forget("all_troubles_{$locale}");
+            }
             return $trouble;
 
         } catch(\Throwable $th){
@@ -161,15 +170,18 @@ class TroubleTicketService
     /**
      * Delete the specified trouble from the database.
      *
-     * @param TroubleTicket $trouble
+     * @param TroubleTicket $trouble The trouble instance to be deleted.
      *
+     * @return bool
      */
-    public function deleteTrouble(TroubleTicket $trouble){
+    public function deleteTrouble(TroubleTicket $trouble)
+    {
         try{
-            return DB::transaction(function () use ($trouble) {
-                Cache::forget("all_troubles");
-                return $trouble->delete();
-            });
+            $deletedTrouble= $trouble->delete();
+            foreach (config('translatable.locales') as $locale) {
+                Cache::forget("all_troubles_{$locale}");
+            }
+            return $deletedTrouble;
 
         } catch(\Throwable $th){
             return $this->error("An error occurred",500, $th->getMessage());
@@ -180,8 +192,13 @@ class TroubleTicketService
      * Change the status of the trouble by the distribution and maintenance
      * network manager and discuss the possibility of change.
      *
-     * @param array $arraydata
-     * @param TroubleTicket $trouble
+     * Prevents changing the status to 'assigned', 'in_progress', or 'fixed'
+     * if the trouble ticket has no assigned reform team.
+     * Disallows status changes for reports of type 'complaint'.
+     * Clears cached trouble ticket data for all supported locales after a successful update.
+     *
+     * @param array $data The data containing the new status
+     * @param TroubleTicket $trouble The trouble ticket instance to be updated.
      *
      * @return TroubleTicket $trouble
      */
@@ -198,8 +215,13 @@ class TroubleTicketService
                                     'You cannot change to this status before assigning a repair team to this troubleticket'
                                     );
             }
+            if($trouble->type ==='complaint'){
+                return $this->error("An error occurred",500,'You cannot change the status of this report because it is a complaint. Please review it');
+            }
             $trouble->update(array_filter($data));
-            Cache::forget("all_troubles");
+            foreach (config('translatable.locales') as $locale) {
+                Cache::forget("all_troubles_{$locale}");
+            }
             return $trouble;
 
         } catch(\Throwable $th){
@@ -208,16 +230,20 @@ class TroubleTicketService
     }
 
     /**
-     * Get all troubles reported by citizens
+     * Get all trouble-type tickets reported by citizens.
+     * Filters trouble tickets by type is 'trouble' and ensures the reporter
+     * has the 'Affected Community Member' role. Eager loads the 'reporter' relation.
      *
-     * @return array $arraydata
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
     public function getAllCitizenTroubles(){
         try{
             $troubles = TroubleTicket::where('type','trouble')
-            ->whereHas('reporter',function($q){
-                $q->role('Affected Community Member');
-            })->with('reporter')->get();
+            ->whereHas('reporter',function($q)
+                {
+                    $q->role('Affected Community Member');
+                })
+            ->with('reporter')->paginate(15);
             return $troubles;
 
         } catch(\Throwable $th){
@@ -226,14 +252,15 @@ class TroubleTicketService
     }
 
     /**
-     * Get all troubles reported by citizens
+     * Get all complaint-type trouble tickets reported by citizens.
+     * Filters trouble tickets by type is 'Complaint' and eager loads the 'reporter' relationship.
      *
-     * @return array $arraydata
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
     public function getAllCitizenComplaints(){
         try{
             $troubles = TroubleTicket::where('type','Complaint')
-                                        ->with('reporter')->get();
+                                        ->with('reporter')->paginate(15);
             return $troubles;
 
         } catch(\Throwable $th){
@@ -247,7 +274,7 @@ class TroubleTicketService
      * It is typically called by technicians or supervisors to confirm a reported
      * technical issue and initiate the assignment process.
      *
-     * @param TroubleTicket $trouble
+     * @param TroubleTicket $trouble The trouble ticket instance to be approved.
      *
      * @return TroubleTicket $trouble
      */
@@ -258,8 +285,11 @@ class TroubleTicketService
                     'status' => 'waiting_assignment',
                 ]);
             }
+            //Trigger an event to inform the reporter that the reported trouble has been approved and a reform will be assigned to it
             event(new CitizenReportOfTroubleAccepted($trouble));
-            Cache::forget("all_troubles");
+            foreach (config('translatable.locales') as $locale) {
+                Cache::forget("all_troubles_{$locale}");
+            }
             return $trouble;
 
         } catch(\Throwable $th){
@@ -273,7 +303,7 @@ class TroubleTicketService
      * It is typically called by support or administrative staff to close non-technical
      * issues after review or resolution.
      *
-     * @param TroubleTicket $trouble
+     * @param TroubleTicket $trouble The trouble ticket instance to be reviewed.
      *
      * @return TroubleTicket $trouble
      */
@@ -284,9 +314,12 @@ class TroubleTicketService
                 $trouble ->update([
                     'status' => 'reviewed',
                 ]);
+            //Trigger an event to inform the reporter that his complaint has been reviewed
             event(new ComplaintReviewed($trouble));
 
-            Cache::forget("all_troubles");
+            foreach (config('translatable.locales') as $locale) {
+                Cache::forget("all_troubles_{$locale}");
+            }
             return $trouble;
 
         } catch(\Throwable $th){
@@ -301,7 +334,7 @@ class TroubleTicketService
      * decides it should be rejected. Only tickets with status 'new'
      * can be rejected. If the status is not allowed, an Exception will be thrown.
      *
-     * @param TroubleTicket $trouble
+     * @param TroubleTicket $trouble The trouble ticket instance to be rejected.
      *
      * @return TroubleTicket $trouble
      */
@@ -318,9 +351,11 @@ class TroubleTicketService
             $trouble ->update([
                 'status' => 'rejected',
             ]);
-
+            //// Trigger an event to inform the reporter that the trouble he reported has been reviewed and no trouble as reported has been confirmed.
             event(new TroubleRejected($trouble));
-            Cache::forget("all_troubles");
+            foreach (config('translatable.locales') as $locale) {
+                Cache::forget("all_troubles_{$locale}");
+            }
             return $trouble;
 
         } catch(\Throwable $th){
