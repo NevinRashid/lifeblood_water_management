@@ -120,6 +120,30 @@ class TroubleTicketController extends Controller
     }
 
     /**
+     * Get all troubles reported by citizens
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getCitizenTroubles()
+    {
+        return $this->successResponse(
+                        'Operation succcessful'
+                        , $this->troubleTicketService->getAllCitizenTroubles());
+    }
+
+    /**
+     * Get all complaints reported by citizens
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getCitizenComplaints()
+    {
+        return $this->successResponse(
+                        'Operation succcessful'
+                        , $this->troubleTicketService->getAllCitizenComplaints());
+    }
+
+    /**
      * .
      *
      * @param TroubleTicket $troubleTicket
@@ -140,11 +164,11 @@ class TroubleTicketController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function approveComplaint(TroubleTicket $troubleTicket)
+    public function markAsReviewed(TroubleTicket $troubleTicket)
     {
         return $this->successResponse(
-                        'The complaint has been confirmed and has become a troubleTicket awaiting reform'
-                        , $this->troubleTicketService->approveComplaint($troubleTicket));
+                        'The complaint has been reviewed '
+                        , $this->troubleTicketService->reviewComplaint($troubleTicket));
     }
 
     /**

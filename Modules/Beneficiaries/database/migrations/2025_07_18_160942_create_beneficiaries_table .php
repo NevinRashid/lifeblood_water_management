@@ -21,7 +21,7 @@ return new class extends Migration
             $table->unsignedInteger('elderly_count')->nullable()->default(0);
             $table->unsignedInteger('disabled_count')->nullable()->default(0);
 
-            $table->enum('benefit_type', ['network', 'tanker', 'other'])->default('network');
+            $table->enum('benefit_type', ['network', 'tanker'])->default('network');
 
             $table->foreignId('distribution_point_id')->constrained('distribution_points')->cascadeOnDelete();
 

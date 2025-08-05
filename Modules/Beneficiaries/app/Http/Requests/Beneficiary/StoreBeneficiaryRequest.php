@@ -35,7 +35,7 @@ class StoreBeneficiaryRequest extends FormRequest
             'elderly_count' => 'nullable|integer|min:0|max:20',
             'disabled_count' => 'nullable|integer|min:0|max:20',
 
-            'benefit_type' => ['required', Rule::in(BeneficiaryType::all())],
+            /*'benefit_type' => ['required', Rule::in(BeneficiaryType::all())],*/
 
             'status' => ['required', Rule::in(BeneficiaryStatus::all())],
 

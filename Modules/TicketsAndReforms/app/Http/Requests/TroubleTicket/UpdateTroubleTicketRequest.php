@@ -20,12 +20,10 @@ class UpdateTroubleTicketRequest extends FormRequest
     {
         return [
             'subject'                   => ['nullable','string','in:leak,pipe_breaks, water_outages, low_pressure, overflow, sensor_failure, other'],
-            //'status'                    => ['in:new, waiting_assignment, assigned, in_progress, fixed, rejected'],
             'body'                      => ['nullable','string','max:1000'],
-            'location.type'             => ['nullable', 'in:Point'],
-            'location.coordinates'      => ['nullable','array','size:2'],
-            'location.coordinates.0'    => ['numeric'],//lng
-            'location.coordinates.1'    => ['numeric'],//lat
+            'location'                  => ['nullable','array'],
+            'location.lat'              => ['nullable','numeric','between:-90,90'],
+            'location.lng'              => ['nullable','numeric','between:-180,180'],
         ];
     }
 
@@ -38,13 +36,11 @@ class UpdateTroubleTicketRequest extends FormRequest
     {
         return[
             'subject.in'                        => 'The subject must be one of (leak,pipe_breaks, water_outages, low_pressure, overflow, sensor_failure, other)',
-            'status.in'                         => 'The status must be one of (new, waiting_assignment, assigned, in_progress, fixed, rejected)',
             'body.max'                          => 'The length of the body may not be more than 1000 characters.',
-            'location.type.in'                  => 'The location type must be "Point".',
-            'location.coordinates.array'        => 'The coordinates must be an array.',
-            'location.coordinates.size'         => 'Each point must contain exactly two values.',
-            'location.coordinates.0.numeric'    => 'The longitude must be a numeric value.',
-            'location.coordinates.1.numeric'    => 'The latitude must be a numeric value.',
+            'type.in'                           => 'The type must be one of (complaint,trouble)',
+            'location.array'                    => 'The location must be an array.',
+            'location.lat.numeric'              => 'The longitude must be a numeric value.',
+            'location.lng.numeric'              => 'The latitude must be a numeric value.',
         ];
     }
 

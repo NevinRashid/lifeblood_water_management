@@ -7,7 +7,9 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use LogicException;
 use MatanYadaev\EloquentSpatial\Objects\Point;
+use Modules\TicketsAndReforms\Events\CitizenReportOfTroubleAccepted;
 use Modules\TicketsAndReforms\Events\NewTroubleTicketCreated;
 use Modules\TicketsAndReforms\Models\TroubleTicket;
 
@@ -17,6 +19,9 @@ class TroubleTicketService
 
     /**
      * Get all troubles from database
+     *
+     * @param array $filters
+     * @param int $perPage
      *
      * @return array $arraydata
      */
@@ -91,22 +96,23 @@ class TroubleTicketService
             return DB::transaction(function () use ($data) {
                 $data['user_id']= Auth::user()->id;
 
+                //We check the role, if it is a Affected Community Member, the default status is new, and if the report is a complaint,
+                // we put the subject is other, meaning it is not a malfunction.
                 if(Auth::user()->hasRole('Affected Community Member')){
                     $data['status'] = 'new';
                     if($data['type'] === 'complaint'){
                         $data['subject'] = 'other';
                     }
                 }
-                else{
+                //If the report is from the field team, the default status is waiting_assignment
+                //This means that this is definitely a trouble ticket and it is waiting for a reform to be set
+                elseif(Auth::user()->hasRole('Field Monitoring Agent')){
                     $data['status']= 'waiting_assignment';
+                    $data['type']= "trouble";
                 }
 
-                if(Auth::user()->hasRole('Field Monitoring Agent')){
-                    $data['type']= "failure";
-                }
-
-                if(isset($data['location'])){
-                    $data['location'] = new Point($data['location']['coordinates'][0], $data['location']['coordinates'][1]);
+                if (isset($data['location']) && is_array($data['location'])) {
+                    $data['location'] = new Point($data['location']['lat'], $data['location']['lng']);
                 }
 
                 $trouble = TroubleTicket::create($data);
@@ -200,7 +206,41 @@ class TroubleTicketService
     }
 
     /**
-     *Approves a trouble-type trouble ticket by updating its status to 'waiting_assignment'.
+     * Get all troubles reported by citizens
+     *
+     * @return array $arraydata
+     */
+    public function getAllCitizenTroubles(){
+        try{
+            $troubles = TroubleTicket::where('type','trouble')
+            ->whereHas('reporter',function($q){
+                $q->role('Affected Community Member');
+            })->with('reporter')->get();
+            return $troubles;
+
+        } catch(\Throwable $th){
+            return $this->error("An error occurred",500, $th->getMessage());
+        }
+    }
+
+    /**
+     * Get all troubles reported by citizens
+     *
+     * @return array $arraydata
+     */
+    public function getAllCitizenComplaints(){
+        try{
+            $troubles = TroubleTicket::where('type','Complaint')
+                                        ->with('reporter')->get();
+            return $troubles;
+
+        } catch(\Throwable $th){
+            return $this->error("An error occurred",500, $th->getMessage());
+        }
+    }
+
+    /**
+     * Approves a trouble-type trouble ticket by updating its status to 'waiting_assignment'.
      * This method should be used only for tickets where the type is 'trouble'.
      * It is typically called by technicians or supervisors to confirm a reported
      * technical issue and initiate the assignment process.
@@ -211,12 +251,12 @@ class TroubleTicketService
      */
     public function approveTrouble(TroubleTicket $trouble){
         try{
-            if($trouble->type === 'trouble'){
+            if($trouble->type === 'trouble' && $trouble->status === 'new'){
                 $trouble ->update([
                     'status' => 'waiting_assignment',
                 ]);
             }
-
+            event(new CitizenReportOfTroubleAccepted($trouble));
             Cache::forget("all_troubles");
             return $trouble;
 
@@ -226,7 +266,7 @@ class TroubleTicketService
     }
 
     /**
-     * Resolves a service-type complaint by updating its status to 'resolved'.
+     * Review a service-type complaint by updating its status to 'reviewed'.
      * This method should be used only for tickets where the type is 'complaint'.
      * It is typically called by support or administrative staff to close non-technical
      * issues after review or resolution.
@@ -235,10 +275,12 @@ class TroubleTicketService
      *
      * @return TroubleTicket $trouble
      */
-    public function approveComplaint(TroubleTicket $trouble){
+    public function reviewComplaint(TroubleTicket $trouble){
         try{
+            if(!($trouble->type === 'complaint' && $trouble->status === 'new'))
+                throw new LogicException('Only complaints can be reviewed');
                 $trouble ->update([
-                    'status' => 'resolved',
+                    'status' => 'reviewed',
                 ]);
 
             Cache::forget("all_troubles");
@@ -263,7 +305,7 @@ class TroubleTicketService
     public function rejectTrouble(TroubleTicket $trouble){
         try{
             if($trouble->status !== 'new'){
-                throw new \Exception('Only new trouble tickets can be rejected');
+                throw new \Exception('Only trouble tickets reported by citizens can be rejected');
             }
             $trouble ->update([
                 'status' => 'rejected',

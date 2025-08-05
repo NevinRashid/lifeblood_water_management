@@ -3,6 +3,8 @@
 namespace Modules\TicketsAndReforms\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use Modules\TicketsAndReforms\Events\CitizenReportOfTroubleAccepted;
+use Modules\TicketsAndReforms\Events\ComplaintAcknowledged;
 use Modules\TicketsAndReforms\Events\NewReformCreated;
 use Modules\TicketsAndReforms\Events\NewTroubleTicketCreated;
 use Modules\TicketsAndReforms\Events\ReformScheduleUpdated;
@@ -13,6 +15,8 @@ use Modules\TicketsAndReforms\Listeners\NotifyCitizenAboutInterruption;
 use Modules\TicketsAndReforms\Listeners\NotifyCitizenAboutRestoration;
 use Modules\TicketsAndReforms\Listeners\NotifyNetworkManagerAboutNewTrouble;
 use Modules\TicketsAndReforms\Listeners\NotifyRepairTeamOfScheduleUpdate;
+use Modules\TicketsAndReforms\Listeners\NotifyUserOfAcceptedTrouble;
+use Modules\TicketsAndReforms\Listeners\NotifyUserOfAcknowledgedComplaint;
 use Modules\TicketsAndReforms\Listeners\SendReformNotification;
 use Modules\TicketsAndReforms\Listeners\SetRepairEndTime;
 use Modules\TicketsAndReforms\Listeners\SetRepairStartTime;
@@ -52,6 +56,14 @@ class EventServiceProvider extends ServiceProvider
 
         ReformScheduleUpdated::class => [
         NotifyRepairTeamOfScheduleUpdate::class,
+        ],
+
+        CitizenReportOfTroubleAccepted::class => [
+        NotifyUserOfAcceptedTrouble::class,
+        ],
+
+        ComplaintAcknowledged::class => [
+        NotifyUserOfAcknowledgedComplaint::class,
         ],
     ];
 

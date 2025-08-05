@@ -19,7 +19,7 @@ class UpdateTroubleTickeStatusRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status'  => ['in:new,waiting_assignment,assigned,in_progress,fixed,rejected'],
+            'status'  => ['in:new,waiting_assignment,assigned,in_progress,fixed,reviewed,rejected'],
         ];
     }
 
@@ -31,7 +31,7 @@ class UpdateTroubleTickeStatusRequest extends FormRequest
     public function messages():array
     {
         return[
-            'status.in'  => 'The status must be one of (new, waiting_assignment, assigned, in_progress, fixed, rejected)',
+            'status.in'  => 'The status must be one of (new, waiting_assignment, assigned, in_progress, fixed,reviewed,rejected)',
         ];
     }
 

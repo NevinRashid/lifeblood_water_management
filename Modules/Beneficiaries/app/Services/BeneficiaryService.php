@@ -5,7 +5,9 @@ namespace Modules\Beneficiaries\Services;
 use App\Services\Base\BaseService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Cache;
+use Modules\Beneficiaries\Enums\BeneficiaryType;
 use Modules\Beneficiaries\Models\Beneficiary;
+use Modules\DistributionNetwork\Models\DistributionPoint;
 
 class BeneficiaryService extends BaseService
 {
@@ -39,6 +41,14 @@ class BeneficiaryService extends BaseService
     public function store(array $data)
     {
         return $this->handle(function () use ($data) {
+            $distribution_point_type= DistributionPoint::find($data['distribution_point_id'])?->type;
+            if($distribution_point_type === 'tanker'){
+                $data['benefit_type'] = BeneficiaryType::TANKER;
+            }
+            elseif ($distribution_point_type === 'water tap'){
+                $data['benefit_type'] = BeneficiaryType::NETWORK;
+            }
+
             $beneficiaries = parent::store($data);
             foreach (config('translatable.locales') as $locale) {
                 Cache::forget("beneficiaries_{$locale}");

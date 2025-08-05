@@ -19,15 +19,20 @@ class StoreTroubleTicketRequest extends FormRequest
 
     public function rules(): array
     {
-        return [
-            'subject'                   => ['required','string','in:leak,pipe_breaks, water_outages, low_pressure, overflow, sensor_failure, other'],
-            'body'                      => ['required','string','max:1000'],
-            'type'                      => ['in:complaint,trouble'],
-            'location.type'             => ['required', 'in:Point'],
-            'location.coordinates'      => ['required','array','size:2'],
-            'location.coordinates.0'    => ['numeric'],//lng
-            'location.coordinates.1'    => ['numeric'],//lat
+        $rules = [
+            'subject'       => ['required','string','in:leak,pipe_breaks, water_outages, low_pressure, overflow, sensor_failure, other'],
+            'body'          => ['required','string','max:1000'],
+            'location'      => ['required','array'],
+            'location.lat'  => ['required','numeric','between:-90,90'],
+            'location.lng'  => ['required','numeric','between:-180,180'],
         ];
+
+        //If the user is a citizen, the type of report must be entered, either a complaint or a trouble.
+        // If the user is a field team, the default status is trouble.
+        if(Auth::user()->hasRole('Affected Community Member')){
+            $rules['type']= ['required','in:complaint,trouble'];
+        }
+        return $rules;
     }
 
     /**
@@ -38,17 +43,16 @@ class StoreTroubleTicketRequest extends FormRequest
     public function messages():array
     {
         return[
-            'subject.required'                  => 'The subject is required please.',
-            'subject.in'                        => 'The subject must be one of (leak,pipe_breaks, water_outages, low_pressure, overflow, sensor_failure, other)',
-            'body.required'                     => 'The body is required please.',
-            'body.max'                          => 'The length of the body may not be more than 1000 characters.',
-            'type.in'                           => 'The type must be one of (complaint,trouble)',
-            'location.type.required'            => 'The location is required please.',
-            'location.type.in'                  => 'The location type must be "Point".',
-            'location.coordinates.array'        => 'The coordinates must be an array.',
-            'location.coordinates.size'         => 'Each point must contain exactly two values.',
-            'location.coordinates.0.numeric'    => 'The longitude must be a numeric value.',
-            'location.coordinates.1.numeric'    => 'The latitude must be a numeric value.',
+            'subject.required'     => 'The subject is required please.',
+            'subject.in'           => 'The subject must be one of (leak,pipe_breaks, water_outages, low_pressure, overflow, sensor_failure, other)',
+            'body.required'        => 'The body is required please.',
+            'body.max'             => 'The length of the body may not be more than 1000 characters.',
+            'type.required'        => 'The type is required please.',
+            'type.in'              => 'The type must be one of (complaint,trouble)',
+            'location.required'    => 'The location is required please.',
+            'location.array'       => 'The location must be an array.',
+            'location.lat.numeric' => 'The longitude must be a numeric value.',
+            'location.lng.numeric' => 'The latitude must be a numeric value.',
         ];
     }
 
