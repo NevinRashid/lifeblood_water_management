@@ -67,8 +67,12 @@ class PermissionSeeder extends Seeder
             'update_water_quality_test',
             'create_sensor_reading',
             'update_sensor_reading',
+
             'create_water_extraction',
             'update_water_extraction',
+            'delete_water_extraction',
+            'view_water_extraction',
+
             'create_infrastructure_status',
             'update_infrastructure_status',
             'view_distribution_network_map',
@@ -91,6 +95,17 @@ class PermissionSeeder extends Seeder
             'predict_water_shortages',
             'access_environmental_impact_data',
 
+            'show_logs',
+
+            'create_beneficiary',
+            'update_beneficiary',
+            'delete_beneficiary',
+            'view_beneficiary',
+
+            'create_water_quota',
+            'update_water_quota',
+            'delete_water_quota',
+            'view_water_quota',
         ];
 
         foreach ($permissions as $permission) {

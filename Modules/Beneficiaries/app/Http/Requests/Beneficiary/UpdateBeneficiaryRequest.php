@@ -19,7 +19,7 @@ class UpdateBeneficiaryRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return $this->user()->hasPermissionTo('update_beneficiary');
     }
 
     /**

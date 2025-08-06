@@ -5,6 +5,7 @@ namespace Modules\WaterSources\Services;
 use App\Services\Base\BaseService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Cache;
+use Modules\WaterSources\Jobs\CheckWaterLevelAndSendEmail;
 use Modules\WaterSources\Models\WaterExtraction;
 
 /**
@@ -109,6 +110,7 @@ class WaterExtractionService extends BaseService
     {
         return $this->handle(function () use ($data) {
             $waterExtraction = parent::store($data);
+            CheckWaterLevelAndSendEmail::dispatch($waterExtraction, app()->getLocale())->afterCommit();
             // Invalidate the cache since we've added new data
             Cache::forget('waterExtractions');
             return $waterExtraction;

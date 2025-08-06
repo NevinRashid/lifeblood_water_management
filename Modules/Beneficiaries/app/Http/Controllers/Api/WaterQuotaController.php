@@ -4,13 +4,23 @@ namespace Modules\Beneficiaries\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Modules\Beneficiaries\Http\Requests\WaterQuota\FilterWaterQuotaRequest;
 use Modules\Beneficiaries\Http\Requests\WaterQuota\UpdateWaterQuotaRequest;
 use Modules\Beneficiaries\Http\Requests\WaterQuota\StoreWaterQuotaRequest;
 use Modules\Beneficiaries\Services\WaterQuotaService;
 
-class WaterQuotaController extends Controller
+class WaterQuotaController extends Controller implements HasMiddleware
 {
+
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('can:view_water_quota', only: ['show']),
+            new Middleware('can:delete_water_quota', only: ['destroy']),
+        ];
+    }
 
     /**
      * Service to handle waterQuota-related logic 

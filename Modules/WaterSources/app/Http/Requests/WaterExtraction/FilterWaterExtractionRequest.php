@@ -8,6 +8,16 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 
 class FilterWaterExtractionRequest extends FormRequest
 {
+
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return $this->user()->hasPermissionTo('view_water_extraction');
+    }
+
+
     /**
      * Get the validation rules that apply to the request.
      */
@@ -36,23 +46,6 @@ class FilterWaterExtractionRequest extends FormRequest
             'sort_by'          => 'Sort By Column',
             'sort_direction'   => 'Sort Direction',
         ];
-    }
-
-    public function messages()
-    {
-        return [
-            'after_or_equal' => 'the :attribute should be after or equal start date',
-            'gte' => 'the :attribute should be grater than or equal min_extracted',
-            'in' => 'the :attribute values should be in :values',
-        ];
-    }
-
-    /**
-     * Determine if the user is authorized to make this request.
-     */
-    public function authorize(): bool
-    {
-        return true;
     }
 
     /**
