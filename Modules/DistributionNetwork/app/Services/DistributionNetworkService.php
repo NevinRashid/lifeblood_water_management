@@ -21,25 +21,18 @@ class DistributionNetworkService
      */
     public function getAllNetworks()
     {
-
         try{
-            $networks = Cache::remember('all_networks', 3600, function(){
-                    $networks= DistributionNetwork::all();
-                    $networks = $networks->map(function($network){
-                        return[
-                            'id'              => $network->id,
-                            'name'            => $network->name,
-                            'address'         => $network->address,
-                            'mamager'         => $network->manager->name ,
-                            'water_source_id' => $network->water_source_id ,
-                            'zone'            => $network->zone,
-                            'created_at'      => $network->created_at,
-                            'updated_at'      => $network->updated_at,
-                        ];
-                    });
-                    return $networks;
-                });
+            $networks = Cache::remember('all_networks_'. app()->getLocale(), now()->addDay(), function(){
+                            $networks= DistributionNetwork::withCount([
+                                'reservoirs','distributionPoints',
+                                'pumpingStations','valves','pipes'
+                                ])->paginate(10);
+                            return $networks->through(function ($network) {
+                                return $network->toArray();
+                            });
+                        });
             return $networks;
+
         } catch (\Throwable $th) {
             return $this->error("An error occurred", 500, $th->getMessage());
         }
@@ -92,7 +85,10 @@ class DistributionNetworkService
                 $data['zone']=new Polygon([$linestring]);
 
                 $network = DistributionNetwork::create($data);
-                Cache::forget("all_networks");
+
+                foreach (config('translatable.locales') as $locale) {
+                    Cache::forget("all_networks_{$locale}");
+                }
                 return $network;
             });
         } catch (\Throwable $th) {
@@ -113,7 +109,11 @@ class DistributionNetworkService
     {
         try {
             $network->update(array_filter($data));
-            Cache::forget("all_networks");
+
+            foreach (config('translatable.locales') as $locale) {
+                Cache::forget("all_networks_{$locale}");
+            }
+
             return $network;
         } catch (\Throwable $th) {
             return $this->error("An error occurred", 500, $th->getMessage());
@@ -136,7 +136,10 @@ class DistributionNetworkService
                 $network->pumpingStations()->delete();
                 $network->valves()->delete();
                 $network->pipes()->delete();
-                Cache::forget("all_networks");
+
+                foreach (config('translatable.locales') as $locale) {
+                    Cache::forget("all_networks_{$locale}");
+                }
                 return $network->delete();
             });
         } catch (\Throwable $th) {

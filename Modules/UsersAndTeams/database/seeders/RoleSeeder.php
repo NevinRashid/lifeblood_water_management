@@ -71,50 +71,74 @@ class RoleSeeder extends Seeder
 
         // National Water Authority Manager permissions
         $authorityManager->givePermissionTo([
-            'create water source',
-            'view water source',
-            'update water source',
-            'delete water source',
-            'attach documents to water source',
-            'view water source map',
-            'set water quality standards',
-            'view water quantity reports',
-            'craete field team',
-            'update field team',
-            'view field team',
-            'delete field team',
+            'create_water_source',
+            'view_water_source',
+            'update_water_source',
+            'delete_water_source',
+            'attach_documents_to_water_source',
+            'view_water_source_map',
+            'craete_field_team',
+            'update_field_team',
+            'view_field_team',
+            'delete_field_team',
+            'view_water_quantity_reports',
+            'set_water_quality_standards',
+            'view_risk_heatmap'
         ]);
 
         // Water Treatment Engineer permissions
         $engineer->givePermissionTo([
-            'record water quality analysis',
-            'view water quality reports',
-            'receive water quality alerts',
-            'view water source map',
-            'view field team',
-            'assign field team'
+            'record_water_quality_analysis',
+            'view_water_quality_reports',
+            'receive_water_quality_alerts',
+            'view_water_source_map',
+            'view_field_team',
+            'assign_field_team',
+            'view_risk_heatmap'
         ]);
 
         // Network Distribution / Maintenance Manager Permissions
         $networkManager->givePermissionTo([
-            'view_network_map',
-            'update_network_component',
-            'create_fault_report',
-            'view_fault_reports',
-            'assign_repair_team',
-            'update_repair_status',
-            'log_repair_costs',
-            'delete_fault_report',
+            'view_distribution_network_map',
+            'create_distribution_network',
+            'update_distribution_network',
+            'show_distribution_network',
+            'delete_distribution_network',
+            'create_distribution_network_component',
+            'update_distribution_network_component',
+            'show_distribution_network_component',
+            'delete_distribution_network_component',
             'view_sensor_data',
-            'receive_fault_alerts',
             'receive_pressure_alerts',
-            'receive_repair_task_alerts',
-            'view_efficiency_reports',
-            'view_repair_reports',
+            'create_trouble_ticket',
+            'update_trouble_ticket',
+            'show_trouble_ticket',
+            'view_all_trouble_tickets',
+            'delete_trouble_ticket',
+            'approve_trouble_ticket',
+            'reject_trouble_ticket',
+            'review_complaint',
+            'change_trouble_ticket_status',
+            'view_citizen_trouble_tickets',
+            'view_citizen_complaints',
+            'create_reform',
+            'update_reform',
+            'show_reform',
+            'view_all_reforms',
+            'delete_reform',
+            'upload_reform_images',
+            'create_team',
+            'update_team',
+            'show_team',
+            'view_all_teams',
+            'delete_team',
+            'assign_members_for_team',
+            'remove_members_form_team',
         ]);
 
         // Water Reservoir / Tanker Officer Permissions
         $reservoirAndTankerSupervisor->givePermissionTo([
+            'view_distribution_network_map',
             'view_reservoir_levels',
             'create_fill_operation',
             'create_empty_operation',
@@ -145,14 +169,20 @@ class RoleSeeder extends Seeder
             'view_distribution_network_map',
             'create_field_report',
             'upload_field_photos',
+            'create_trouble_ticket',
+            'update_trouble_ticket',
+            'show_trouble_ticket',
+            'delete_trouble_ticket',
+            'upload_reform_images',
         ]);
 
         // Affected Community Member permissions
         $affectedmember->givePermissionTo([
             'create_trouble_ticket',
-            'view_own_tickets',
-            'receive_notifications',
-            'submit_feedback',
+            'show_trouble_ticket',
+            'delete_trouble_ticket',
+            'view_citizen_trouble_tickets',
+            'view_citizen_complaints',
             'view_public_water_status',
             'view_distribution_point_info'
         ]);
@@ -170,7 +200,7 @@ class RoleSeeder extends Seeder
         $dataAnalyst->givePermissionTo([
             'generate_water_quality_reports',
             'predict_water_shortages',
-            'access_environmental_impact_data'
+            'access_environmental_impact_data',
         ]);
 
 }

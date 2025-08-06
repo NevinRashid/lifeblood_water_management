@@ -6,22 +6,26 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Modules\TicketsAndReforms\Models\TroubleTicket;
 
-class ComplaintAcknowledgedNotification extends Notification
+class TroubleRejectedNotification extends Notification
 {
     use Queueable;
-
+    public $trouble;
     /**
      * Create a new notification instance.
      */
-    public function __construct() {}
+    public function __construct(TroubleTicket $trouble)
+    {
+        $this->trouble = $trouble;
+    }
 
     /**
      * Get the notification's delivery channels.
      */
     public function via($notifiable): array
     {
-        return ['mail'];
+        return ['mail','database'];
     }
 
     /**
@@ -30,9 +34,11 @@ class ComplaintAcknowledgedNotification extends Notification
     public function toMail($notifiable): MailMessage
     {
         return (new MailMessage)
-            ->line('The introduction to the notification.')
-            ->action('Notification Action', 'https://laravel.com')
-            ->line('Thank you for using our application!');
+            ->subject('Your Trouble Report Has Been Rejected')
+            ->greeting("Dear {$this->trouble->reporter->name}")
+            ->line('Thank you for reporting the issue.')
+            ->line('Our maintenance team has inspected the reported location but did not find any malfunction or problem that requires repair at this time.')
+            ->line('We appreciate your vigilance and encourage you to continue reporting any concerns that may arise in the future.');
     }
 
     /**

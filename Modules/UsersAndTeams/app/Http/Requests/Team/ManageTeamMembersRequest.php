@@ -5,6 +5,7 @@ namespace Modules\UsersAndTeams\Http\Requests\Team;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Support\Facades\Auth;
 
 class ManageTeamMembersRequest extends FormRequest
 {
@@ -13,7 +14,8 @@ class ManageTeamMembersRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        $user=Auth::user();
+        return $user->can('assign_members_for_team') || $user->can('remove_members_form_team');
     }
 
     /**

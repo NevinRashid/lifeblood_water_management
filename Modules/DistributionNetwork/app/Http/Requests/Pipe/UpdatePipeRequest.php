@@ -3,6 +3,7 @@
 namespace Modules\DistributionNetwork\Http\Requests\Pipe;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class UpdatePipeRequest extends FormRequest
 {
@@ -11,7 +12,8 @@ class UpdatePipeRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        $user=Auth::user();
+        return $user->can('update_distribution_network_component');
     }
 
     public function rules(): array

@@ -3,10 +3,9 @@
 namespace Modules\DistributionNetwork\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Modules\DistributionNetwork\Http\Requests\DistributionNetwork\SotreDistributionNetworkRequest;
+use Illuminate\Routing\Controllers\Middleware;
+use Modules\DistributionNetwork\Http\Requests\DistributionNetwork\StoreDistributionNetworkRequest;
 use Modules\DistributionNetwork\Http\Requests\DistributionNetwork\UpdateDistributionNetworkRequest;
 use Modules\DistributionNetwork\Models\DistributionNetwork;
 use Modules\DistributionNetwork\Services\DistributionNetworkService;
@@ -14,6 +13,18 @@ use Modules\DistributionNetwork\Services\DistributionNetworkService;
 class DistributionNetworkController extends Controller
 {
     protected DistributionNetworkService $networkService;
+
+    /**
+     * Summary of middleware
+     * @return array<Middleware|string>
+     */
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('role:Super Admin|Distribution Network Manager', only:['store','show', 'update', 'destroy']),
+            new Middleware('permission:view_distribution_network_map', only:['index']),
+        ];
+    }
 
     /**
      * Constructor for the DistributionNetworkController class.
@@ -32,27 +43,25 @@ class DistributionNetworkController extends Controller
     public function index()
     {
         return $this->successResponse(
-            'Operation succcessful',
-            $this->networkService->getAllNetworks(),
-            200
-        );
+                        'Operation succcessful'
+                        , $this->networkService->getAllNetworks()
+                        , 200);
     }
 
     /**
      * Add a new network in the database using the networkService via the createNetwork method
      * passes the validated request data to createNetwork.
      *
-     * @param SotreDistributionNetworkRequest $request
+     * @param StoreDistributionNetworkRequest $request
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function store(SotreDistributionNetworkRequest $request)
+    public function store(StoreDistributionNetworkRequest $request)
     {
         return $this->successResponse(
-            'Created succcessful',
-            $this->networkService->createNetwork($request->validated()),
-            201
-        );
+                        'Created succcessful'
+                        , $this->networkService->createNetwork($request->validated())
+                        , 201);
     }
 
     /**
@@ -61,15 +70,14 @@ class DistributionNetworkController extends Controller
      *
      * @param DistributionNetwork $network
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show(DistributionNetwork $network)
     {
         return $this->successResponse(
-            'Operation succcessful',
-            $this->networkService->showNetwork($network),
-            200
-        );
+                        'Operation succcessful'
+                        ,$this->networkService->showNetwork($network)
+                        ,200);
     }
 
     /**
@@ -80,14 +88,13 @@ class DistributionNetworkController extends Controller
      *
      * @param DistributionNetwork $network
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(UpdateDistributionNetworkRequest  $request, DistributionNetwork $network)
     {
         return $this->successResponse(
-            'Updated succcessful',
-            $this->networkService->updateNetwork($request->validated(), $network)
-        );
+                        'Updated succcessful'
+                        ,$this->networkService->updateNetwork($request->validated(), $network));
     }
 
     /**
@@ -96,15 +103,14 @@ class DistributionNetworkController extends Controller
      *
      * @param DistributionNetwork $network
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(DistributionNetwork $network)
     {
         $this->networkService->deleteNetwork($network);
         return $this->successResponse(
-            'Deleted succcessful',
-            null
-        );
+                        'Deleted succcessful'
+                        ,null);
     }
 
     /**

@@ -8,10 +8,9 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Modules\TicketsAndReforms\Models\TroubleTicket;
 
-class TroubleAcceptedNotification extends Notification
+class ComplaintReviewedNotification extends Notification
 {
     use Queueable;
-
     public $trouble;
     /**
      * Create a new notification instance.
@@ -35,10 +34,11 @@ class TroubleAcceptedNotification extends Notification
     public function toMail($notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Your Report About Trouble Has Been Accepted')
+            ->subject('Your Complaint Has Been Reviewed')
             ->greeting("Dear {$this->trouble->reporter->name}")
-            ->line('We have reviewed and confirmed the issue you reported, and is currently awaiting assignment for repair')
-            ->line('Thank you for your valuable contribution in helping us improve the water sevices');
+            ->line("Thank you for your feedback.")
+            ->line("Your complaint has been reviewed by our team and taken into consideratuon.")
+            ->line('We appreciate your effort in helping us improve the quality of water services');
     }
 
     /**
@@ -49,6 +49,7 @@ class TroubleAcceptedNotification extends Notification
         return [
             'trouble_ticket_id' => $this->trouble->id,
             'reporter'          => $this->trouble->reporter,
+            'status'            => $this->trouble->status,
         ];
     }
 }

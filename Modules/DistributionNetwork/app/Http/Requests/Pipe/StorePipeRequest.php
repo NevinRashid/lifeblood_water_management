@@ -3,6 +3,7 @@
 namespace Modules\DistributionNetwork\Http\Requests\Pipe;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class StorePipeRequest extends FormRequest
 {
@@ -11,7 +12,8 @@ class StorePipeRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        $user=Auth::user();
+        return $user->can('create_distribution_network_component');
     }
 
     public function rules(): array
@@ -19,11 +21,6 @@ class StorePipeRequest extends FormRequest
         return [
             'name'                      => ['required', 'string','unique:pipes', 'max:255'],
             'status'                    => ['in:active,inactive, damaged, under_repair'],
-            /*'path.type'                 => ['required','in:LineString'],
-            'path.coordinates'          => ['required','array','min:2'],
-            'path.coordinates.*'        => ['array','size:2'],
-            'path.coordinates.*.0'      => ['numeric'],//lng
-            'path.coordinates.*.1'      => ['numeric'],//lat*/
             'distribution_network_id'   => ['required', 'integer','exists:distribution_networks,id'],
             'current_pressure'          => ['nullable', 'numeric'],
             'current_flow'              => ['nullable', 'numeric'],

@@ -5,6 +5,7 @@ namespace Modules\UsersAndTeams\Http\Requests\Team;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Support\Facades\Auth;
 
 class StoreTeamRequest extends FormRequest
 {
@@ -13,7 +14,8 @@ class StoreTeamRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        $user=Auth::user();
+        return $user->can('create_team');
     }
 
     public function rules(): array

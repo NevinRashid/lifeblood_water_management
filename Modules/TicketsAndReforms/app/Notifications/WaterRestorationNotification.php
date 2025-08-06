@@ -39,8 +39,7 @@ class WaterRestorationNotification extends Notification
             ->line("Dear Citizen,")
             ->line("We are pleased to inform you that the water supply has been successfully restored in your area, served by the {$this->troubleTicket->network} distribution network")
             ->line("restored at {$this->troubleTicket->reform->end_date}")
-            ->line("Thank you for your cooperation")
-            ->line('Lifeblood Water Management Team!');
+            ->line("Thank you for your cooperation");
     }
 
     /**

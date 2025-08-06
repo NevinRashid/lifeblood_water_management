@@ -5,6 +5,7 @@ namespace Modules\TicketsAndReforms\Http\Requests\Reform;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Support\Facades\Auth;
 
 class UploadImageReformRequest extends FormRequest
 {
@@ -13,7 +14,8 @@ class UploadImageReformRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        $user=Auth::user();
+        return $user->can('upload_reform_images');
     }
 
     /**

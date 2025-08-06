@@ -5,18 +5,21 @@ namespace Modules\TicketsAndReforms\Providers;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Modules\TicketsAndReforms\Events\CitizenReportOfTroubleAccepted;
 use Modules\TicketsAndReforms\Events\ComplaintAcknowledged;
+use Modules\TicketsAndReforms\Events\ComplaintReviewed;
 use Modules\TicketsAndReforms\Events\NewReformCreated;
 use Modules\TicketsAndReforms\Events\NewTroubleTicketCreated;
 use Modules\TicketsAndReforms\Events\ReformScheduleUpdated;
 use Modules\TicketsAndReforms\Events\ReformStatusChangedToCompleted;
 use Modules\TicketsAndReforms\Events\ReformStatusChangedToInProgress;
+use Modules\TicketsAndReforms\Events\TroubleRejected;
 use Modules\TicketsAndReforms\Events\WaterSupplyRestored;
 use Modules\TicketsAndReforms\Listeners\NotifyCitizenAboutInterruption;
 use Modules\TicketsAndReforms\Listeners\NotifyCitizenAboutRestoration;
 use Modules\TicketsAndReforms\Listeners\NotifyNetworkManagerAboutNewTrouble;
 use Modules\TicketsAndReforms\Listeners\NotifyRepairTeamOfScheduleUpdate;
 use Modules\TicketsAndReforms\Listeners\NotifyUserOfAcceptedTrouble;
-use Modules\TicketsAndReforms\Listeners\NotifyUserOfAcknowledgedComplaint;
+use Modules\TicketsAndReforms\Listeners\NotifyUserOfRejectedTrouble;
+use Modules\TicketsAndReforms\Listeners\NotifyUserOfReviewedComplaint;
 use Modules\TicketsAndReforms\Listeners\SendReformNotification;
 use Modules\TicketsAndReforms\Listeners\SetRepairEndTime;
 use Modules\TicketsAndReforms\Listeners\SetRepairStartTime;
@@ -62,8 +65,12 @@ class EventServiceProvider extends ServiceProvider
         NotifyUserOfAcceptedTrouble::class,
         ],
 
-        ComplaintAcknowledged::class => [
-        NotifyUserOfAcknowledgedComplaint::class,
+        ComplaintReviewed::class => [
+        NotifyUserOfReviewedComplaint::class,
+        ],
+
+        TroubleRejected::class => [
+        NotifyUserOfRejectedTrouble::class,
         ],
     ];
 

@@ -5,6 +5,7 @@ namespace Modules\TicketsAndReforms\Http\Requests\Reform;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Support\Facades\Auth;
 use Modules\TicketsAndReforms\Rules\TroubleTicketNotRejected;
 
 class StoreReformRequest extends FormRequest
@@ -14,7 +15,8 @@ class StoreReformRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        $user=Auth::user();
+        return $user->can('create_reform');
     }
 
     public function rules(): array
