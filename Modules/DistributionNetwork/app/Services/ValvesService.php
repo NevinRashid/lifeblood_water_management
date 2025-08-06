@@ -3,11 +3,10 @@
 namespace Modules\DistributionNetwork\Services;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Modules\DistributionNetwork\Models\Valve;
-
-
 
 class ValvesService
 {
@@ -21,20 +20,26 @@ class ValvesService
     public function getAll(array $filters = [])
     {
         try {
-            $query = Valve::query();
+            // Generate a unique cache key based on the filters.
+            $cacheKey = 'valves.all.' . md5(json_encode($filters));
 
-            // Apply filters if provided
-            if (!empty($filters)) {
-                $this->applyFilters($query, $filters);
-            }
+            // Use the remember function to cache the result for 3600 seconds.
+            return Cache::remember($cacheKey, 3600, function () use ($filters) {
+                $query = Valve::query();
 
-            // Apply sorting
-            if (isset($filters['sort_by'])) {
-                $sortOrder = $filters['sort_order'] ?? 'asc';
-                $query->orderBy($filters['sort_by'], $sortOrder);
-            }
+                // Apply filters if provided
+                if (!empty($filters)) {
+                    $this->applyFilters($query, $filters);
+                }
 
-            return $query->paginate($filters['per_page'] ?? 15);
+                // Apply sorting
+                if (isset($filters['sort_by'])) {
+                    $sortOrder = $filters['sort_order'] ?? 'asc';
+                    $query->orderBy($filters['sort_by'], $sortOrder);
+                }
+
+                return $query->paginate($filters['per_page'] ?? 15);
+            });
         } catch (QueryException $e) {
             throw new \Exception('Database error while retrieving valves', 500);
         } catch (\Exception $e) {
@@ -53,7 +58,10 @@ class ValvesService
     public function get(string $id)
     {
         try {
-            return Valve::findOrFail($id);
+            // Use the remember function to cache the single valve for 3600 seconds.
+            return Cache::remember('valves.' . $id, 3600, function () use ($id) {
+                return Valve::findOrFail($id);
+            });
         } catch (ModelNotFoundException $e) {
             throw new \Exception('Valve not found', 404);
         } catch (\Exception $e) {
@@ -72,14 +80,16 @@ class ValvesService
     {
         try {
             DB::beginTransaction();
-
             $valve = Valve::create($data);
-
             DB::commit();
+
+            // Clear the cache for the 'getAll' method since the data has changed.
+            Cache::tags('valves')->flush();
+
             return $valve;
         } catch (QueryException $e) {
             DB::rollBack();
-            throw new \Exception('Database error while creating valve'. $e->getMessage(), 500);
+            throw new \Exception('Database error while creating valve' . $e->getMessage(), 500);
         } catch (\Exception $e) {
             DB::rollBack();
             throw new \Exception('Error creating valve: ' . $e->getMessage(), 400);
@@ -99,7 +109,6 @@ class ValvesService
     {
         try {
             DB::beginTransaction();
-
             $valve = Valve::findOrFail($id);
 
             // Only update location if it was explicitly provided
@@ -108,8 +117,12 @@ class ValvesService
             }
             
             $valve->update($data);
-
             DB::commit();
+
+            // Clear the cache for the specific valve and all valves.
+            Cache::forget('valves.' . $id);
+            Cache::tags('valves')->flush();
+
             return $valve;
         } catch (ModelNotFoundException $e) {
             DB::rollBack();
@@ -135,11 +148,14 @@ class ValvesService
     {
         try {
             DB::beginTransaction();
-
             $valve = Valve::findOrFail($id);
             $valve->delete();
-
             DB::commit();
+
+            // Clear the cache for the specific valve and all valves.
+            Cache::forget('valves.' . $id);
+            Cache::tags('valves')->flush();
+
         } catch (ModelNotFoundException $e) {
             DB::rollBack();
             throw new \Exception('Valve not found', 404);
@@ -173,5 +189,4 @@ class ValvesService
 
         // Add more filters as needed...
     }
-
 }

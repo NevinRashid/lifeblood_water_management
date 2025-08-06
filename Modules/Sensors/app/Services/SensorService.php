@@ -2,9 +2,10 @@
 
 namespace Modules\Sensors\Services;
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\DB;
 use Modules\Sensors\Models\Sensor;
 
 class SensorService
@@ -19,20 +20,26 @@ class SensorService
     public function getAll(array $filters = [])
     {
         try {
-            $query = Sensor::query();
+            // Generate a unique cache key based on the filters.
+            $cacheKey = 'sensors.all.' . md5(json_encode($filters));
 
-            // Apply filters if provided
-            if (!empty($filters)) {
-                $this->applyFilters($query, $filters);
-            }
+            // Use the remember function to cache the result for 3600 seconds.
+            return Cache::remember($cacheKey, 3600, function () use ($filters) {
+                $query = Sensor::query();
 
-            // Apply sorting
-            if (isset($filters['sort_by'])) {
-                $sortOrder = $filters['sort_order'] ?? 'asc';
-                $query->orderBy($filters['sort_by'], $sortOrder);
-            }
+                // Apply filters if provided
+                if (!empty($filters)) {
+                    $this->applyFilters($query, $filters);
+                }
 
-            return $query->paginate($filters['per_page'] ?? 15);
+                // Apply sorting
+                if (isset($filters['sort_by'])) {
+                    $sortOrder = $filters['sort_order'] ?? 'asc';
+                    $query->orderBy($filters['sort_by'], $sortOrder);
+                }
+
+                return $query->paginate($filters['per_page'] ?? 15);
+            });
         } catch (QueryException $e) {
             throw new \Exception('Database error while retrieving sensors', 500);
         } catch (\Exception $e) {
@@ -51,7 +58,10 @@ class SensorService
     public function get(string $id)
     {
         try {
-            return Sensor::findOrFail($id);
+            // Use the remember function to cache the single sensor for 3600 seconds.
+            return Cache::remember('sensors.' . $id, 3600, function () use ($id) {
+                return Sensor::findOrFail($id);
+            });
         } catch (ModelNotFoundException $e) {
             throw new \Exception('Sensor not found', 404);
         } catch (\Exception $e) {
@@ -78,7 +88,7 @@ class SensorService
 
             // Get the mapped class from sensorableMap
             $modelClass = Sensor::getSensorableClass($data['sensorable_type']);
-            $data['sensorable_type']=$modelClass; 
+            $data['sensorable_type'] = $modelClass;
 
             if (!$modelClass) {
                 throw new \Exception('Invalid sensorable_type provided', 400);
@@ -90,8 +100,11 @@ class SensorService
             }
 
             $sensor = Sensor::create($data);
-
             DB::commit();
+
+            // Invalidate the cache for all sensors after a new one is created.
+            Cache::tags('sensors')->flush();
+
             return $sensor;
         } catch (QueryException $e) {
             DB::rollBack();
@@ -124,8 +137,12 @@ class SensorService
             }
 
             $sensor->update($data);
-
             DB::commit();
+
+            // Invalidate the cache for the specific sensor and all sensors.
+            Cache::forget('sensors.' . $id);
+            Cache::tags('sensors')->flush();
+
             return $sensor;
         } catch (ModelNotFoundException $e) {
             DB::rollBack();
@@ -156,6 +173,11 @@ class SensorService
             $sensor->delete();
 
             DB::commit();
+
+            // Invalidate the cache for the specific sensor and all sensors.
+            Cache::forget('sensors.' . $id);
+            Cache::tags('sensors')->flush();
+
         } catch (ModelNotFoundException $e) {
             DB::rollBack();
             throw new \Exception('Sensor not found', 404);
