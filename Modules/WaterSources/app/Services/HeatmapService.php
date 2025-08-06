@@ -11,14 +11,19 @@ class HeatmapService
     use HandleServiceErrors;
 
     /**
-     * Get all risky sources from database
+     * Retrieve water sources that are considered risky based on recent extraction and quality test data.
+     * - A source is considered at risk if:
+     * - Volume risk: the average daily extraction in the last 30 days exceeds 90% of its capacity.
+     * - Quality risk: more than 30% of quality tests in the last 30 days failed.
+     * - Determines risk type as 'volume', 'quality', or 'both'.
+     * - Results are cached per locale for one day to improve performance.
      *
-     * @return array $arraydata
+     * @return array $arraydata A list of risky water sources with details including risk percentages, coordinates, and risk type.
      */
     public function getRiskySources()
     {
         try{
-            $riskySources = Cache::remember('all_risky_sources', 3600, function(){
+            return Cache::remember('all_risky_sources_'. app()->getLocale(), now()->addDay(), function(){
                     $result = [];
                     $sources= WaterSource::with([
                         'extractions'  => function($q) { return $q->scopeLastNDays(30); },
@@ -48,8 +53,8 @@ class HeatmapService
                                 'name'            => $source->name,
                                 'status'          => $source->status,
                                 'operating_date'  => $source->operating_date,
-                                'lat'             => $source->location->getLat(),
-                                'lng'             => $source->location->getLng(),
+                                'lat'             => $source->location->latitude,
+                                'lng'             => $source->location->longitude,
                                 'volume_risk'     => $volumeRisk,
                                 'quality_risk'    => $qualityRisk,
                                 'risk_type'       => $riskType,
@@ -58,7 +63,6 @@ class HeatmapService
                     }
                     return $result;;
                 });
-            return $riskySources;
 
         } catch(\Throwable $th){
             return $this->error("An error occurred",500, $th->getMessage());

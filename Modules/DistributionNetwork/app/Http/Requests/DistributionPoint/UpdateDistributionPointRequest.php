@@ -3,6 +3,7 @@
 namespace Modules\DistributionNetwork\Http\Requests\DistributionPoint;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class UpdateDistributionPointRequest extends FormRequest
 {
@@ -11,7 +12,8 @@ class UpdateDistributionPointRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        $user=Auth::user();
+        return $user->can('update_distribution_network_component');
     }
 
     public function rules(): array

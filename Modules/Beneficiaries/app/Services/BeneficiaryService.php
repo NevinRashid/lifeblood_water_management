@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Cache;
 use Modules\Beneficiaries\Enums\BeneficiaryType;
 use Modules\Beneficiaries\Models\Beneficiary;
 use Modules\DistributionNetwork\Models\DistributionPoint;
+use Modules\UsersAndTeams\Models\User;
 
 class BeneficiaryService extends BaseService
 {
@@ -49,6 +50,10 @@ class BeneficiaryService extends BaseService
                 $data['benefit_type'] = BeneficiaryType::NETWORK;
             }
 
+            $user = User::find($data['user_id']);
+            if($user && !$user->hasRole('Affected Community Member')){
+                $user->assignRole('Affected Community Member');
+            }
             $beneficiaries = parent::store($data);
             foreach (config('translatable.locales') as $locale) {
                 Cache::forget("beneficiaries_{$locale}");

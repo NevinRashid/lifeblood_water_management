@@ -36,8 +36,7 @@ class WaterInterruptionNotification extends Notification
         return (new MailMessage)
             ->subject('ًWater Supply Interruption')
             ->line("Dear Citizen,")
-            ->line("We Would like to inform you that the water supply in your area, served by the {$this->troubleTicket->network} distribution network")
-            ->line('Lifeblood Water Management Team!');
+            ->line("We Would like to inform you that the water supply in your area, served by the {$this->troubleTicket->network} distribution network");
     }
 
     /**

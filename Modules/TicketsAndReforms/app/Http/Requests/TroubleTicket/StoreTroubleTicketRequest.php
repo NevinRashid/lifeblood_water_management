@@ -14,7 +14,8 @@ class StoreTroubleTicketRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        $user=Auth::user();
+        return $user->can('create_trouble_ticket');
     }
 
     public function rules(): array

@@ -4,6 +4,7 @@ namespace Modules\TicketsAndReforms\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\Middleware;
 use Modules\TicketsAndReforms\Http\Requests\TroubleTicket\StoreTroubleTicketRequest;
 use Modules\TicketsAndReforms\Http\Requests\TroubleTicket\UpdateTroubleTickeStatusRequest;
 use Modules\TicketsAndReforms\Http\Requests\TroubleTicket\UpdateTroubleTicketRequest;
@@ -14,6 +15,22 @@ class TroubleTicketController extends Controller
 {
 
     protected TroubleTicketService $troubleTicketService;
+
+    /**
+     * Summary of middleware
+     * @return array<Middleware|string>
+     */
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('role:Super Admin|Distribution Network Manager|Affected Community Member|Field Monitoring Agent', only:['store', 'show', 'destroy']),
+            new Middleware('role:Super Admin|Distribution Network Manager|Affected Community Member', only:['getCitizenTroubles','getCitizenComplaints']),
+            new Middleware('role:Super Admin|Distribution Network Manager', only:['approveTrouble','reviewComplaint','reject']),
+            new Middleware('permission:view_all_trouble_tickets', only:['index']),
+            new Middleware('permission:update_trouble_ticket', only:['update']),
+            new Middleware('permission:change_trouble_ticket_status', only:['changeTroubleStatus']),
+        ];
+    }
 
     /**
      * Constructor for the TroubleTicketController class.
@@ -30,7 +47,7 @@ class TroubleTicketController extends Controller
      * This method return all troubleTickets from database.
      * using the pointService via the getAllTroubles method
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index(Request $request)
     {
@@ -47,7 +64,7 @@ class TroubleTicketController extends Controller
      *
      * @param StoreTroubleTicketRequest $request
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(StoreTroubleTicketRequest $request)
     {
@@ -63,7 +80,7 @@ class TroubleTicketController extends Controller
      *
      * @param TroubleTicket $troubleTicket
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show(TroubleTicket $troubleTicket)
     {
@@ -81,7 +98,7 @@ class TroubleTicketController extends Controller
      *
      * @param TroubleTicket $troubleTicket
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(UpdateTroubleTicketRequest $request, TroubleTicket $troubleTicket)
     {
@@ -95,7 +112,7 @@ class TroubleTicketController extends Controller
      *
      * @param TroubleTicket $troubleTicket
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(TroubleTicket $troubleTicket)
     {
@@ -110,7 +127,7 @@ class TroubleTicketController extends Controller
      *
      * @param TroubleTicket $troubleTicket
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function changeTroubleStatus(UpdateTroubleTickeStatusRequest $request,TroubleTicket $troubleTicket)
     {
@@ -122,7 +139,7 @@ class TroubleTicketController extends Controller
     /**
      * Get all troubles reported by citizens
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function getCitizenTroubles()
     {
@@ -134,7 +151,7 @@ class TroubleTicketController extends Controller
     /**
      * Get all complaints reported by citizens
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function getCitizenComplaints()
     {
@@ -144,11 +161,14 @@ class TroubleTicketController extends Controller
     }
 
     /**
-     * .
+     * Approve a submitted trouble ticket and return a success response.
+     * Delegates the approval logic to the TroubleTicketService.
+     * Typically used to confirm a complaint and convert it into a trouble ticket
+     * awaiting assignment to a reform team.
      *
      * @param TroubleTicket $troubleTicket
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function approveTrouble(TroubleTicket $troubleTicket)
     {
@@ -162,9 +182,9 @@ class TroubleTicketController extends Controller
      *
      * @param TroubleTicket $troubleTicket
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function markAsReviewed(TroubleTicket $troubleTicket)
+    public function reviewComplaint(TroubleTicket $troubleTicket)
     {
         return $this->successResponse(
                         'The complaint has been reviewed '
@@ -176,7 +196,7 @@ class TroubleTicketController extends Controller
      *
      * @param TroubleTicket $troubleTicket
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function reject(TroubleTicket $troubleTicket)
     {

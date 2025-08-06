@@ -5,16 +5,25 @@ namespace Modules\UsersAndTeams\Http\Requests\Team;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Support\Facades\Auth;
 
 class UpdateTeamRequest extends FormRequest
 {
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        $user=Auth::user();
+        return $user->can('update_team');
+    }
+
     public function rules(): array
     {
         return [
             'name'          => ['nullable', 'string','unique:teams','max:255'],
             'description'   => ['nullable', 'string','max:1000'],
             'status'        => ['in:available,busy,offline'],
-            //'user_id'       => ['nullable', 'integer','exists:users,id'],
         ];
     }
 
@@ -30,7 +39,6 @@ class UpdateTeamRequest extends FormRequest
             'name.unique'           => 'The name must be unique and not duplicate. Please use another name',
             'description.max'       => 'The length of the name may not be more than 1000 characters.',
             'status.in'             => 'The status must be one of (active,inactive,damaged,under_repair)',
-            //'user_id.exists'        => 'The member you are trying to add does not exist.',
         ];
     }
 

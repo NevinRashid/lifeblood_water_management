@@ -4,6 +4,7 @@ namespace Modules\UsersAndTeams\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\Middleware;
 use Modules\UsersAndTeams\Http\Requests\Team\ManageTeamMembersRequest;
 use Modules\UsersAndTeams\Http\Requests\Team\StoreTeamRequest;
 use Modules\UsersAndTeams\Http\Requests\Team\UpdateTeamRequest;
@@ -13,6 +14,19 @@ use Modules\UsersAndTeams\Services\TeamService;
 class TeamController extends Controller
 {
     protected TeamService $teamService;
+
+    /**
+     * Summary of middleware
+     * @return array<Middleware|string>
+     */
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('role:Super Admin|Distribution Network Manager',
+                            only:['index','store', 'show','update', 'destroy','assignMembers','removeMembers'
+                            ]),
+        ];
+    }
 
     /**
      * Constructor for the TeamController class.
@@ -30,7 +44,7 @@ class TeamController extends Controller
      *
      * @param Request $request
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index(Request $request)
     {
@@ -47,7 +61,7 @@ class TeamController extends Controller
      *
      * @param StoreTeamRequest $request
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(StoreTeamRequest $request)
     {
@@ -63,7 +77,7 @@ class TeamController extends Controller
      *
      * @param Team $team
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show(Team $team)
     {
@@ -80,7 +94,7 @@ class TeamController extends Controller
      * @param UpdateTeamRequest $request
      * @param Team $team
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(UpdateTeamRequest $request, Team $team)
     {
@@ -94,7 +108,7 @@ class TeamController extends Controller
      *
      * @param Team $team
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(Team $team)
     {
@@ -110,7 +124,7 @@ class TeamController extends Controller
      * @param Team $team
      * @param array $memberIds
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function assignMembers(ManageTeamMembersRequest $request, Team $team)
     {
@@ -125,7 +139,7 @@ class TeamController extends Controller
      * @param Team $team
      * @param array $memberIds
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function removeMembers(ManageTeamMembersRequest $request, Team $team)
     {

@@ -4,6 +4,7 @@ namespace Modules\DistributionNetwork\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\Middleware;
 use Modules\DistributionNetwork\Http\Requests\DistributionPoint\StoreDistributionPointRequest;
 use Modules\DistributionNetwork\Http\Requests\DistributionPoint\UpdateDistributionPointRequest;
 use Modules\DistributionNetwork\Models\DistributionPoint;
@@ -12,6 +13,17 @@ use Modules\DistributionNetwork\Services\DistributionPointService;
 class DistributionPointController extends Controller
 {
     protected DistributionPointService $pointService;
+
+    /**
+     * Summary of middleware
+     * @return array<Middleware|string>
+     */
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('role:Super Admin|Distribution Network Manager', only:['store','index','show', 'update', 'destroy']),
+        ];
+    }
 
     /**
      * Constructor for the DistributionPointController class.
@@ -28,7 +40,7 @@ class DistributionPointController extends Controller
      * This method return all distributionPoints from database.
      * using the pointService via the getAllPoints method
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index(Request $request)
     {
@@ -45,7 +57,7 @@ class DistributionPointController extends Controller
      *
      * @param StoreDistributionPointRequest $request
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(StoreDistributionPointRequest $request)
     {
@@ -61,7 +73,7 @@ class DistributionPointController extends Controller
      *
      * @param DistributionPoint $point
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show(DistributionPoint $point)
     {
@@ -79,7 +91,7 @@ class DistributionPointController extends Controller
      *
      * @param DistributionPoint $point
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(UpdateDistributionPointRequest $request, DistributionPoint $point)
     {
@@ -94,13 +106,13 @@ class DistributionPointController extends Controller
      *
      * @param DistributionPoint $point
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(DistributionPoint $point)
     {
         $this->pointService->deletePoint($point);
         return $this->successResponse(
-                    'Deleted succcessful'
-                    ,null);
+                        'Deleted succcessful'
+                        ,null);
     }
 }

@@ -9,16 +9,19 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Modules\TicketsAndReforms\Models\TroubleTicket;
 
-class ComplaintAcknowledged
+class ComplaintReviewed
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-
+    public $trouble;
     /**
      * Create a new event instance.
      */
-    public function __construct() {}
-
+    public function __construct(TroubleTicket $trouble)
+    {
+        $this->trouble = $trouble;
+    }
     /**
      * Get the channels the event should be broadcast on.
      */

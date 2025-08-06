@@ -5,10 +5,7 @@ namespace Modules\TicketsAndReforms\Services;
 use App\Traits\HandleServiceErrors;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Modules\TicketsAndReforms\Events\ReformStatusChangedToCompleted;
-use Modules\TicketsAndReforms\Events\ReformStatusChangedToInProgress;
 use Modules\TicketsAndReforms\Models\Reform;
-use Modules\TicketsAndReforms\Models\TroubleTicket;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class ReformService
@@ -19,13 +16,25 @@ class ReformService
     const MAX_IMAGES = 5;
 
     /**
-     * Get all reforms from database
+     * Get all reforms from database.
+     * If no filters are provided, results are cached per locale for one day.
+     * Supports filtering by team ID and status.
      *
-     * @return array $arraydata
+     * @param array $filters
+     *
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function getAllReforms(array $filters = [], int $perPage = 10)
+    public function getAllReforms(array $filters = [])
     {
         try{
+            if (!$filters) {
+                return Cache::remember('all_reforms_'. app()->getLocale(), now()->addDay(), function(){
+                    $reforms= Reform::with(['ticket','team'])->paginate(15);
+                    return $reforms->through(function ($reform) {
+                            return $reform->toArray();
+                    });
+                });
+            }
             $query = Reform::with(['ticket','team']);
 
             if (isset($filters['team_id'])) {
@@ -36,37 +45,7 @@ class ReformService
                 $query->where('status', $filters['status']);
             }
 
-            $reforms = Cache::remember('all_reforms', 3600, function() use($query, $perPage){
-                    $reforms= $query->paginate($perPage);
-                    $reforms= $reforms->map(function($reform){
-                        $trouble_ticket = [
-                            'id'        =>$reform->ticket->id,
-                            'subject'   =>$reform->ticket->subject,
-                            'body'      =>$reform->ticket->body,
-                            'status'    =>$reform->ticket->status,
-                            'user_id'   =>$reform->ticket->user_id,
-                            'location'  =>$reform->ticket->location->toJson(),
-                        ];
-
-                        return[
-                            'id'                 => $reform->id,
-                            'trouble_ticket_id'  => $reform->trouble_ticket_id,
-                            'description'        => $reform->description,
-                            'status'             => $reform->status,
-                            'team_id'            => $reform->team_id,
-                            'reform_cost'        => $reform->reform_cost,
-                            'materials_used'     => $reform->materials_used,
-                            'expected_start_date'=> $reform->expected_start_date,
-                            'expected_end_date'  => $reform->expected_end_date,
-                            'start_date'         => $reform->start_date,
-                            'end_date'           => $reform->end_date,
-                            'created_at'         => $reform->created_at,
-                            'updated_at'         => $reform->updated_at,
-                            'trouble_ticket'     => $trouble_ticket,
-                        ];
-                    });
-                    return $reforms;
-                });
+            $reforms= $query->paginate($filters['per_page'] ?? 15);
             return $reforms;
 
         } catch(\Throwable $th){
@@ -76,10 +55,11 @@ class ReformService
 
     /**
      * Get a single reform with its relationships.
+     * and fetch associated image URLs.
      *
-     * @param Reform $reforms
+     * @param Reform $reforms The reform instance to retrieve.
      *
-     * @return Reform $reforms
+     * @return array Returns an array containing the reform and its images.
      */
     public function showReform(Reform $reform)
     {
@@ -101,11 +81,14 @@ class ReformService
     }
 
     /**
-     * Add new reform to the database.
+     * Create a new reform record within a database transaction.
+     * Sets the initial status to 'pending',
+     * and clears cached reform data for all configured locales.
      *
-     * @param array $arraydata
+     * @param array $data Associative array of reform attributes.
      *
      * @return Reform $reform
+     *
      */
     public function createReform(array $data)
     {
@@ -113,7 +96,9 @@ class ReformService
             return DB::transaction(function () use ($data) {
                 $data['status']= 'pending';
                 $reform = Reform::create($data);
-                Cache::forget("all_reforms");
+                foreach (config('translatable.locales') as $locale) {
+                    Cache::forget("all_reforms_{$locale}");
+                }
                 return $reform;
             });
 
@@ -124,11 +109,16 @@ class ReformService
 
     /**
      * Update the specified reform in the database.
+     * Prevents changing the assigned team or related trouble ticket if the reform's status is not "pending".
+     * Also clears the cached list of reforms for all supported locales.
      *
-     * @param array $arraydata
-     * @param Reform $reform
+     * @param array $arraydata The new data to update the reform with.
+     * @param Reform $reform The reform instance to be updated.
      *
      * @return Reform $reform
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\HttpException
+     * If attempting to change team or trouble ticket when reform status is not "pending".
      */
     public function updateReform(array $data, Reform $reform)
     {
@@ -147,7 +137,9 @@ class ReformService
             }
 
             $reform->update(array_filter($data));
-            Cache::forget("all_reforms");
+            foreach (config('translatable.locales') as $locale) {
+                Cache::forget("all_reforms_{$locale}");
+            }
             return $reform;
 
         } catch(\Throwable $th){
@@ -156,17 +148,20 @@ class ReformService
     }
 
     /**
-     * Delete the specified reform from the database.
+     * Delete the specified reform from the database and clear related cache.
      *
-     * @param Reform $reform
+     * @param Reform $reform  The reform instance to be deleted.
      *
+     * @return bool
      */
-    public function deleteReform(Reform $reform){
+    public function deleteReform(Reform $reform)
+    {
         try{
-            return DB::transaction(function () use ($reform) {
-                Cache::forget("all_reforms");
-                return $reform->delete();
-            });
+            $deletedReform= $reform->delete();
+            foreach (config('translatable.locales') as $locale) {
+                Cache::forget("all_reforms_{$locale}");
+            }
+            return $deletedReform;
 
         } catch(\Throwable $th){
             return $this->error("An error occurred",500, $th->getMessage());
@@ -174,7 +169,14 @@ class ReformService
     }
 
     /**
+     * Uploads before and after repair images for a given reform.
      *
+     * @param array $data Includes optional 'before_images' and 'after_images'.
+     * @param Reform $reform The reform to attach images to.
+     *
+     * @return array Image URLs grouped by type.
+     *
+     * @throws \Throwable On upload failure.
      */
     public function addReformImages(array $data,Reform $reform)
     {
@@ -195,9 +197,11 @@ class ReformService
     /**
      * This function uploads the set of images to the appropriate collection using the Spatie Media package.
      *
-     * @param Reform $reform
-     * @param array $images
-     * @param string $collection
+     * @param Reform $reform The reform to attach images to.
+     * @param array $images Array of uploaded image files.
+     * @param string $collection Target media collection name.
+     *
+     * @throws \Exception If image limit is exceeded.
      */
     protected function uploadImagesToCollection(Reform $reform, array $images, string $collection)
     {
@@ -221,11 +225,13 @@ class ReformService
     }
 
     /**
-     * Get all images related to this reform.
+     * Get all images URLs related to a given reform.
      *
-     * @param Reform $reform
-
-     * @return array $images
+     * @param Reform $reform The reform instance.
+     *
+     * @return array URLs of 'before_repair' and 'after_repair' images.
+     *
+     * @throws \Throwable On failure to fetch media.
      */
     public function getImagesUrl(Reform $reform)
     {
