@@ -7,6 +7,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\Middleware;
 use Modules\DistributionNetwork\Http\Requests\DistributionNetwork\StoreDistributionNetworkRequest;
+use Modules\DistributionNetwork\Http\Requests\DistributionNetwork\UpdateCurrentVolume;
 use Modules\DistributionNetwork\Http\Requests\DistributionNetwork\UpdateDistributionNetworkRequest;
 use Modules\DistributionNetwork\Models\DistributionNetwork;
 use Modules\DistributionNetwork\Services\DistributionNetworkService;
@@ -123,6 +124,18 @@ class DistributionNetworkController extends Controller
         try {
             $tickets = $this->networkService->review();
             return $this->successResponse('Tickets retrieved successfully', $tickets);
+        } catch (\Throwable $e) {
+            return $this->errorResponse($e->getMessage(), null, $e->getCode() ?: 500);
+        }
+    }
+    /**
+     *
+     */
+    public function updateCurrentVolume(UpdateCurrentVolume $request , DistributionNetwork $network)
+    {
+        try {
+            $current_volume = $request->validated();
+            return $this->networkService->updateCurrentVolume($current_volume , $network);
         } catch (\Throwable $e) {
             return $this->errorResponse($e->getMessage(), null, $e->getCode() ?: 500);
         }

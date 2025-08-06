@@ -8,6 +8,7 @@ use Illuminate\Database\QueryException;
 use MatanYadaev\EloquentSpatial\Objects\Point;
 use MatanYadaev\EloquentSpatial\Objects\LineString;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Modules\WaterDistributionOperations\Events\DeliveryRouteCanceled;
 use Modules\WaterDistributionOperations\Models\DeliveryRoute;
 
 class DeliveryRouteService extends BaseService
@@ -51,12 +52,12 @@ class DeliveryRouteService extends BaseService
 
         return $query->paginate($filters['per_page'] ?? 15);
     }
- /**
-  *
-  * @param array $data
-  * @return TModel
-  */
- public function createDeliveryRoute(array $data): DeliveryRoute
+    /**
+     *
+     * @param array $data
+     * @return TModel
+     */
+    public function createDeliveryRoute(array $data): DeliveryRoute
     {
         $processedData = $this->processPathData($data);
 
@@ -87,7 +88,7 @@ class DeliveryRouteService extends BaseService
      */
     public function updateDeliveryRoute(DeliveryRoute $deliveryRoute, array $data): DeliveryRoute
     {
-
+        
         if (in_array($deliveryRoute->status, ['completed', 'in_progress'])) {
             $this->throwExceptionJson(
                 'Cannot update a route that is already in progress or completed.',
@@ -97,7 +98,17 @@ class DeliveryRouteService extends BaseService
         $processedData = $this->processPathData($data);
 
         try {
+            // Check if the status is being updated to 'canceled'.
+            $isCanceled = isset($processedData['status']) && $processedData['status'] === 'cancelled';
+
             $deliveryRoute->update($processedData);
+
+            // If the route was just canceled, dispatch the event.
+            if ($isCanceled) {
+                event(new DeliveryRouteCanceled($deliveryRoute));
+            }
+
+            // Use the 'fresh' method to get a new instance with the latest data.
             return $deliveryRoute->fresh();
         } catch (\Exception $e) {
             Log::error('Failed to update delivery route ' . $deliveryRoute->id . ': ' . $e->getMessage());

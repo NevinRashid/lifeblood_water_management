@@ -3,6 +3,7 @@
 namespace Modules\DistributionNetwork\Services;
 
 use App\Traits\HandleServiceErrors;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Cache;
 use Modules\DistributionNetwork\Models\DistributionNetwork;
 use Illuminate\Support\Facades\DB;
@@ -98,7 +99,7 @@ class DistributionNetworkService
                     ->map(fn($coord) => new Point($coord['lat'], $coord['lng']));
 
                 $linestring = new LineString($points);
-                $data['zone']=new Polygon([$linestring]);
+                $data['zone'] = new Polygon([$linestring]);
 
                 $network = DistributionNetwork::create($data);
 
@@ -142,7 +143,6 @@ class DistributionNetworkService
      * @param DistributionNetwork $network
      *
      */
-
     public function deleteNetwork(DistributionNetwork $network)
     {
         try {
@@ -164,6 +164,31 @@ class DistributionNetworkService
     }
 
     /**
+     *
+     */
+    public function updateCurrentVolume(array $data, DistributionNetwork $network)
+    {
+        try {
+            DB::beginTransaction();
+
+            $network->update([
+                'current_volume' => $data['extracted'],
+            ]);
+
+            DB::commit();
+
+            return $network ;
+
+        } catch (ModelNotFoundException $e) {
+            DB::rollBack();
+            throw new \Exception('network not found', 404);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return $this->error("An error occurred", 500, $th->getMessage());
+        }
+    }
+
+    /**
      * Retrieve all trouble tickets with their network.
      */
     public function review()
@@ -179,11 +204,10 @@ class DistributionNetworkService
                     'body'     => $ticket->body,
                     'reporter' => $ticket->reporter->name,
                     'network'  => $ticket->network, // the distribution name
-                    'reform' =>[
+                    'reform' => [
                         'info' => $ticket->reform,
                     ]
                 ];
-
             });
             return $tickets;
         } catch (\Throwable $th) {

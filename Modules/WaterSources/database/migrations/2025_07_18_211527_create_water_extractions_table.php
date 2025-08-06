@@ -15,7 +15,13 @@ return new class extends Migration
             $table->id();
             $table->decimal('extracted', 15, 4);
             $table->dateTime('extraction_date');
+
+            $table->decimal('delivered_amount', 15, 4)->default(0); // Actual quantity that arrived (extracted - loss)
+            $table->decimal('lost_amount', 15, 4)->default(0); // Quantity that was waste
+
+            $table->foreignId('distribution_network_id')->constrained('distribution_networks')->cascadeOnDelete();
             $table->foreignId('water_source_id')->constrained('water_sources')->cascadeOnDelete();
+
             $table->index(['water_source_id', 'extraction_date']);
             $table->timestamps();
         });

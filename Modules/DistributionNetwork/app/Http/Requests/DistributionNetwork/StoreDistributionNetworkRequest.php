@@ -27,6 +27,8 @@ class StoreDistributionNetworkRequest extends FormRequest
             'zone'                    => ['required','array',new VaildPolygon()],
             'zone.*.lat'              => ['required_with:zone','numeric','between:-90,90'],
             'zone.*.lng'              => ['required_with:zone','numeric','between:-180,180'],
+            'loss_percentage'         => ['required', 'numeric', 'between:0,100'],
+            'current_volume'          => ['nullable', 'numeric', 'min:0'],
         ];
     }
 
@@ -35,9 +37,9 @@ class StoreDistributionNetworkRequest extends FormRequest
      *
      *  @return array<string, string>
      */
-    public function messages():array
+    public function messages(): array
     {
-        return[
+        return [
             'name.required'                  => 'The name is required please.',
             'name.max'                       => 'The length of the name may not be more than 255 characters.',
             'name.unique'                    => 'The name must be unique and not duplicate. Please use another name',
@@ -52,6 +54,4 @@ class StoreDistributionNetworkRequest extends FormRequest
             'zone.*.lng.numeric'             => 'The longitude must be a numeric value.',
         ];
     }
-
-
 }

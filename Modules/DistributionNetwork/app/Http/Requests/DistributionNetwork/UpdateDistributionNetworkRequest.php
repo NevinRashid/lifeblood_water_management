@@ -26,6 +26,8 @@ class UpdateDistributionNetworkRequest extends FormRequest
             'zone'                    => ['nullable','array',new VaildPolygon()],
             'zone.*.lat'              => ['nullable_with:zone','numeric','between:-90,90'],
             'zone.*.lng'              => ['nullable_with:zone','numeric','between:-180,180'],
+            'loss_percentage'         => ['nullable', 'numeric', 'between:0,100'],
+            'current_volume'          => ['nullable', 'numeric', 'min:0'],
         ];
     }
 
@@ -34,23 +36,17 @@ class UpdateDistributionNetworkRequest extends FormRequest
      *
      *  @return array<string, string>
      */
-    public function messages():array
+    public function messages(): array
     {
-        return[
+        return [
             'name.max'                       => 'The length of the name may not be more than 255 characters.',
             'name.unique'                    => 'The name must be unique and not duplicate. Please use another name',
             'address.max'                    => 'The length of the address may not be more than 255 characters.',
-            'zone.type.in'                   => 'The zone type must be "Polygon".',
-            'zone.coordinates.array'         => 'The coordinates must be an array.',
-            'zone.coordinates.size'          => 'Only one set of coordinates (outer ring) is allowed.',
-            'zone.coordinates.0.array'       => 'The outer ring must be an array of points.',
-            'zone.coordinates.0.min'         => 'The outer ring must contain at least 4 points to form a closed polygon.',
-            'zone.coordinates.0.*.array'     => 'Each point in the outer ring must be an array.',
-            'zone.coordinates.0.*.size'      => 'Each point must have exactly 2 values (longitude and latitude).',
-            'zone.coordinates.0.*.0.numeric' => 'Longitude (x) must be a number.',
-            'zone.coordinates.0.*.1.numeric' => 'Latitude (y) must be a number.',
+            'zone.array'                     => 'The zone must be an array of points.',
+            'zone.*.lat.numeric'             => 'The latitude must be a numeric value.',
+            'zone.*.lng.numeric'             => 'The longitude must be a numeric value.',
+            'loss_percentage'                => ['sometimes', 'numeric', 'between:0,100'],
+            'current_volume'                 => ['sometimes', 'numeric', 'min:0'],
         ];
     }
-
-
 }

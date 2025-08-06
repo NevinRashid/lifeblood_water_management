@@ -17,6 +17,7 @@ class StoreWaterExtractionRequest extends FormRequest
             'extracted' => 'required|numeric|min:0.0001|max:9999999999999.9999',
             'extraction_date'     => 'required|date|before_or_equal:now',
             'water_source_id'     => 'required|exists:water_sources,id',
+            'distribution_network_id' => 'required|exists:distribution_networks,id',
         ];
     }
 

@@ -4,13 +4,16 @@ use Illuminate\Support\Facades\Route;
 use Modules\WaterSources\Http\Controllers\HeatmapController;
 use Modules\WaterSources\Http\Controllers\WaterSourcesController;
 use Modules\WaterSources\Http\Controllers\TestingParameterController;
+use Modules\WaterSources\Http\Controllers\WaterExtractionReportController;
 use Modules\WaterSources\Http\Controllers\WaterQualityTestController;
 use Modules\WaterSources\Http\Controllers\Api\WaterExtractionController;
 use Modules\WaterSources\Http\Controllers\WaterSourceParameterController;
 
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
-
+    
+    Route::get('/reports/water-extractions', [WaterExtractionReportController::class, 'generateReport']);
     Route::get('/water-situation/overview', [WaterSourcesController::class, 'overview']);
+
     Route::apiResource('watersources', WaterSourcesController::class)->names('watersources');
     Route::post('watersources/{waterSource}/add-media', [WaterSourcesController::class, 'addMedia'])->name('water-sources.add-media');
     Route::apiResource('water-extractions', WaterExtractionController::class)->names('water-extractions');
