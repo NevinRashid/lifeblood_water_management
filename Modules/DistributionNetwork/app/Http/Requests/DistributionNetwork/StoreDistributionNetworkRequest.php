@@ -3,16 +3,18 @@
 namespace Modules\DistributionNetwork\Http\Requests\DistributionNetwork;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 use Modules\DistributionNetwork\Rules\VaildPolygon;
 
-class SotreDistributionNetworkRequest extends FormRequest
+class StoreDistributionNetworkRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        $user=Auth::user();
+        return $user->can('create_distribution_network');
     }
 
     public function rules(): array
@@ -21,12 +23,6 @@ class SotreDistributionNetworkRequest extends FormRequest
             'name'                    => ['required', 'string','unique:distribution_networks', 'max:255'],
             'address'                 => ['nullable', 'string','max:255'],
             'water_source_id'         => ['required', 'integer','exists:water_sources,id'],
-            /*'zone.type'               => ['nullable','in:Polygon'],
-            'zone.coordinates'        => ['array','size:1'],
-            'zone.coordinates.0'      => ['array','min:4',new VaildPolygon()],
-            'zone.coordinates.0.*'    => ['array','size:2'],
-            'zone.coordinates.0.*.0'  => ['numeric'],//lng
-            'zone.coordinates.0.*.1'  => ['numeric'],//lat*/
             'manager_id'              => ['required','integer','exists:users,id'],
             'zone'                    => ['required','array',new VaildPolygon()],
             'zone.*.lat'              => ['required_with:zone','numeric','between:-90,90'],
@@ -48,15 +44,6 @@ class SotreDistributionNetworkRequest extends FormRequest
             'address.max'                    => 'The length of the address may not be more than 255 characters.',
             'water_source_id.required'       => 'This distribution network must be connected to a specific water source.',
             'water_source_id.exists'         => 'The water source you are trying to connect this distribution network to does not exist.',
-            /*'zone.type.in'                   => 'The zone type must be "Polygon".',
-            'zone.coordinates.array'         => 'The coordinates must be an array.',
-            'zone.coordinates.size'          => 'Only one set of coordinates (outer ring) is allowed.',
-            'zone.coordinates.0.array'       => 'The outer ring must be an array of points.',
-            'zone.coordinates.0.min'         => 'The outer ring must contain at least 4 points to form a closed polygon.',
-            'zone.coordinates.0.*.array'     => 'Each point in the outer ring must be an array.',
-            'zone.coordinates.0.*.size'      => 'Each point must have exactly 2 values (longitude and latitude).',
-            'zone.coordinates.0.*.0.numeric' => 'Longitude (x) must be a number.',
-            'zone.coordinates.0.*.1.numeric' => 'Latitude (y) must be a number.',*/
             'zone.required'                  => 'The zone is required please.',
             'zone.array'                     => 'The zone must be an array of points.',
             'zone.*.lat.required'            => 'The latitude is required please.',

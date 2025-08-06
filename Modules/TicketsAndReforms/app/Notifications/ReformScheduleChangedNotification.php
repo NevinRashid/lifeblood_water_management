@@ -49,7 +49,6 @@ class ReformScheduleChangedNotification extends Notification
             $msg->line("New expected end date: {$this->reform->expected_end_date}");
             }
 
-            $msg->line('Lifeblood Water Management!');
         return $msg;
     }
 

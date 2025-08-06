@@ -13,7 +13,7 @@ class UsersAndTeamsDatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $superAdmin = User::create([
+        $superAdmin = User::firstOrCreate([
             'name'     => 'Rama',
             'email'    => 'ramaabdo657@gmail.com',
             'password' => '123456789',
@@ -21,7 +21,7 @@ class UsersAndTeamsDatabaseSeeder extends Seeder
         $superAdmin->assignRole('Super Admin');
 
         //National Water Authority Manager
-        $authorityManager = User::create([
+        $authorityManager = User::firstOrCreate([
             'name'     => 'Rama',
             'email'    => 'authorityManager@gmail.com',
             'password' => '123456789',
@@ -29,7 +29,7 @@ class UsersAndTeamsDatabaseSeeder extends Seeder
         $authorityManager->assignRole('National Water Authority Manager');
 
         //Water Treatment Engineer
-        $engineer = User::create([
+        $engineer = User::firstOrCreate([
             'name'     => 'Haneen',
             'email'    => 'engineer@gmail.com',
             'password' => '123456789'
@@ -37,7 +37,7 @@ class UsersAndTeamsDatabaseSeeder extends Seeder
         $engineer->assignRole('Treatment Plant Engineer');
 
         //Distribution Network Manager
-        $networkManager = User::create([
+        $networkManager = User::firstOrCreate([
             'name'     => 'Nevin',
             'email'    => 'fieldMonitor@gmail.com',
             'password' => '123456789'
@@ -45,7 +45,7 @@ class UsersAndTeamsDatabaseSeeder extends Seeder
         $networkManager->assignRole('Distribution Network Manager');
 
         //Reservoir And Tanker Supervisor
-        $reservoirAndTankerSupervisor = User::create([
+        $reservoirAndTankerSupervisor = User::firstOrCreate([
             'name'     => 'Moneer',
             'email'    => 'reservoirAndTankerSupervisor@gmail.com',
             'password' => '123456789'
@@ -53,7 +53,7 @@ class UsersAndTeamsDatabaseSeeder extends Seeder
         $reservoirAndTankerSupervisor->assignRole('Reservoir And Tanker Supervisor');
 
         //Field Monitoring Agent
-        $fieldMonitoringAgent = User::create([
+        $fieldMonitoringAgent = User::firstOrCreate([
             'name'     => 'Mohamad',
             'email'    => 'fieldMonitoringAgent@gmail.com',
             'password' => '123456789'
@@ -61,7 +61,7 @@ class UsersAndTeamsDatabaseSeeder extends Seeder
         $fieldMonitoringAgent->assignRole('Field Monitoring Agent');
 
         //Affected Community Member
-        $affectedmember = User::create([
+        $affectedmember = User::firstOrCreate([
             'name'     => 'Ziad',
             'email'    => 'affectedmember@gmail.com',
             'password' => '123456789'
@@ -69,7 +69,7 @@ class UsersAndTeamsDatabaseSeeder extends Seeder
         $affectedmember->assignRole('Affected Community Member');
 
         //Donor Agency
-        $donorAgency = User::create([
+        $donorAgency = User::firstOrCreate([
             'name'     => 'Omar',
             'email'    => 'donorAgency@gmail.com',
             'password' => '123456789'
@@ -77,7 +77,7 @@ class UsersAndTeamsDatabaseSeeder extends Seeder
         $donorAgency->assignRole('Donor Agency');
 
         //Enviromental Data Analyst
-        $dataAnalyst = User::create([
+        $dataAnalyst = User::firstOrCreate([
             'name'     => 'lara',
             'email'    => 'dataAnalyst@gmail.com',
             'password' => '123456789'

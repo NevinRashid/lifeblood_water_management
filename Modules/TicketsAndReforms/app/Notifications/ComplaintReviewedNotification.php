@@ -35,7 +35,7 @@ class ComplaintReviewedNotification extends Notification
     {
         return (new MailMessage)
             ->subject('Your Complaint Has Been Reviewed')
-            ->line("Dear {$this->trouble->reporter->name}")
+            ->greeting("Dear {$this->trouble->reporter->name}")
             ->line("Thank you for your feedback.")
             ->line("Your complaint has been reviewed by our team and taken into consideratuon.")
             ->line('We appreciate your effort in helping us improve the quality of water services');

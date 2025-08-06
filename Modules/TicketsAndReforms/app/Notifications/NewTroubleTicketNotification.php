@@ -37,9 +37,7 @@ class NewTroubleTicketNotification extends Notification
             ->line("There is a new trouble ticket in the distribution network {$this->troubleTicket->network}")
             ->line("The location of the trouble ({$this->troubleTicket->location->latitude} , {$this->troubleTicket->location->longitude})")
             ->line("The trouble is a {$this->troubleTicket->subject}")
-            ->line("The reporter for this trouble is {$this->troubleTicket->reporter->name}")
-            ->line('Lifeblood Water Management!');
-            //->action('Notification Action', 'https://laravel.com');
+            ->line("The reporter for this trouble is {$this->troubleTicket->reporter->name}");
     }
 
     /**

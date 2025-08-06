@@ -3,6 +3,7 @@
 namespace Modules\DistributionNetwork\Http\Requests\DistributionNetwork;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 use Modules\DistributionNetwork\Rules\VaildPolygon;
 
 class UpdateDistributionNetworkRequest extends FormRequest
@@ -12,7 +13,8 @@ class UpdateDistributionNetworkRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        $user=Auth::user();
+        return $user->can('update_distribution_network');
     }
 
     public function rules(): array
@@ -20,13 +22,10 @@ class UpdateDistributionNetworkRequest extends FormRequest
         return [
             'name'                    => ['nullable', 'string','unique:distribution_networks', 'max:255'],
             'address'                 => ['nullable', 'string','max:255'],
-            'zone.type'               => ['nullable','in:Polygon'],
-            'zone.coordinates'        => ['array','size:1'],
-            'zone.coordinates.0'      => ['array','min:4',new VaildPolygon()],
-            'zone.coordinates.0.*'    => ['array','size:2'],
-            'zone.coordinates.0.*.0'  => ['numeric'],//lng
-            'zone.coordinates.0.*.1'  => ['numeric'],//lat
-            'manager_id'              => ['sometimes','integer','exists:users,id']
+            'manager_id'              => ['sometimes','integer','exists:users,id'],
+            'zone'                    => ['nullable','array',new VaildPolygon()],
+            'zone.*.lat'              => ['nullable_with:zone','numeric','between:-90,90'],
+            'zone.*.lng'              => ['nullable_with:zone','numeric','between:-180,180'],
         ];
     }
 

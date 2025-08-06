@@ -36,10 +36,9 @@ class TroubleAcceptedNotification extends Notification
     {
         return (new MailMessage)
             ->subject('Your Report About Trouble Has Been Accepted')
-            ->line("Dear {$this->trouble->reporter->name}")
+            ->greeting("Dear {$this->trouble->reporter->name}")
             ->line('We have reviewed and confirmed the issue you reported, and is currently awaiting assignment for repair')
-            ->line('Thank you for your valuable contribution in helping us improve the water sevices')
-            ->line('Lifeblood Water Management!');
+            ->line('Thank you for your valuable contribution in helping us improve the water sevices');
     }
 
     /**

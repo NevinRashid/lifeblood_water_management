@@ -5,6 +5,7 @@ namespace Modules\TicketsAndReforms\Http\Requests\TroubleTicket;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Support\Facades\Auth;
 
 class UpdateTroubleTicketRequest extends FormRequest
 {
@@ -13,7 +14,8 @@ class UpdateTroubleTicketRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        $user=Auth::user();
+        return $user->can('update_trouble_ticket');
     }
 
     public function rules(): array

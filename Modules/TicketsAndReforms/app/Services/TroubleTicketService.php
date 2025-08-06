@@ -149,9 +149,14 @@ class TroubleTicketService
     public function updateTrouble(array $data, TroubleTicket $trouble)
     {
         try{
-            if(Auth::user()->hasRole('Field Monitoring Agent') && $trouble->status != 'waiting_assignment')
+            if(Auth::user()->hasRole('Field Monitoring Agent'))
             {
-                return $this->error("An error occurred",500, 'Unfortunately, you cannot update this troubleticket after it has been processed.');
+                if($trouble->status != 'waiting_assignment'){
+                    return $this->error("An error occurred",422, 'Unfortunately, you cannot update this troubleticket after it has been processed.');
+                }
+                if($trouble->user_id != Auth::user()->id){
+                    return $this->error("An error occurred",403, 'Unfortunately, you cannot update a troubleticket that you are not responsible for');
+                }
             }
 
             unset($data['status']);
@@ -177,6 +182,22 @@ class TroubleTicketService
     public function deleteTrouble(TroubleTicket $trouble)
     {
         try{
+            //Prevent deletion if the user is a Field Monitoring Agent
+            // and the trouble has already been assigned or is being processed.
+            if(Auth::user()->hasRole('Field Monitoring Agent') && $trouble->status != 'waiting_assignment')
+            {
+                return $this->error("An error occurred",422
+                                    ,'You cannot delete this troubleTicket because it has already been assigned or is currently being processed.'
+                                    );
+            }
+
+            // Prevent Field Monitoring Agents or Affected Community Members
+            // from deleting trouble tickets that they did not create.
+            if(Auth::user()->hasAnyRole(['Field Monitoring Agent','Affected Community Member']) && $trouble->user_id != Auth::user()->id){
+                    return $this->error("An error occurred",403
+                                        ,'You cannot delete a trouble ticket you did not submit.'
+                                        );
+            }
             $deletedTrouble= $trouble->delete();
             foreach (config('translatable.locales') as $locale) {
                 Cache::forget("all_troubles_{$locale}");
@@ -211,12 +232,12 @@ class TroubleTicketService
                 || $data['status']==='fixed')
                 && !$trouble->reform )
             {
-                return $this->error("An error occurred",500,
+                return $this->error("An error occurred",422,
                                     'You cannot change to this status before assigning a repair team to this troubleticket'
                                     );
             }
             if($trouble->type ==='complaint'){
-                return $this->error("An error occurred",500,'You cannot change the status of this report because it is a complaint. Please review it');
+                return $this->error("An error occurred",422,'You cannot change the status of this report because it is a complaint. Please review it');
             }
             $trouble->update(array_filter($data));
             foreach (config('translatable.locales') as $locale) {
@@ -238,6 +259,10 @@ class TroubleTicketService
      */
     public function getAllCitizenTroubles(){
         try{
+            if(Auth::user()->hasRole('Affected Community Member')){
+                return TroubleTicket::where('user_id',Auth::user()->id)->where('type','trouble')->paginate(15);
+            }
+
             $troubles = TroubleTicket::where('type','trouble')
             ->whereHas('reporter',function($q)
                 {
@@ -259,6 +284,10 @@ class TroubleTicketService
      */
     public function getAllCitizenComplaints(){
         try{
+            if(Auth::user()->hasRole('Affected Community Member')){
+                return TroubleTicket::where('user_id',Auth::user()->id)->where('type','Complaint')->paginate(15);
+            }
+
             $troubles = TroubleTicket::where('type','Complaint')
                                         ->with('reporter')->paginate(15);
             return $troubles;

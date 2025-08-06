@@ -18,7 +18,6 @@ use Modules\TicketsAndReforms\Listeners\NotifyCitizenAboutRestoration;
 use Modules\TicketsAndReforms\Listeners\NotifyNetworkManagerAboutNewTrouble;
 use Modules\TicketsAndReforms\Listeners\NotifyRepairTeamOfScheduleUpdate;
 use Modules\TicketsAndReforms\Listeners\NotifyUserOfAcceptedTrouble;
-use Modules\TicketsAndReforms\Listeners\NotifyUserOfAcknowledgedComplaint;
 use Modules\TicketsAndReforms\Listeners\NotifyUserOfRejectedTrouble;
 use Modules\TicketsAndReforms\Listeners\NotifyUserOfReviewedComplaint;
 use Modules\TicketsAndReforms\Listeners\SendReformNotification;

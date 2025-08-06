@@ -3,6 +3,7 @@
 namespace Modules\DistributionNetwork\Http\Requests\DistributionPoint;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class StoreDistributionPointRequest extends FormRequest
 {
@@ -11,7 +12,8 @@ class StoreDistributionPointRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        $user=Auth::user();
+        return $user->can('create_distribution_network_component');
     }
 
     public function rules(): array
@@ -24,7 +26,6 @@ class StoreDistributionPointRequest extends FormRequest
             'location'                  => ['required','array'],
             'location.lat'              => ['required','numeric','between:-90,90'],
             'location.lng'              => ['required','numeric','between:-180,180'],
-
         ];
     }
 

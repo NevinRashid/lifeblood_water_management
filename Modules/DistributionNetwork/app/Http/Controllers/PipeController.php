@@ -4,6 +4,7 @@ namespace Modules\DistributionNetwork\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\Middleware;
 use Modules\DistributionNetwork\Http\Requests\Pipe\StorePipeRequest;
 use Modules\DistributionNetwork\Http\Requests\Pipe\UpdatePipeRequest;
 use Modules\DistributionNetwork\Models\Pipe;
@@ -13,6 +14,17 @@ class PipeController extends Controller
 {
 
     protected PipeService $pipeService;
+
+    /**
+     * Summary of middleware
+     * @return array<Middleware|string>
+     */
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('role:Super Admin|Distribution Network Manager', only:['store','index','show', 'update', 'destroy']),
+        ];
+    }
 
     /**
      * Constructor for the PipeController class.
@@ -43,7 +55,7 @@ class PipeController extends Controller
      *
      * @param StorePipeRequest $request
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(StorePipeRequest $request)
     {
@@ -59,7 +71,7 @@ class PipeController extends Controller
      *
      * @param Pipe $pipe
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show(Pipe $pipe)
     {
@@ -76,7 +88,7 @@ class PipeController extends Controller
      * @param UpdatePipeRequest $request
      * @param Pipe $pipe
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(UpdatePipeRequest $request, Pipe $pipe)
     {
@@ -90,7 +102,7 @@ class PipeController extends Controller
      *
      * @param Pipe $pipe
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(Pipe $pipe)
     {

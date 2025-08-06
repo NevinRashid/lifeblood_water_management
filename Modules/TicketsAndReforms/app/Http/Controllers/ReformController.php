@@ -4,6 +4,7 @@ namespace Modules\TicketsAndReforms\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\Middleware;
 use Modules\TicketsAndReforms\Http\Requests\Reform\StoreReformRequest;
 use Modules\TicketsAndReforms\Http\Requests\Reform\UpdateReformRequest;
 use Modules\TicketsAndReforms\Http\Requests\Reform\UploadImageReformRequest;
@@ -14,6 +15,18 @@ class ReformController extends Controller
 {
     protected ReformService $reformService;
 
+    /**
+     * Summary of middleware
+     * @return array<Middleware|string>
+     */
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('role:Super Admin|Distribution Network Manager', only:['index','store', 'show','update', 'destroy','getImagesUrl']),
+            new Middleware('permission:upload_reform_images', only:['addImage']),
+        ];
+    }
+    
     /**
      * Constructor for the ReformController class.
      * Initializes the $reformService property via dependency injection.
@@ -31,7 +44,7 @@ class ReformController extends Controller
      *
      * @param Request $request
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index(Request $request)
     {
@@ -48,7 +61,7 @@ class ReformController extends Controller
      *
      * @param StoreReformRequest $request
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(StoreReformRequest $request)
     {
@@ -64,7 +77,7 @@ class ReformController extends Controller
      *
      * @param Reform $reform
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show(Reform $reform)
     {
@@ -82,7 +95,7 @@ class ReformController extends Controller
      *
      * @param Reform $reform
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(UpdateReformRequest $request, Reform $reform)
     {
@@ -96,7 +109,7 @@ class ReformController extends Controller
      *
      * @param Reform $reform
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(Reform $reform)
     {
@@ -113,7 +126,7 @@ class ReformController extends Controller
      * @param UploadImageReformRequest $request
      * @param Reform $reform
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function addImage(UploadImageReformRequest $request, Reform $reform)
     {
@@ -127,7 +140,7 @@ class ReformController extends Controller
      *
      * @param Reform $reform
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function getImagesUrl( Reform $reform)
     {
