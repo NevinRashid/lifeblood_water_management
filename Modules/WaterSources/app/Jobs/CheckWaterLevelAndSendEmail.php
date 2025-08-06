@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Mail;
+use Modules\UsersAndTeams\Models\User;
 use Modules\WaterSources\Emails\LowWaterLevelMail;
 use Modules\WaterSources\Models\WaterExtraction;
 
@@ -53,7 +54,7 @@ class CheckWaterLevelAndSendEmail implements ShouldQueue
 
         // if the total extraction equal or more than 80%, send email
         if ($totalExtractedToday >= $thresholdAmount && $extractedBeforeThis < $thresholdAmount) {
-            $emails = ['bshermahayni@gmail.com', 'rayahaneen8@gmail.com', 'nevinalirashid@gmail.com'];
+            $emails = User::select('email')->role('Treatment Plant Engineer')->get();
             foreach ($emails as $email) {
                 Mail::to($email)->send(new LowWaterLevelMail($waterSource, $totalExtractedToday));
             }
