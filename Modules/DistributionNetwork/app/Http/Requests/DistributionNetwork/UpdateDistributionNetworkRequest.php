@@ -18,15 +18,15 @@ class UpdateDistributionNetworkRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'                    => ['nullable', 'string','unique:distribution_networks', 'max:255'],
-            'address'                 => ['nullable', 'string','max:255'],
-            'zone.type'               => ['nullable','in:Polygon'],
-            'zone.coordinates'        => ['array','size:1'],
-            'zone.coordinates.0'      => ['array','min:4',new VaildPolygon()],
-            'zone.coordinates.0.*'    => ['array','size:2'],
-            'zone.coordinates.0.*.0'  => ['numeric'],//lng
-            'zone.coordinates.0.*.1'  => ['numeric'],//lat
-            'manager_id'              => ['sometimes','integer','exists:users,id']
+            'name'                    => ['nullable', 'string', 'unique:distribution_networks', 'max:255'],
+            'address'                 => ['nullable', 'string', 'max:255'],
+            'zone.type'               => ['nullable', 'in:Polygon'],
+            'zone.coordinates'        => ['array', 'size:1'],
+            'zone.coordinates.0'      => ['array', 'min:4', new VaildPolygon()],
+            'zone.coordinates.0.*'    => ['array', 'size:2'],
+            'zone.coordinates.0.*.0'  => ['numeric'], //lng
+            'zone.coordinates.0.*.1'  => ['numeric'], //lat
+            'manager_id'              => ['sometimes', 'integer', 'exists:users,id']
         ];
     }
 
@@ -35,9 +35,9 @@ class UpdateDistributionNetworkRequest extends FormRequest
      *
      *  @return array<string, string>
      */
-    public function messages():array
+    public function messages(): array
     {
-        return[
+        return [
             'name.max'                       => 'The length of the name may not be more than 255 characters.',
             'name.unique'                    => 'The name must be unique and not duplicate. Please use another name',
             'address.max'                    => 'The length of the address may not be more than 255 characters.',
@@ -50,8 +50,8 @@ class UpdateDistributionNetworkRequest extends FormRequest
             'zone.coordinates.0.*.size'      => 'Each point must have exactly 2 values (longitude and latitude).',
             'zone.coordinates.0.*.0.numeric' => 'Longitude (x) must be a number.',
             'zone.coordinates.0.*.1.numeric' => 'Latitude (y) must be a number.',
+            'loss_percentage'                => ['sometimes', 'numeric', 'between:0,100'],
+            'current_volume'                 => ['sometimes', 'numeric', 'min:0'],
         ];
     }
-
-
 }

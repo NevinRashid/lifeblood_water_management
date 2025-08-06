@@ -17,6 +17,7 @@ class UpdateWaterExtractionRequest extends FormRequest
             'extracted' => 'sometimes|numeric|min:0.0001|max:9999999999999.9999',
             'extraction_date'     => 'sometimes|date|before_or_equal:now',
             'water_source_id'     => 'sometimes|exists:water_sources,id',
+            'distribution_network_id' => 'sometimes|exists:distribution_networks,id',
         ];
     }
 

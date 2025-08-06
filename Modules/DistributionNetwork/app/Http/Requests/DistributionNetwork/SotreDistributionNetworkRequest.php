@@ -18,19 +18,21 @@ class SotreDistributionNetworkRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'                    => ['required', 'string','unique:distribution_networks', 'max:255'],
-            'address'                 => ['nullable', 'string','max:255'],
-            'water_source_id'         => ['required', 'integer','exists:water_sources,id'],
+            'name'                    => ['required', 'string', 'unique:distribution_networks', 'max:255'],
+            'address'                 => ['nullable', 'string', 'max:255'],
+            'water_source_id'         => ['required', 'integer', 'exists:water_sources,id'],
             /*'zone.type'               => ['nullable','in:Polygon'],
             'zone.coordinates'        => ['array','size:1'],
             'zone.coordinates.0'      => ['array','min:4',new VaildPolygon()],
             'zone.coordinates.0.*'    => ['array','size:2'],
             'zone.coordinates.0.*.0'  => ['numeric'],//lng
             'zone.coordinates.0.*.1'  => ['numeric'],//lat*/
-            'manager_id'              => ['required','integer','exists:users,id'],
-            'zone'                    => ['required','array',new VaildPolygon()],
-            'zone.*.lat'              => ['required_with:zone','numeric','between:-90,90'],
-            'zone.*.lng'              => ['required_with:zone','numeric','between:-180,180'],
+            'manager_id'              => ['required', 'integer', 'exists:users,id'],
+            'zone'                    => ['required', 'array', new VaildPolygon()],
+            'zone.*.lat'              => ['required_with:zone', 'numeric', 'between:-90,90'],
+            'zone.*.lng'              => ['required_with:zone', 'numeric', 'between:-180,180'],
+            'loss_percentage'         => ['required', 'numeric', 'between:0,100'],
+            'current_volume'          => ['nullable', 'numeric', 'min:0'],
         ];
     }
 
@@ -39,9 +41,9 @@ class SotreDistributionNetworkRequest extends FormRequest
      *
      *  @return array<string, string>
      */
-    public function messages():array
+    public function messages(): array
     {
-        return[
+        return [
             'name.required'                  => 'The name is required please.',
             'name.max'                       => 'The length of the name may not be more than 255 characters.',
             'name.unique'                    => 'The name must be unique and not duplicate. Please use another name',
@@ -65,6 +67,4 @@ class SotreDistributionNetworkRequest extends FormRequest
             'zone.*.lng.numeric'             => 'The longitude must be a numeric value.',
         ];
     }
-
-
 }

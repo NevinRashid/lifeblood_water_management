@@ -3,6 +3,7 @@
 namespace Modules\DistributionNetwork\Services;
 
 use App\Traits\HandleServiceErrors;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Cache;
 use Modules\DistributionNetwork\Models\DistributionNetwork;
 use Illuminate\Support\Facades\DB;
@@ -22,23 +23,23 @@ class DistributionNetworkService
     public function getAllNetworks()
     {
 
-        try{
-            $networks = Cache::remember('all_networks', 3600, function(){
-                    $networks= DistributionNetwork::all();
-                    $networks = $networks->map(function($network){
-                        return[
-                            'id'              => $network->id,
-                            'name'            => $network->name,
-                            'address'         => $network->address,
-                            'mamager'         => $network->manager->name ,
-                            'water_source_id' => $network->water_source_id ,
-                            'zone'            => $network->zone,
-                            'created_at'      => $network->created_at,
-                            'updated_at'      => $network->updated_at,
-                        ];
-                    });
-                    return $networks;
+        try {
+            $networks = Cache::remember('all_networks', 3600, function () {
+                $networks = DistributionNetwork::all();
+                $networks = $networks->map(function ($network) {
+                    return [
+                        'id'              => $network->id,
+                        'name'            => $network->name,
+                        'address'         => $network->address,
+                        'mamager'         => $network->manager->name,
+                        'water_source_id' => $network->water_source_id,
+                        'zone'            => $network->zone,
+                        'created_at'      => $network->created_at,
+                        'updated_at'      => $network->updated_at,
+                    ];
                 });
+                return $networks;
+            });
             return $networks;
         } catch (\Throwable $th) {
             return $this->error("An error occurred", 500, $th->getMessage());
@@ -89,7 +90,7 @@ class DistributionNetworkService
                     ->map(fn($coord) => new Point($coord['lat'], $coord['lng']));
 
                 $linestring = new LineString($points);
-                $data['zone']=new Polygon([$linestring]);
+                $data['zone'] = new Polygon([$linestring]);
 
                 $network = DistributionNetwork::create($data);
                 Cache::forget("all_networks");
@@ -126,7 +127,6 @@ class DistributionNetworkService
      * @param DistributionNetwork $network
      *
      */
-
     public function deleteNetwork(DistributionNetwork $network)
     {
         try {
@@ -140,6 +140,31 @@ class DistributionNetworkService
                 return $network->delete();
             });
         } catch (\Throwable $th) {
+            return $this->error("An error occurred", 500, $th->getMessage());
+        }
+    }
+
+    /**
+     * 
+     */
+    public function updateCurrentVolume(array $data, DistributionNetwork $network)
+    {
+        try {
+            DB::beginTransaction();
+
+            $network->update([
+                'current_volume' => $data['extracted'],
+            ]);
+
+            DB::commit();
+            
+            return $network ;
+            
+        } catch (ModelNotFoundException $e) {
+            DB::rollBack();
+            throw new \Exception('network not found', 404);
+        } catch (\Throwable $th) {
+            DB::rollBack();
             return $this->error("An error occurred", 500, $th->getMessage());
         }
     }
@@ -160,11 +185,10 @@ class DistributionNetworkService
                     'body'     => $ticket->body,
                     'reporter' => $ticket->reporter->name,
                     'network'  => $ticket->network, // the distribution name
-                    'reform' =>[
+                    'reform' => [
                         'info' => $ticket->reform,
                     ]
                 ];
-
             });
             return $tickets;
         } catch (\Throwable $th) {
