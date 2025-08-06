@@ -4,6 +4,7 @@ namespace Modules\DistributionNetwork\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\Middleware;
 use Modules\DistributionNetwork\Http\Requests\DistributionNetwork\StoreDistributionNetworkRequest;
 use Modules\DistributionNetwork\Http\Requests\DistributionNetwork\UpdateDistributionNetworkRequest;
@@ -40,11 +41,12 @@ class DistributionNetworkController extends Controller
     /**
      * This method return all networks from database.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $filters = $request->only(['name','water_source_id', 'manager_id']);
         return $this->successResponse(
                         'Operation succcessful'
-                        , $this->networkService->getAllNetworks()
+                        , $this->networkService->getAllNetworks($filters)
                         , 200);
     }
 

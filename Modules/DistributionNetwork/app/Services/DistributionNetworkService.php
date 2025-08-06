@@ -19,18 +19,34 @@ class DistributionNetworkService
      *
      * @return array $arraydata
      */
-    public function getAllNetworks()
+    public function getAllNetworks(array $filters = [])
     {
         try{
-            $networks = Cache::remember('all_networks_'. app()->getLocale(), now()->addDay(), function(){
-                            $networks= DistributionNetwork::withCount([
+            if (!$filters) {
+                return Cache::remember('all_networks_'. app()->getLocale(), now()->addDay(), function(){
+                    $networks= DistributionNetwork::with([
                                 'reservoirs','distributionPoints',
                                 'pumpingStations','valves','pipes'
                                 ])->paginate(10);
-                            return $networks->through(function ($network) {
+                        return $networks->through(function ($network) {
                                 return $network->toArray();
-                            });
                         });
+                });
+            }
+            $query = DistributionNetwork::with(['reservoirs','distributionPoints','pumpingStations','valves','pipes']);
+
+            if (isset($filters['name'])) {
+                $query->where('name', $filters['name']);
+            }
+
+            if (isset($filters['water_source_id'])) {
+                $query->where('water_source_id', $filters['water_source_id']);
+            }
+
+            if (isset($filters['manager_id'])) {
+                $query->where('manager_id', $filters['manager_id']);
+            }
+            $networks= $query->paginate($filters['per_page'] ?? 15);
             return $networks;
 
         } catch (\Throwable $th) {
