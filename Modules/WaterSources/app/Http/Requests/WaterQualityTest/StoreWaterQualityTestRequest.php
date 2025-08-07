@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\WaterSources\Http\Requests;
+namespace Modules\WaterSources\Http\Requests\WaterQualityTest;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -22,7 +22,7 @@ class StoreWaterQualityTestRequest extends FormRequest
             'nitrate' => 'nullable|numeric',
             'total_coliform_bacteria' => 'nullable|numeric',
             'test_date' => 'required|date_format:Y-m-d H:i:s',
-        
+
         ];
     }
 

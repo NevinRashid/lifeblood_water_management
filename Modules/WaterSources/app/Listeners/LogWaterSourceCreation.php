@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Listeners;
+namespace Modules\WaterSources\Listeners;
 
 
-use App\Events\WaterSourceCreated;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Modules\WaterSources\Events\WaterSourceCreated;
 
 
 class LogWaterSourceCreation
@@ -21,7 +21,7 @@ class LogWaterSourceCreation
 
     /**
      * 
-     * @param \AppEvents\WaterSourceCreated $event
+     * @param \Modules\WaterSources\Events\WaterSourceCreated $event
      * @return void
      */
     public function handle(WaterSourceCreated $event)

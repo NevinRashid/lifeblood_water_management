@@ -36,14 +36,21 @@ class WaterSource extends Model implements HasMedia
         'operating_date'
     ];
 
+    public array $translatable = ['name'];
+
+    /**
+     *
+     * @var array
+     */
     protected $casts = [
         'location' => Point::class,
         'operating_date' => 'date',
     ];
 
-    public array $translatable = ['name'];
-
-    // Register media collections
+    /**
+     *
+     * @return void
+     */
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('water_source_documents');
@@ -51,7 +58,7 @@ class WaterSource extends Model implements HasMedia
         $this->addMediaCollection('water_source_videos');
     }
 
- 
+
     /**
      * Get all extractions from this source
      */

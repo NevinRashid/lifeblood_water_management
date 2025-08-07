@@ -2,10 +2,11 @@
 
 namespace Modules\WaterDistributionOperations\Http\Controllers;
 
+use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use Modules\UsersAndTeams\Models\User;
-use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\Middleware;
 use Modules\WaterDistributionOperations\Models\Tanker;
 use Modules\WaterDistributionOperations\Services\TankerUserService;
 use Modules\WaterDistributionOperations\Http\Requests\TankersUser\AssignUserToTankerRequest;
@@ -13,13 +14,26 @@ use Modules\WaterDistributionOperations\Http\Requests\TankersUser\AssignUserToTa
 class TankerUserController extends Controller
 {
     /**
-     * 
+     *
      * @param \Modules\WaterDistributionOperations\Services\TankerUserService $tankerUserService
      */
     public function __construct(protected TankerUserService $tankerUserService)
     {
     }
+    
 
+     /**
+      *
+      * @return Middleware[]
+      */
+     public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:assign user to tanker', only: ['store']),
+            new Middleware('permission:unassign user from tanker', only: ['destroy']),
+            new Middleware('permission:view tanker assignments', only: ['index']),
+        ];
+    }
     /**
      *
      * @param \Illuminate\Http\Request $request

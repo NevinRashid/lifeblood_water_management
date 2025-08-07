@@ -95,6 +95,7 @@ class RoleSeeder extends Seeder
             'view water source map',
             'set water quality standards',
             'view water quantity reports',
+            'destroy water quality analysis',
             'craete field team',
             'update field team',
             'view field team',
@@ -104,6 +105,10 @@ class RoleSeeder extends Seeder
             'delete_beneficiary',
             'view_beneficiary',
             'view_any_beneficiaries',
+            'view water source parameters',
+            'assign water source parameters',
+            'unassign water source parameters',
+            'view testing parameters',
         ]);
 
         // Water Treatment Engineer permissions
@@ -120,6 +125,18 @@ class RoleSeeder extends Seeder
             'delete_water_extraction',
             'view_water_extraction',
             'view_any_water_extraction',
+            'record water quality analysis',
+            'view water quality reports',
+            'destroy water quality analysis',
+            'receive water quality alerts',
+            'view water source map',
+            'view field team',
+            'assign field team',
+            'view water source parameters',
+            'view testing parameters',
+            'create testing parameter',
+            'update testing parameter',
+            'delete testing parameter',
         ]);
 
         // Network Distribution / Maintenance Manager Permissions
@@ -186,13 +203,19 @@ class RoleSeeder extends Seeder
             'view_distribution_records',
             'create_distribution_record',
             'update_distribution_record',
-            'receive_reservoir_alerts'
+            'receive_reservoir_alerts',
+             'view tanker routes',
+            'delete distribution record',
+            'assign user to tanker',
+            'unassign user from tanker',
+            'view tanker assignments',
         ]);
 
         // Field Monitoring permissions
         $fieldMonitoringAgent->givePermissionTo([
             'create_water_quality_test',
             'update_water_quality_test',
+            'destroy water quality analysis',
             'create_sensor_reading',
             'update_sensor_reading',
             'create_infrastructure_status',
@@ -205,6 +228,8 @@ class RoleSeeder extends Seeder
             'show_trouble_ticket',
             'delete_trouble_ticket',
             'upload_reform_images',
+            'view water source parameters',
+            'view testing parameters',
         ]);
 
         // Affected Community Member permissions
@@ -232,6 +257,8 @@ class RoleSeeder extends Seeder
             'generate_water_quality_reports',
             'predict_water_shortages',
             'access_environmental_impact_data',
+            'view water source parameters',
+            'view testing parameters',
         ]);
     }
 }

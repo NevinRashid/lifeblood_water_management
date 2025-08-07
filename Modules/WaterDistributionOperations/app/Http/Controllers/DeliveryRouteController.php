@@ -2,13 +2,14 @@
 
 namespace Modules\WaterDistributionOperations\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Modules\WaterDistributionOperations\Http\Requests\DeliveryRoute\StoreDeliveryRouteRequest;
-use Modules\WaterDistributionOperations\Http\Requests\DeliveryRoute\UpdateDeliveryRouteRequest;
+use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controllers\Middleware;
 use Modules\WaterDistributionOperations\Models\DeliveryRoute;
 use Modules\WaterDistributionOperations\Services\DeliveryRouteService;
+use Modules\WaterDistributionOperations\Http\Requests\DeliveryRoute\StoreDeliveryRouteRequest;
+use Modules\WaterDistributionOperations\Http\Requests\DeliveryRoute\UpdateDeliveryRouteRequest;
 
 class DeliveryRouteController extends Controller
 {
@@ -19,6 +20,17 @@ class DeliveryRouteController extends Controller
     public function __construct(protected DeliveryRouteService $deliveryRouteService)
     {
 
+    }
+        /**
+         * Summary of middleware
+         * @return Middleware[]
+         */
+        public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:plan_tanker_routes', only: ['store', 'update', 'destroy']),
+            new Middleware('permission:view tanker routes', only: ['index', 'show']),
+        ];
     }
     /**
      *
@@ -62,7 +74,7 @@ class DeliveryRouteController extends Controller
         return $this->successResponse('Delivery route updated successfully.', $route);
     }
     /**
-     * 
+     *
      * @param \Modules\WaterDistributionOperations\Models\DeliveryRoute $deliveryRoute
      * @return JsonResponse
      */

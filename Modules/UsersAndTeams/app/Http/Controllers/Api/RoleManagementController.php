@@ -7,6 +7,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use Modules\UsersAndTeams\Models\User;
+use Illuminate\Routing\Controllers\Middleware;
 use Modules\UsersAndTeams\Services\RoleManagementService;
 use Modules\UsersAndTeams\Http\Requests\Admin\UserRoleRequest;
 
@@ -17,9 +18,18 @@ class RoleManagementController extends Controller
     public function __construct(RoleManagementService $roleService)
     {
         $this->roleService = $roleService;
-
-        // $this->middleware('role:Admin');
     }
+     /**
+         * Define the middleware for this controller.
+         *
+         * @return array
+         */
+        public static function middleware(): array
+        {
+            return [
+                new Middleware('permission:manage User Role', only: ['index', 'assign', 'update','revoke']),
+            ];
+        }
 
     /**
      * Get a list of all available roles.
