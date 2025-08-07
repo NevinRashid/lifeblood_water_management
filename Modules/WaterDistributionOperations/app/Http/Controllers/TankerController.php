@@ -2,25 +2,38 @@
 
 namespace Modules\WaterDistributionOperations\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Modules\WaterDistributionOperations\Http\Requests\Tankers\StoreTankerRequest;
-use Modules\WaterDistributionOperations\Http\Requests\Tankers\UpdateTankerRequest;
+use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controllers\Middleware;
 use Modules\WaterDistributionOperations\Models\Tanker;
 use Modules\WaterDistributionOperations\Services\TankerService;
+use Modules\WaterDistributionOperations\Http\Requests\Tankers\StoreTankerRequest;
+use Modules\WaterDistributionOperations\Http\Requests\Tankers\UpdateTankerRequest;
 
 class TankerController extends Controller
 {
     /**
-     * 
+     *
      * @param \Modules\WaterDistributionOperations\Services\TankerService $tankerService
      */
     public function __construct(protected TankerService $tankerService)
     {
 
     }
-
+      /**
+       *
+       * @return Middleware[]
+       */
+      public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:view_tanker_fleet', only: ['index', 'show']),
+            new Middleware('permission:create_tanker', only: ['store']),
+            new Middleware('permission:update_tanker', only: ['update']),
+            new Middleware('permission:delete_tanker', only: ['destroy']),
+        ];
+    }
     /**
      *
      * @param \Illuminate\Http\Request $request
@@ -40,7 +53,7 @@ class TankerController extends Controller
     public function store(StoreTankerRequest $request): JsonResponse
     {
         // dd($request);
-        $tanker = $this->tankerService->createTanker($request->validated());
+        $tanker = $this->tankerService->store($request->validated());
 
         return response()->json([
             'message' => 'Tanker created successfully.',
@@ -68,7 +81,7 @@ class TankerController extends Controller
     public function update(UpdateTankerRequest $request, Tanker $tanker): JsonResponse
     {
         // dd($request);
-        $updatedTanker = $this->tankerService->updateTanker($tanker, $request->validated());
+        $updatedTanker = $this->tankerService->update($request->validated(),$tanker );
 
         return response()->json([
             'message' => 'Tanker updated successfully.',
@@ -83,7 +96,7 @@ class TankerController extends Controller
      */
     public function destroy(Tanker $tanker): JsonResponse
     {
-        $this->tankerService->deleteTanker($tanker);
+        $this->tankerService->destroy($tanker);
         return $this->successResponse('Tanker deleted successfully.', null);
     }
 }

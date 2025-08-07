@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\WaterSources\Http\Requests;
+namespace Modules\WaterSources\Http\Requests\WaterSource;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -14,7 +14,7 @@ class AddMediaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            
+
             'images'    => 'sometimes|required_without:documents|array',
             'images.*'  => 'image|mimes:jpeg,png,jpg,gif|max:2048',
 

@@ -2,6 +2,9 @@
 
 namespace Modules\WaterSources\Providers;
 
+use Modules\WaterSources\Events\WaterTestFailed;
+use Modules\WaterSources\Models\WaterQualityTest;
+use Modules\WaterSources\Observers\WaterQualityTestObserver;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Modules\WaterSources\Events\WaterExtracted;
 use Modules\WaterSources\Listeners\SendWaterExtractionNotification;
@@ -9,6 +12,8 @@ use Modules\WaterSources\Listeners\UpdateDistributionNetworkVolume;
 
 class EventServiceProvider extends ServiceProvider
 {
+
+
     /**
      * The event handler mappings for the application.
      *
@@ -21,6 +26,9 @@ class EventServiceProvider extends ServiceProvider
         ],
     ];
 
+    protected $observers = [
+        WaterQualityTest::class => [WaterQualityTestObserver::class],
+    ];
     /**
      * Indicates if events should be discovered.
      *

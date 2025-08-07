@@ -151,7 +151,6 @@ class ReservoirService
             // Invalidate the cache for the specific reservoir and all reservoirs.
             Cache::forget('reservoirs.' . $id);
             Cache::tags('reservoirs')->flush();
-
         } catch (QueryException $e) {
             DB::rollBack();
             throw new \Exception('Database error while deleting reservoir', 500);

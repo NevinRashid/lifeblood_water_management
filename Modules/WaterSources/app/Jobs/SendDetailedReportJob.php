@@ -1,16 +1,17 @@
 <?php
 
-namespace App\Jobs;
+namespace Modules\WaterSources\Jobs;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\WaterQualityReportMail;
 use Illuminate\Queue\SerializesModels;
 use Modules\UsersAndTeams\Models\User;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Modules\WaterSources\Models\WaterQualityTest;
+use Modules\WaterSources\Mail\WaterQualityReportMail;
 
 class SendDetailedReportJob implements ShouldQueue
 {
@@ -18,14 +19,16 @@ class SendDetailedReportJob implements ShouldQueue
 
     protected WaterQualityTest $test;
     protected User $recipient;
+    protected string $locale;
 
     /**
      * Create a new job instance.
      */
-    public function __construct(WaterQualityTest $test, User $recipient)
+    public function __construct(WaterQualityTest $test, User $recipient, string $locale)
     {
         $this->test = $test;
         $this->recipient = $recipient;
+        $this->locale = $locale;
     }
 
     /**
@@ -33,6 +36,7 @@ class SendDetailedReportJob implements ShouldQueue
      */
     public function handle(): void
     {
+         App::setLocale($this->locale);
         $email = new WaterQualityReportMail($this->test);
         Mail::to($this->recipient->email)->send($email);
     }

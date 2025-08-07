@@ -3,6 +3,7 @@ namespace Modules\WaterDistributionOperations\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controllers\Middleware;
 use Modules\WaterDistributionOperations\Models\DeliveryRoute;
 use Modules\WaterDistributionOperations\Models\RouteDelivered;
 use Modules\WaterDistributionOperations\Services\RouteDeliveryService;
@@ -18,7 +19,19 @@ class RouteDeliveryController extends Controller
     public function __construct(protected RouteDeliveryService $routeDeliveryService) {
 
     }
-
+    /**
+     *
+     * @return Middleware[]
+     */
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:view_distribution_records', only: ['index', 'show']),
+            new Middleware('permission:create_distribution_record', only: ['store']),
+            new Middleware('permission:update_distribution_record', only: ['update']),
+            new Middleware('permission:delete distribution record', only: ['destroy']),
+        ];
+    }
     /**
      *
      * @param \Modules\WaterDistributionOperations\Models\DeliveryRoute $deliveryRoute
@@ -40,7 +53,7 @@ class RouteDeliveryController extends Controller
         $data = $request->validated();
         $data['delivery_route_id'] = $deliveryRoute->id;
 
-        $delivery = $this->routeDeliveryService->createDelivery($data);
+        $delivery = $this->routeDeliveryService->store($data);
         return $this->successResponse('Delivery recorded successfully.', $delivery->load('distributionPoint'), 201);
     }
 
@@ -61,18 +74,18 @@ class RouteDeliveryController extends Controller
      */
     public function update(UpdateRouteDeliveryRequest $request, RouteDelivered $routeDelivered): JsonResponse
     {
-        $updatedDelivery = $this->routeDeliveryService->updateDelivery($routeDelivered, $request->validated());
+        $updatedDelivery = $this->routeDeliveryService->update( $request->validated(),$routeDelivered);
         return $this->successResponse('Delivery updated successfully.', $updatedDelivery);
     }
 
     /**
-     * 
+     *
      * @param \Modules\WaterDistributionOperations\Models\RouteDelivered $routeDelivered
      * @return JsonResponse
      */
     public function destroy(RouteDelivered $routeDelivered): JsonResponse
     {
-        $this->routeDeliveryService->deleteDelivery($routeDelivered);
+        $this->routeDeliveryService->destroy($routeDelivered);
         return $this->successResponse('Delivery deleted successfully.', null);
     }
 }

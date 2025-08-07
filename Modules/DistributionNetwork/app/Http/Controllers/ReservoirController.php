@@ -20,7 +20,7 @@ class ReservoirController extends Controller
 
     /**
      * Get all reservoirs with optional filtering and pagination
-     * 
+     *
      * @param Request $request The HTTP request containing filter parameters
      * @return JsonResponse Paginated list of reservoirs with success status
      */
@@ -45,7 +45,7 @@ class ReservoirController extends Controller
 
     /**
      * Get a single reservoir by ID
-     * 
+     *
      * @param string $id The ID of the reservoir to retrieve
      * @return JsonResponse The requested reservoir data with success status
      */
@@ -61,24 +61,22 @@ class ReservoirController extends Controller
 
     /**
      * Create a new reservoir record
-     * 
+     *
      * @param StoreReservoirRequest $request The HTTP request containing reservoir data
      * @return JsonResponse The newly created reservoir with success status
      */
     public function store(StoreReservoirRequest $request): JsonResponse
     {
-        try {
-            $validated = $request->validated();
+        $validated = $request->validated();
+        // dd( $request);
             $reservoir = $this->service->store($validated);
             return $this->successResponse('Reservoir created successfully', $reservoir, 201);
-        } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage(), null, $e->getCode() ?: 400);
-        }
+
     }
 
     /**
      * Update an existing reservoir record
-     * 
+     *
      * @param UpdateReservoirRequest $request The HTTP request containing updated data
      * @param string $id The ID of the reservoir to update
      * @return JsonResponse The updated reservoir data with success status
@@ -96,7 +94,7 @@ class ReservoirController extends Controller
 
     /**
      * Delete a reservoir record
-     * 
+     *
      * @param string $id The ID of the reservoir to delete
      * @return JsonResponse Success message with empty data
      */

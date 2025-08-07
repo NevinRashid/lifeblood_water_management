@@ -1,12 +1,12 @@
 <?php
 
-namespace Modules\WaterSources\Http\Requests;
+namespace Modules\WaterSources\Http\Requests\WaterSource;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use MatanYadaev\EloquentSpatial\Objects\Point;
 
-class StoreWaterSourceRequest extends FormRequest
+class UpdateWaterSourceRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -16,14 +16,12 @@ class StoreWaterSourceRequest extends FormRequest
     public function rules(): array
     {
         return [
-
-            'source' => ['required', Rule::in(['well', 'river', 'lake', 'dam', 'spring', 'desalination', 'imported'])],
-            'location' => 'required|array',
-            'location.latitude' => 'required|numeric',
-            'location.longitude' => 'required|numeric',
+            'source' => ['sometimes', 'required', Rule::in(['well', 'river', 'lake', 'dam', 'spring', 'desalination', 'imported'])],
+            'location.latitude' => 'sometimes|required|numeric|between:-90,90',
+            'location.longitude' => 'sometimes|required|numeric|between:-180,180',
             'capacity_per_day' => 'nullable|numeric|min:0',
             'capacity_per_hour' => 'nullable|numeric|min:0',
-            'status' => ['required', Rule::in(['active', 'inactive', 'damaged', 'under_repair'])],
+            'status' => ['sometimes', 'required', Rule::in(['active', 'inactive', 'damaged', 'under_repair'])],
             'operating_date' => 'nullable|date',
             'documents' => 'nullable|array|max:5',
             'documents.*' => 'file|mimes:pdf,doc,docx|max:20480',
@@ -32,18 +30,13 @@ class StoreWaterSourceRequest extends FormRequest
             'videos' => 'nullable|array|max:3',
             'videos.*' => 'file|mimes:mp4,mov,avi,qt|max:102400',
 
-            'name' => 'required|array|min:1',
-            'name.*' => 'required|string|max:255',
+            'name' => 'sometimes|array|min:1',
+            'name.*' => 'sometimes|string|max:255',
         ];
     }
 
-    /**
-     * Prepare the data for validation.
-     * This method combines latitude and longitude into a Point object after validation.
-     */
- protected function passedValidation(): void
+    protected function passedValidation(): void
 {
-
     if ($this->has(['location.latitude', 'location.longitude'])) {
         $this->merge([
             'location' => new Point(
@@ -54,10 +47,4 @@ class StoreWaterSourceRequest extends FormRequest
     }
 }
 
-    }
-
-
-
-
-
-
+}
