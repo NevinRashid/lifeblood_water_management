@@ -1,7 +1,7 @@
 # LifeBlood: Water Management & Humanitarian Logistics System
 
 [![PHP Version](https://img.shields.io/badge/php-%3E=8.1-8892BF.svg)](https://php.net/)
-[![Laravel Version](https://img.shields.io/badge/laravel-10.x-FF2D20.svg)](https://laravel.com)
+[![Laravel Version](https://img.shields.io/badge/laravel-12.x-FF2D20.svg)](https://laravel.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 <details>
