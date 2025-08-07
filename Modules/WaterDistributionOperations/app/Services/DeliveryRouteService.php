@@ -83,11 +83,10 @@ class DeliveryRouteService extends BaseService
             try {
                 return DeliveryRoute::create($processedData);
             } catch (QueryException $e) {
-                // يمكنك هنا إلقاء استثناء أكثر تحديدًا إذا أردت
-                // سيتم التقاطه بواسطة CrudException العام، لكن هذا يمنحك رسالة أفضل
+            
                 throw new CrudException(
                     'An error occurred while creating the route. Please check the provided data.',
-                    422, // 422 Unprocessable Entity مناسب هنا
+                    422, 
                     $e
                 );
             }
@@ -101,8 +100,6 @@ class DeliveryRouteService extends BaseService
      */
     public function findDeliveryRoute(DeliveryRoute $deliveryRoute): DeliveryRoute
     {
-        // لا حاجة لاستخدام handle هنا إذا كنت متأكدًا أن التحميل لن يسبب خطأ
-        // لكن من الجيد استخدامه للاتساق
         return $this->handle(fn() => $deliveryRoute->load('userTanker.user', 'userTanker.tanker', 'deliveries'));
     }
 
@@ -114,8 +111,7 @@ class DeliveryRouteService extends BaseService
      */
     public function updateDeliveryRoute(DeliveryRoute $deliveryRoute, array $data): DeliveryRoute
     {
-        // **التحقق من منطق العمل (Business Logic) يبقى كما هو**
-        // لا يجب وضع هذا التحقق داخل handle لأنه ليس خطأ في قاعدة البيانات
+        
         if (in_array($deliveryRoute->status, ['completed', 'in_progress'])) {
             $this->throwExceptionJson(
                 'Cannot update a route that is already in progress or completed.',
@@ -126,7 +122,7 @@ class DeliveryRouteService extends BaseService
         return $this->handle(function () use ($deliveryRoute, $data) {
             $processedData = $this->processPathData($data);
             $deliveryRoute->update($processedData);
-            return $deliveryRoute->fresh(); // fresh() لإعادة تحميل الموديل بالبيانات الجديدة
+            return $deliveryRoute->fresh(); 
         });
     }
 
@@ -137,7 +133,7 @@ class DeliveryRouteService extends BaseService
      */
     public function deleteDeliveryRoute(DeliveryRoute $deliveryRoute): bool
     {
-        // **التحقق من منطق العمل يبقى كما هو**
+        
         if ($deliveryRoute->status === 'in_progress') {
             $this->throwExceptionJson(
                 'Cannot delete a route that is currently in progress.',
