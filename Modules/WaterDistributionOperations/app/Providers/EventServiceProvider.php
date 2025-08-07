@@ -2,6 +2,8 @@
 
 namespace Modules\WaterDistributionOperations\Providers;
 
+use Modules\WaterDistributionOperations\Events\ReservoirCriticalLevelReached;
+use Modules\WaterDistributionOperations\Listeners\SendCriticalReservoirAlert;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Modules\WaterDistributionOperations\Events\DeliveryRouteCanceled;
 use Modules\WaterDistributionOperations\Listeners\SendCanceledDeliveryRouteNotification;
@@ -16,7 +18,10 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         DeliveryRouteCanceled::class => [
             SendCanceledDeliveryRouteNotification::class,
-        ],
+            ReservoirCriticalLevelReached::class => [
+                SendCriticalReservoirAlert::class,
+            ],
+        ]
     ];
 
     /**

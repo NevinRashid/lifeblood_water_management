@@ -41,6 +41,7 @@ class ReservoirActivity extends Model
 
     public array $translatable = ['notes'];
 
+ 
     /**
      * The reservoir where activity occurred
      */

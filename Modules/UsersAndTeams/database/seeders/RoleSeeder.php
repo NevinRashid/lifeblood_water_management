@@ -28,17 +28,20 @@ class RoleSeeder extends Seeder
             'name' => 'Treatment Plant Engineer',
             'guard_name' => 'sanctum'
 
+
         ]);
 
         $networkManager = Role::create([
             'name' => 'Distribution Network Manager',
             'guard_name' => 'sanctum'
+    
 
         ]);
 
         $reservoirAndTankerSupervisor = Role::create([
             'name' => 'Reservoir And Tanker Supervisor',
             'guard_name' => 'sanctum'
+       
 
         ]);
 
