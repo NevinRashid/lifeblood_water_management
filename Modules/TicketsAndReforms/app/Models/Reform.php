@@ -2,6 +2,7 @@
 
 namespace Modules\TicketsAndReforms\Models;
 
+use App\Traits\AutoTranslatesAttributes;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -17,7 +18,7 @@ use Spatie\Translatable\HasTranslations;
 
 class Reform extends Model implements HasMedia
 {
-    use HasFactory,LogsActivity, HasTranslations,InteractsWithMedia;
+    use HasFactory, LogsActivity, HasTranslations, InteractsWithMedia, AutoTranslatesAttributes;
 
     /**
      * The attributes that are mass assignable.
@@ -41,6 +42,8 @@ class Reform extends Model implements HasMedia
         'reform_cost' => 'decimal:2'
     ];
 
+    public array $translatable = ['materials_used', 'description'];
+
     /**
      * The trouble ticket this reform addresses
      */
@@ -63,7 +66,7 @@ class Reform extends Model implements HasMedia
     protected function description(): Attribute
     {
         return Attribute::make(
-            set: fn (string $value) => strip_tags($value),
+            set: fn(string $value) => strip_tags($value),
         );
     }
 
@@ -73,14 +76,14 @@ class Reform extends Model implements HasMedia
     protected function materials_used(): Attribute
     {
         return Attribute::make(
-            set: fn (string $value) => strip_tags($value),
+            set: fn(string $value) => strip_tags($value),
         );
     }
 
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-        ->logFillable();
+            ->logFillable();
         // Chain fluent methods for configuration options
     }
 }

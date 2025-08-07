@@ -4,14 +4,23 @@ namespace Modules\WaterSources\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Modules\WaterSources\Http\Requests\WaterExtraction\FilterWaterExtractionRequest;
 use Modules\WaterSources\Http\Requests\WaterExtraction\StoreWaterExtractionRequest;
 use Modules\WaterSources\Http\Requests\WaterExtraction\UpdateWaterExtractionRequest;
 use Modules\WaterSources\Services\WaterExtractionService;
 
-class WaterExtractionController extends Controller
+class WaterExtractionController extends Controller implements HasMiddleware
 {
 
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('can:view_water_extraction', only: ['show']),
+            new Middleware('can:delete_water_extraction', only: ['destroy']),
+        ];
+    }
     /**
      * Service to handle aterExtraction-related logic 
      * and separating it from the controller

@@ -83,7 +83,24 @@ class RoleSeeder extends Seeder
             'delete_field_team',
             'view_water_quantity_reports',
             'set_water_quality_standards',
-            'view_risk_heatmap'
+            'view_risk_heatmap',
+            'create water source',
+            'view water source',
+            'update water source',
+            'delete water source',
+            'attach documents to water source',
+            'view water source map',
+            'set water quality standards',
+            'view water quantity reports',
+            'craete field team',
+            'update field team',
+            'view field team',
+            'delete field team',
+            'create_beneficiary',
+            'update_beneficiary',
+            'delete_beneficiary',
+            'view_beneficiary',
+            'view_any_beneficiaries',
         ]);
 
         // Water Treatment Engineer permissions
@@ -94,7 +111,12 @@ class RoleSeeder extends Seeder
             'view_water_source_map',
             'view_field_team',
             'assign_field_team',
-            'view_risk_heatmap'
+            'view_risk_heatmap',
+            'create_water_extraction',
+            'update_water_extraction',
+            'delete_water_extraction',
+            'view_water_extraction',
+            'view_any_water_extraction',
         ]);
 
         // Network Distribution / Maintenance Manager Permissions
@@ -134,6 +156,14 @@ class RoleSeeder extends Seeder
             'delete_team',
             'assign_members_for_team',
             'remove_members_form_team',
+            'receive_repair_task_alerts',
+            'view_efficiency_reports',
+            'view_repair_reports',
+            'create_water_quota',
+            'update_water_quota',
+            'delete_water_quota',
+            'view_water_quota',
+            'view_any_water_quota',
         ]);
 
         // Water Reservoir / Tanker Officer Permissions
@@ -162,8 +192,6 @@ class RoleSeeder extends Seeder
             'update_water_quality_test',
             'create_sensor_reading',
             'update_sensor_reading',
-            'create_water_extraction',
-            'update_water_extraction',
             'create_infrastructure_status',
             'update_infrastructure_status',
             'view_distribution_network_map',
@@ -202,6 +230,5 @@ class RoleSeeder extends Seeder
             'predict_water_shortages',
             'access_environmental_impact_data',
         ]);
-
-}
+    }
 }

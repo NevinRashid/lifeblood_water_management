@@ -16,8 +16,8 @@ return new class extends Migration
             $table->unsignedBigInteger('manager_id')->nullable();
 
             $table->foreign('manager_id')->references('id')->on('users')->nullOnDelete();
-            $table->string('name');
-            $table->string('address', 255)->nullable();
+            $table->json('name');
+            $table->json('address')->nullable();
             $table->geometry('zone', subtype: 'polygon')->nullable();
 
             // Fixed loss ratio per network (between source and network or between networks)
@@ -27,7 +27,6 @@ return new class extends Migration
             $table->decimal('current_volume', 12, 2)->default(0);
 
             $table->foreignId('water_source_id')->constrained('water_sources')->cascadeOnDelete();
-            $table->index('name');
             $table->timestamps();
         });
     }

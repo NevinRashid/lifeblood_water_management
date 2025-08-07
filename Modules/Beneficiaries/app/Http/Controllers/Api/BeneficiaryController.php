@@ -4,13 +4,23 @@ namespace Modules\Beneficiaries\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Modules\Beneficiaries\Http\Requests\Beneficiary\FilterBeneficiaryRequest;
 use Modules\Beneficiaries\Http\Requests\Beneficiary\StoreBeneficiaryRequest;
 use Modules\Beneficiaries\Http\Requests\Beneficiary\UpdateBeneficiaryRequest;
 use Modules\Beneficiaries\Services\BeneficiaryService;
 
-class BeneficiaryController extends Controller
+class BeneficiaryController extends Controller implements HasMiddleware
 {
+
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('can:view_beneficiary', only: ['show']),
+            new Middleware('can:delete_beneficiary', only: ['destroy']),
+        ];
+    }
 
     /**
      * Service to handle beneficiary-related logic 

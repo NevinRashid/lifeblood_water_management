@@ -18,7 +18,7 @@ return new class extends Migration
             $table->decimal('amount', 15, 4)->nullable();
             $table->enum('triggered_by', ['manual_user', 'scada_system']);
             $table->enum('activity_type', ['filling_started', 'filling_ended', 'emptying_started', 'emptying_ended', 'overflow_detected', 'critical_low_level', 'level_restored_above_critical', 'manual_adjustment', 'pump_started_scada', 'valve_opened_scada']);
-            $table->text('notes')->nullable();
+            $table->json('notes')->nullable();
             $table->foreignId('reservoir_id')->constrained('reservoirs')->cascadeOnDelete();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete()->nullable();
             $table->timestamps();

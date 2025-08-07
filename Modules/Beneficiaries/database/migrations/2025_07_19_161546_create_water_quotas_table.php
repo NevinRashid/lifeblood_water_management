@@ -16,7 +16,7 @@ return new class extends Migration
             $table->decimal('received_volume', 15, 4);
             $table->dateTime('allocation_date');
             $table->enum('status', ['allocated', 'delivered', 'pending', 'cancelled']);
-            $table->text('notes')->nullable();
+            $table->json('notes')->nullable();
             $table->foreignId('beneficiary_id')->constrained('beneficiaries')->cascadeOnDelete();
             $table->foreignId('delivery_route_id')->constrained('delivery_routes')->cascadeOnDelete();
             $table->index(['beneficiary_id', 'allocation_date', 'status']);

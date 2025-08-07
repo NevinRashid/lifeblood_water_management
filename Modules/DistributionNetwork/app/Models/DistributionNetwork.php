@@ -2,6 +2,7 @@
 
 namespace Modules\DistributionNetwork\Models;
 
+use App\Traits\AutoTranslatesAttributes;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -19,7 +20,7 @@ use Spatie\Translatable\HasTranslations;
 
 class DistributionNetwork extends Model
 {
-    use HasFactory, LogsActivity, HasTranslations;
+    use HasFactory, LogsActivity, HasTranslations, AutoTranslatesAttributes;
 
     /**
      * The attributes that are mass assignable.
@@ -37,6 +38,8 @@ class DistributionNetwork extends Model
     protected $casts = [
         'zone' => Polygon::class
     ];
+
+    public array $translatable = ['name', 'address'];
 
     /** Get all reservoirs in this network */
     public function reservoirs(): HasMany

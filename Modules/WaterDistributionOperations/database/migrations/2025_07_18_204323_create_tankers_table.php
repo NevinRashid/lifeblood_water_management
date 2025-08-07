@@ -19,7 +19,7 @@ return new class extends Migration
             $table->geometry('current_location', subtype: 'point')->nullable();
             $table->date('last_maintenance_date')->nullable();
             $table->date('next_maintenance_date')->nullable();
-            $table->text('note')->nullable();
+            $table->json('note')->nullable();
             $table->index('status');
             $table->timestamps();
         });

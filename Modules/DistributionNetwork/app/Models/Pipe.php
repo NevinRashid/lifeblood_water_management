@@ -2,6 +2,7 @@
 
 namespace Modules\DistributionNetwork\Models;
 
+use App\Traits\AutoTranslatesAttributes;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -18,7 +19,7 @@ use Spatie\Translatable\HasTranslations;
 
 class Pipe extends Model
 {
-    use HasFactory,LogsActivity, HasTranslations, HasSpatial;
+    use HasFactory, LogsActivity, HasTranslations, HasSpatial, AutoTranslatesAttributes;
 
     /**
      * The attributes that are mass assignable.
@@ -40,10 +41,12 @@ class Pipe extends Model
         'path' => LineString::class
     ];
 
+    public array $translatable = ['name'];
+
     /** The network this pipe belongs to */
     public function network(): BelongsTo
     {
-        return $this->belongsTo(DistributionNetwork::class,'distribution_network_id');
+        return $this->belongsTo(DistributionNetwork::class, 'distribution_network_id');
     }
 
     public function sensors(): MorphMany
@@ -63,8 +66,8 @@ class Pipe extends Model
     protected function name(): Attribute
     {
         return Attribute::make(
-            get: fn (string $value) => ucfirst($value),
-            set: fn (string $value) => strtolower($value),
+            get: fn(string $value) => ucfirst($value),
+            set: fn(string $value) => strtolower($value),
         );
     }
 
@@ -74,5 +77,4 @@ class Pipe extends Model
             ->logFillable();
         // Chain fluent methods for configuration options
     }
-
 }

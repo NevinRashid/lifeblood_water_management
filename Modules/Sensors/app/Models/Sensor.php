@@ -2,6 +2,7 @@
 
 namespace Modules\Sensors\Models;
 
+use App\Traits\AutoTranslatesAttributes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -18,7 +19,7 @@ use Spatie\Translatable\HasTranslations;
 
 class Sensor extends Model
 {
-    use HasFactory, LogsActivity, HasTranslations;
+    use HasFactory, LogsActivity, HasTranslations, AutoTranslatesAttributes;
 
     /**
      * The attributes that are mass assignable.
@@ -39,6 +40,8 @@ class Sensor extends Model
     protected $casts = [
         'location' => Point::class,
     ];
+
+    public array $translatable = ['name'];
 
     /**
      * Mapping of sensorable types to their corresponding model classes

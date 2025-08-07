@@ -2,6 +2,7 @@
 
 namespace Modules\Beneficiaries\Models;
 
+use App\Traits\AutoTranslatesAttributes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,7 +15,7 @@ use Spatie\Translatable\HasTranslations;
 
 class WaterQuota extends Model
 {
-    use HasFactory,LogsActivity, HasTranslations;
+    use HasFactory, LogsActivity, HasTranslations, AutoTranslatesAttributes;
 
     /**
      * The attributes that are mass assignable.
@@ -31,6 +32,14 @@ class WaterQuota extends Model
     protected $casts = [
         'allocation_date' => 'datetime'
     ];
+
+    /**
+     * The model attributes that should be automatically translated
+     *
+     * Used by a translation trait (like AutoTranslatesAttributes) to know
+     * which fields to process when the model is converted to an array
+     */
+    public array $translatable = ['notes'];
 
     /**
      * The beneficiary receiving this water quota
@@ -56,7 +65,7 @@ class WaterQuota extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-        ->logFillable();
+            ->logFillable();
         // Chain fluent methods for configuration options
     }
 }

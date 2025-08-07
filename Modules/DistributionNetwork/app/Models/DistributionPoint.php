@@ -18,7 +18,7 @@ use Modules\WaterDistributionOperations\Models\RouteDelivered;
 
 class DistributionPoint extends Model
 {
-    use HasFactory,LogsActivity, HasTranslations;
+    use HasFactory, LogsActivity, HasTranslations, AutoTranslatesAttributes;
 
     /**
      * The attributes that are mass assignable.
@@ -37,17 +37,25 @@ class DistributionPoint extends Model
         'status' => 'string',
     ];
 
+    protected $withCount = ['beneficiaries'];
+
+    public array $translatable = ['name'];
 
     /** The network this point belongs to */
     public function network(): BelongsTo
     {
-        return $this->belongsTo(DistributionNetwork::class,'distribution_network_id');
+        return $this->belongsTo(DistributionNetwork::class, 'distribution_network_id');
     }
 
     /** All water deliveries to this point */
     public function deliveries(): HasMany
     {
         return $this->hasMany(RouteDelivered::class);
+    }
+
+    public function beneficiaries()
+    {
+        return $this->hasMany(Beneficiary::class);
     }
 
     /**
@@ -57,15 +65,15 @@ class DistributionPoint extends Model
     protected function name(): Attribute
     {
         return Attribute::make(
-            get: fn (string $value) => ucfirst($value),
-            set: fn (string $value) => strtolower($value),
+            get: fn(string $value) => ucfirst($value),
+            set: fn(string $value) => strtolower($value),
         );
     }
 
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-        ->logFillable();
+            ->logFillable();
         // Chain fluent methods for configuration options
     }
 }

@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'locales' => ['en', 'ar'],
+    'locales' => ['en', 'ar', 'fr', 'zh_CN', 'ru'],
 ];

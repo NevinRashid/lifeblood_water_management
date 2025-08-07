@@ -19,7 +19,6 @@ class StorePipeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'                      => ['required', 'string','unique:pipes', 'max:255'],
             'status'                    => ['in:active,inactive, damaged, under_repair'],
             'distribution_network_id'   => ['required', 'integer','exists:distribution_networks,id'],
             'current_pressure'          => ['nullable', 'numeric'],
@@ -27,6 +26,10 @@ class StorePipeRequest extends FormRequest
             'path'                      => ['required','array'],
             'path.*.lat'                => ['required_with:path','numeric','between:-90,90'],
             'path.*.lng'                => ['required_with:path','numeric','between:-180,180'],
+
+            'name' => 'required|array|min:1',
+            'name.*' => 'required|string|unique:pipes,name->*|max:255',
+
         ];
     }
 
@@ -35,9 +38,9 @@ class StorePipeRequest extends FormRequest
      *
      *  @return array<string, string>
      */
-    public function messages():array
+    public function messages(): array
     {
-        return[
+        return [
             'name.required'                     => 'The name is required please.',
             'name.max'                          => 'The length of the name may not be more than 255 characters.',
             'name.unique'                       => 'The name must be unique and not duplicate. Please use another name',
@@ -55,5 +58,4 @@ class StorePipeRequest extends FormRequest
 
         ];
     }
-
 }

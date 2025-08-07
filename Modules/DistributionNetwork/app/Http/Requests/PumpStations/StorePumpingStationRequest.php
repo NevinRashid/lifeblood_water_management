@@ -15,7 +15,6 @@ class StorePumpingStationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
             'location' => 'required|array',
             'location.lat' => 'required|numeric|between:-90,90',
             'location.lng' => 'required|numeric|between:-180,180',
@@ -27,6 +26,9 @@ class StorePumpingStationRequest extends FormRequest
             'min_flow' => 'nullable|numeric',
             'max_pressure' => 'nullable|numeric',
             'min_pressure' => 'nullable|numeric',
+
+            'name' => 'required|array|min:1',
+            'name.*' => 'required|string|unique:pumping_stations,name->*|max:255',
         ];
     }
 

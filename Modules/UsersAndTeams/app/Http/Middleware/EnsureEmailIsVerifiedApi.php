@@ -6,17 +6,28 @@ use Closure;
 use Illuminate\Http\Request;
 use Modules\UsersAndTeams\Exceptions\EmailNotVerifiedException;
 
+/**
+ * API middleware to ensure the authenticated user has verified their email address
+ *
+ * This should be applied to API routes that require a user to have a confirmed
+ * email. If the check fails, it throws a custom exception that can be
+ * rendered into a JSON error response
+ */
 class EnsureEmailIsVerifiedApi
 {
     /**
-     * Handle an incoming request.
+     * Handle the incoming request and verify the user's email
+     *
+     * @throws \Modules\UsersAndTeams\Exceptions\EmailNotVerifiedException If the user is not present or their email is not verified
      */
     public function handle(Request $request, Closure $next)
     {
-
+        // Get the currently authenticated user
         $user = auth()->user();
 
-        if (! $user || ! $user->hasVerifiedEmail()) {
+        // If there's no user or they haven't verified their email, block the request
+        if (!$user || !$user->hasVerifiedEmail()) {
+            // Throw a specific exception for the API context
             throw new EmailNotVerifiedException($user);
         }
 

@@ -17,7 +17,6 @@ class StoreWaterSourceRequest extends FormRequest
     {
         return [
 
-            'name' => 'required|string|max:255',
             'source' => ['required', Rule::in(['well', 'river', 'lake', 'dam', 'spring', 'desalination', 'imported'])],
             'location' => 'required|array',
             'location.latitude' => 'required|numeric',
@@ -32,6 +31,9 @@ class StoreWaterSourceRequest extends FormRequest
             'images.*' => 'image|max:10240',
             'videos' => 'nullable|array|max:3',
             'videos.*' => 'file|mimes:mp4,mov,avi,qt|max:102400',
+
+            'name' => 'required|array|min:1',
+            'name.*' => 'required|string|max:255',
         ];
     }
 

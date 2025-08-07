@@ -2,6 +2,7 @@
 
 namespace Modules\WaterDistributionOperations\Models;
 
+use App\Traits\AutoTranslatesAttributes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -16,9 +17,9 @@ use MatanYadaev\EloquentSpatial\Traits\HasSpatial;
 
 class DeliveryRoute extends Model
 {
-    use HasFactory,LogsActivity, HasTranslations,HasSpatial;
+    use HasFactory, LogsActivity, HasTranslations, HasSpatial, AutoTranslatesAttributes;
 
-    
+
     /**
      * The attributes that are mass assignable.
      */
@@ -54,6 +55,8 @@ class DeliveryRoute extends Model
         'path',
     ];
 
+    public array $translatable = ['name', 'description'];
+
     /**
      * The tanker-user assignment for this route
      */
@@ -73,7 +76,7 @@ class DeliveryRoute extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-        ->logFillable();
+            ->logFillable();
         // Chain fluent methods for configuration options
     }
 }

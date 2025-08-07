@@ -13,7 +13,6 @@ class UpdateValveFormRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'sometimes|string|max:255',
             'location' => 'sometimes|array',
             'location.lat' => 'required_with:location|numeric',
             'location.lng' => 'required_with:location|numeric',
@@ -24,6 +23,9 @@ class UpdateValveFormRequest extends FormRequest
             'current_flow' => 'nullable|numeric',
             'max_flow' => 'nullable|numeric',
             'min_flow' => 'nullable|numeric',
+
+            'name' => 'sometimes|array|min:1',
+            'name.*' => 'sometimes|string|unique:valves,name->*|max:255',
         ];
     }
 

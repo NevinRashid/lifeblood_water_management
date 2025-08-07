@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->decimal('water_amount_delivered', 15, 4);
             $table->dateTime('arrival_time')->nullable();
-            $table->text('notes')->nullable();
+            $table->json('notes')->nullable();
             $table->foreignId('delivery_route_id')->constrained('delivery_routes')->cascadeOnDelete();
             $table->foreignId('distribution_point_id')->constrained('distribution_points')->cascadeOnDelete();
             $table->index('distribution_point_id');

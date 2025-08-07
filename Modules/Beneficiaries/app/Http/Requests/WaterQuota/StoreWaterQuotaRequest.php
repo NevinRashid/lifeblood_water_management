@@ -16,7 +16,7 @@ class StoreWaterQuotaRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return $this->user()->hasPermissionTo('create_water_quota');
     }
 
     /**
@@ -34,23 +34,12 @@ class StoreWaterQuotaRequest extends FormRequest
                 Rule::in(WaterQuotaStatus::all()),
             ],
 
-            'notes' => 'nullable|string|max:5000',
+            'notes' => 'nullable|array',
+            'notes.*' => 'nullable|string|max:1000',
 
             'beneficiary_id' => 'required|exists:beneficiaries,id',
 
             'delivery_route_id' => 'required|exists:delivery_routes,id',
-        ];
-    }
-
-    public function messages(): array
-    {
-        return [
-            'required' => 'The :attribute is required',
-            'numeric' => 'The :attribute must be a valid decimal number',
-            'min' => 'The :attribute cannot be negative, must be at least :min',
-            'after_or_equal' => 'The :attribute must be in the future or now',
-            'status.in' => 'The status must be one of ' . implode(', ', WaterQuotaStatus::all()),
-            'exists' => 'The selected :attribute does not exist',
         ];
     }
 

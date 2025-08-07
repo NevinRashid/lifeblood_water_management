@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('valves', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->json('name');
             $table->geometry('location', subtype: 'point');
             $table->boolean('is_open');
             $table->enum('valve_type', ['gate_valve', 'butterfly_valve', 'ball_valve']);

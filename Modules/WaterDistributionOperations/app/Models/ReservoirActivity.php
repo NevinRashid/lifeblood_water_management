@@ -2,6 +2,7 @@
 
 namespace Modules\WaterDistributionOperations\Models;
 
+use App\Traits\AutoTranslatesAttributes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,7 +16,7 @@ use Spatie\Translatable\HasTranslations;
 
 class ReservoirActivity extends Model
 {
-    use HasFactory,LogsActivity, HasTranslations;
+    use HasFactory,LogsActivity, HasTranslations, AutoTranslatesAttributes;
 
     protected $table = 'reservoirs_activity';
 
@@ -37,6 +38,8 @@ class ReservoirActivity extends Model
     protected $casts = [
         'activity_time' => 'datetime'
     ];
+
+    public array $translatable = ['notes'];
 
     /**
      * The reservoir where activity occurred

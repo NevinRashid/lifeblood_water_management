@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('pumping_stations', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->json('name');
             $table->geometry('location', subtype: 'point');
             $table->enum('status', ['active', 'inactive', 'damaged', 'under_repair']);
             $table->foreignId('distribution_network_id')->constrained('distribution_networks')->cascadeOnDelete();

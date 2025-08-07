@@ -23,8 +23,6 @@ class UpdateDeliveryRouteRequest extends FormRequest
     {
 
         return [
-            'name' => 'sometimes|required|string|max:255',
-            'description' => 'nullable|string',
             'status' => ['sometimes', 'required', Rule::in(['planned', 'in_progress', 'completed', 'cancelled'])],
             'start_time' => 'nullable|date_format:Y-m-d H:i:s',
             'end_time' => 'nullable|date_format:Y-m-d H:i:s|after_or_equal:start_time',
@@ -33,6 +31,13 @@ class UpdateDeliveryRouteRequest extends FormRequest
             'path' => 'nullable|array',
             'path.*.lat' => 'required_with:path|numeric|between:-90,90',
             'path.*.lng' => 'required_with:path|numeric|between:-180,180',
+
+            'name' => 'sometimes|array|min:1',
+            'name.*' => 'sometimes|string|max:255',
+
+            
+            'description' => 'nullable|array',
+            'description.*' => 'nullable|string',
         ];
     }
 }

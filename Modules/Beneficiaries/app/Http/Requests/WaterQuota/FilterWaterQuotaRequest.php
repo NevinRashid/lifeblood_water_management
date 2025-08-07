@@ -15,7 +15,7 @@ class FilterWaterQuotaRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return $this->user()->hasPermissionTo('view_any_water_quota');
     }
 
     /**

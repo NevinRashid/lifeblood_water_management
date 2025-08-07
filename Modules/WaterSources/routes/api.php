@@ -9,11 +9,9 @@ use Modules\WaterSources\Http\Controllers\WaterQualityTestController;
 use Modules\WaterSources\Http\Controllers\Api\WaterExtractionController;
 use Modules\WaterSources\Http\Controllers\WaterSourceParameterController;
 
-Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
-    
+Route::middleware(['auth:sanctum', 'set_locale_lang'])->prefix('v1')->group(function () {
     Route::get('/reports/water-extractions', [WaterExtractionReportController::class, 'generateReport']);
     Route::get('/water-situation/overview', [WaterSourcesController::class, 'overview']);
-
     Route::apiResource('watersources', WaterSourcesController::class)->names('watersources');
     Route::post('watersources/{waterSource}/add-media', [WaterSourcesController::class, 'addMedia'])->name('water-sources.add-media');
     Route::apiResource('water-extractions', WaterExtractionController::class)->names('water-extractions');
@@ -27,8 +25,3 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('water-quality-tests', WaterQualityTestController::class);
     Route::get('heatmap', [HeatmapController::class, 'index']);
 });
-
-
-
-
-

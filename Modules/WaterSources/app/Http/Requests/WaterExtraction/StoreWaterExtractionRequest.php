@@ -2,12 +2,23 @@
 
 namespace Modules\WaterSources\Http\Requests\WaterExtraction;
 
+use Carbon\Carbon;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
 class StoreWaterExtractionRequest extends FormRequest
 {
+
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return $this->user()->hasPermissionTo('create_water_extraction');
+    }
+
+
     /**
      * Get the validation rules that apply to the request.
      */
@@ -15,7 +26,6 @@ class StoreWaterExtractionRequest extends FormRequest
     {
         return [
             'extracted' => 'required|numeric|min:0.0001|max:9999999999999.9999',
-            'extraction_date'     => 'required|date|before_or_equal:now',
             'water_source_id'     => 'required|exists:water_sources,id',
             'distribution_network_id' => 'required|exists:distribution_networks,id',
         ];
@@ -30,25 +40,13 @@ class StoreWaterExtractionRequest extends FormRequest
         ];
     }
 
-    public function messages()
+    public function validated($key = null, $default = null)
     {
-        return [
-            'required' => 'the :attribute should not be empty, please add the :attribute!',
-            'numeric' => 'the :attribute should be numeric',
-            'exists' => 'the :attribute is not exist',
-            'before_or_equal' => 'the :attribute should be before or equal now',
-            'min' => 'the :attribute should be at least :min',
-            'max' => 'the :attribute should be at most :max',
-        ];
+        $data = parent::validated();
+        $data['extraction_date'] = Carbon::now();
+        return $data;
     }
 
-    /**
-     * Determine if the user is authorized to make this request.
-     */
-    public function authorize(): bool
-    {
-        return true;
-    }
 
     /**
      * if the validation failed it return a json response

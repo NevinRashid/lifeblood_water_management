@@ -2,6 +2,8 @@
 
 namespace Modules\Beneficiaries\Models;
 
+use App\Traits\AutoTranslatesAttributes;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -19,7 +21,7 @@ use Spatie\Translatable\HasTranslations;
 
 class Beneficiary extends Model
 {
-    use HasFactory, LogsActivity, HasTranslations, HasSpatial;
+    use HasFactory, LogsActivity, HasTranslations, HasSpatial, AutoTranslatesAttributes;
 
     /**
      * The attributes that are mass assignable.
@@ -44,7 +46,13 @@ class Beneficiary extends Model
         'additional_data' => 'array',
     ];
 
-    public array $translatable = ['address'];
+    /**
+     * The model attributes that should be automatically translated
+     *
+     * Used by a translation trait (like AutoTranslatesAttributes) to know
+     * which fields to process when the model is converted to an array
+     */
+    public array $translatable = ['address', 'notes', 'additional_data'];
 
     /**
      * The distribution point where beneficiary receives water
@@ -77,10 +85,5 @@ class Beneficiary extends Model
         return LogOptions::defaults()
             ->logFillable();
         // Chain fluent methods for configuration options
-    }
-
-    public function getLocalizedAddressAttribute(): string|null
-    {
-        return $this->translate('address', app()->getLocale());
     }
 }

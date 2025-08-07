@@ -2,6 +2,7 @@
 
 namespace Modules\WaterSources\Models;
 
+use App\Traits\AutoTranslatesAttributes;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\Activitylog\LogOptions;
 use Illuminate\Database\Eloquent\Model;
@@ -20,7 +21,7 @@ use Modules\DistributionNetwork\Models\DistributionNetwork;
 
 class WaterSource extends Model implements HasMedia
 {
-    use HasFactory , HasSpatial, LogsActivity ,HasTranslations,InteractsWithMedia;
+    use HasFactory, HasSpatial, LogsActivity, HasTranslations, InteractsWithMedia, AutoTranslatesAttributes;
 
     /**
      * The attributes that are mass assignable.
@@ -35,10 +36,12 @@ class WaterSource extends Model implements HasMedia
         'operating_date'
     ];
 
-        protected $casts = [
-            'location' => Point::class,
-            'operating_date' => 'date',
-        ];
+    protected $casts = [
+        'location' => Point::class,
+        'operating_date' => 'date',
+    ];
+
+    public array $translatable = ['name'];
 
     // Register media collections
     public function registerMediaCollections(): void
@@ -81,7 +84,7 @@ class WaterSource extends Model implements HasMedia
      */
     public function networks(): HasMany
     {
-        return $this->hasMany(DistributionNetwork::class,'water_source_id');
+        return $this->hasMany(DistributionNetwork::class, 'water_source_id');
     }
 
     public function getActivitylogOptions(): LogOptions

@@ -19,7 +19,7 @@ class UpdateBeneficiaryRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return $this->user()->hasPermissionTo('update_beneficiary');
     }
 
     /**
@@ -43,12 +43,14 @@ class UpdateBeneficiaryRequest extends FormRequest
             'location.latitude' => 'sometimes|numeric',
             'location.longitude' => 'sometimes|numeric',
 
-            'address' => 'required|array',
-            'address.ar' => 'nullable|string|max:255',
-            'address.en' => 'nullable|string|max:255',
+            'address' => 'sometimes|array|min:1',
+            'address.*' => 'sometimes|string|max:255',
+
+            'notes' => 'nullable|array',
+            'notes.*' => 'nullable|string|max:1000',
 
             'additional_data' => 'nullable|array',
-            'notes' => 'nullable|string|max:1000',
+            'additional_data.*' => 'nullable|string|max:1000',
         ];
     }
 

@@ -8,12 +8,12 @@ use Modules\DistributionNetwork\Http\Controllers\ValvesController;
 use Modules\DistributionNetwork\Http\Controllers\DistributionPointController;
 use Modules\DistributionNetwork\Http\Controllers\PipeController;
 
-Route::middleware(['auth:sanctum'])->group(function () {
+Route::middleware(['auth:sanctum', 'set_locale_lang'])->group(function () {
     Route::get('/trouble-tickets', [DistributionNetworkController::class, 'review']);
     Route::apiResource('distributionnetworks', DistributionNetworkController::class)->names('distributionnetwork');
-    Route::apiResource('valves',ValvesController::class)->names('valve');
-    Route::apiResource('pumping_stations',PumpingStationsController::class)->names('pumping_station');
-    Route::apiResource('reservoirs',ReservoirController::class)->names('reservoirs');
+    Route::apiResource('valves', ValvesController::class)->names('valve');
+    Route::apiResource('pumping_stations', PumpingStationsController::class)->names('pumping_station');
+    Route::apiResource('reservoirs', ReservoirController::class)->names('reservoirs');
     Route::apiResource('pipes', PipeController::class)->names('pipe');
     Route::apiResource('distributionpoints', DistributionPointController::class)->names('distributionpoint');
 });

@@ -21,8 +21,10 @@ class UpdateRouteDeliveryRequest extends FormRequest
         return [
             'water_amount_delivered' => 'sometimes|required|numeric|min:0',
             'arrival_time' => 'sometimes|nullable|date',
-            'notes' => 'sometimes|nullable|string',
             'distribution_point_id' => 'sometimes|required|integer|exists:distribution_points,id',
+
+            'notes' => 'sometimes|nullable|array',
+            'notes.*' => 'sometimes|nullable|string',
         ];
     }
 }

@@ -31,10 +31,12 @@ class UpdateTankerRequest extends FormRequest
             'status' => [ Rule::in(['available', 'on_route', 'in_maintenance', 'out_of_service'])],
             'last_maintenance_date' => 'nullable|date_format:Y-m-d',
             'next_maintenance_date' => 'nullable|date_format:Y-m-d|after_or_equal:last_maintenance_date',
-            'note' => 'nullable|string',
             'current_location' => 'nullable|array',
             'current_location.lat' => 'current_location|numeric',
             'current_location.lng' => 'current_location|numeric',
+
+            'note' => 'nullable|array',
+            'note.*' => 'nullable|string',
         ];
     }
 }

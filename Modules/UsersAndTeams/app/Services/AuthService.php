@@ -11,101 +11,106 @@ use Illuminate\Support\Facades\Hash;
 use Modules\UsersAndTeams\Models\User;
 
 /**
- * Service class for handling authentication-related business logic.
+ * Service class for handling all user authentication logic
  *
- * This service extends the BaseService to inherit common service functionalities
- * and implements AuthServiceInterface. It provides methods for user registration,
- * login, and logout, with integrated error handling and logging.
- *
- * @package App\Services
+ * This service manages user registration, login, and logout operations
+ * It uses a central `handle` method to ensure consistent error handling
+ * and logging for all auth-related actions
  */
 class AuthService
 {
     /**
-     * Handles the execution of a given callback for authentication operations,
-     * providing centralized exception handling specific to authentication.
+     * A central error handler for authentication operations
      *
-     * Catches AuthenticationException and general Throwable instances, re-throwing
-     * them as custom AuthenticationException or generic Exception.
+     * This wrapper provides a consistent try/catch block for auth methods,
+     * so we don't have to repeat the same error handling logic everywhere
+     * It catches specific exceptions and re-throws them in a standard format
      *
-     * @param Closure $callback The callback function to execute.
-     * @return mixed The result of the executed callback.
-     * @throws AuthenticationException If authentication fails (e.g., invalid credentials).
-     * @throws \Exception For any other unhandled internal server errors.
-     * @throws \Throwable For any other unhandled exceptions not specifically caught.
+     * @param Closure $callback The function containing the core logic to execute
+     * @return mixed The result from the callback function
+     * @throws \Illuminate\Auth\AuthenticationException If credentials are bad
+     * @throws \Exception For any other unexpected errors
      */
     protected function handle(Closure $callback)
     {
         try {
+            // Run the logic passed into the handler
             return $callback();
         } catch (AuthenticationException $e) {
+            // Catch a specific framework auth exception
             report($e);
+            // Re-throw it with a generic, user-friendly message
             throw new AuthenticationException('Invalid credentials');
         } catch (\Throwable $e) {
+            // Catch any other possible error to prevent crashes
             report($e);
-            throw new \Exception('An internal server error occurred' . $e, 500);
+            // Re-throw it as a generic server error
+            throw new \Exception('An internal server error occurred', 500);
         }
     }
 
     /**
-     * Handle user registration.
+     * Handle a new user registration
      *
-     * This method encrypts the user's password, creates a new user record,
-     * generates a Sanctum plain text token, and logs the registration event.
+     * Hashes the password, creates the user, generates an API token,
+     * logs the event, and fires the 'Registered' event for other listeners
      *
-     * @param array $data Incoming data containing registration credentials (e.g., 'name', 'email', 'password').
-     * @return array The registration success response including user's name and the generated token.
-     * @throws AuthenticationException If an authentication-related issue occurs during registration.
-     * @throws \Exception If an unexpected error occurs during the registration process.
+     * @param array $data User data (name, email, password)
+     * @return array|bool An array with the user's name and token on success, or false on failure
      */
     public function register(array $data)
     {
-        return  $this->handle(function () use ($data) {
+        return $this->handle(function () use ($data) {
+            // hash the password before saving it
             $data['password'] = Hash::make($data['password']);
+
+            // Create the user without triggering activity logs for the creation itself
             $user = activity()
                 ->withoutLogs(function () use ($data) {
-                    return  User::create($data);
+                    return User::create($data);
                 });
 
+            // Make sure the user was actually created before proceeding
             if ($user->wasRecentlyCreated) {
-
+                // Prepare the success response
                 $success['name'] = $user->name;
+                // Create a Sanctum token that expires in one week
                 $success['token'] = $user->createToken('MyApp', ['*'], now()->addWeek())->plainTextToken;
 
-                Logger::auth('registerd', 'the user has been registerd successfully', [
+                // Log the successful registration for auditing
+                Logger::auth('registered', 'the user has been registered successfully', [
                     'user' => $user,
                 ], $user);
 
+                // Fire the built-in Laravel event
                 event(new Registered($user));
 
                 return $success;
             }
 
+            // Return false if for some reason the user wasn't created
             return false;
         });
     }
 
     /**
-     * Handle user login.
+     * Handle a user login attempt
      *
-     * This method attempts to authenticate the user using provided credentials.
-     * On successful authentication, it generates a Sanctum plain text token
-     * and returns user details along with the token. It logs login attempts.
+     * Tries to authenticate the user with email and password
+     * If successful, it creates a new API token and logs the login
      *
-     * @param array $data The incoming data containing email and password.
-     * @return array|bool The authenticated user details and token on success, or false on authentication failure.
-     * @throws AuthenticationException If authentication fails due to invalid credentials.
-     * @throws \Exception If an unexpected error occurs during the login process.
+     * @param array $data User credentials (email, password)
+     * @return array|bool An array with the user object and token, or false on failure
      */
     public function login(array $data)
     {
-        return  $this->handle(function () use ($data) {
+        return $this->handle(function () use ($data) {
+            // Attempt to authenticate
             if (Auth::attempt(['email' => $data['email'], 'password' => $data['password']])) {
-
                 $user = Auth::user();
+                $token = $user->createToken('MyApp', ['*'], now()->addWeek())->plainTextToken;
 
-                $token = $user->createToken('MyApp')->plainTextToken;
-
+                // Log the successful login
                 Logger::auth('login', 'the user has been Logged in successfully', [
                     'user' => $user,
                 ], $user);
@@ -116,6 +121,7 @@ class AuthService
                 ];
             }
 
+            // If auth fails, log the attempt for security monitoring
             Logger::auth('failed-login', 'An user could not Login!', [
                 'email' => $data['email'],
             ]);
@@ -125,25 +131,21 @@ class AuthService
     }
 
     /**
-     * Handle user logout.
+     * Log the current user out by revoking their API token
      *
-     * This method deletes the current access token for the authenticated user,
-     * effectively logging them out. It logs the logout event.
-     *
-     * @return bool True if the current access token was successfully deleted, false otherwise.
-     * @throws AuthenticationException If there is no authenticated user or token to delete.
-     * @throws \Exception If an unexpected error occurs during the logout process.
+     * @return bool True if the token was deleted successfully
      */
     public function logout()
     {
         return $this->handle(function () {
-
             $user = auth()->user();
 
+            // Log the logout event before revoking the token
             Logger::auth('logout', 'An user has been logged out successfully', [
                 'user' => $user,
             ]);
 
+            // Delete the specific token that was used for the current request
             return $user->currentAccessToken()->delete();
         });
     }

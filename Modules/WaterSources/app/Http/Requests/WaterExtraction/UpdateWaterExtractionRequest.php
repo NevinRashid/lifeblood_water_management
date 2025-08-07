@@ -8,6 +8,16 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 
 class UpdateWaterExtractionRequest extends FormRequest
 {
+
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return $this->user()->hasPermissionTo('update_water_extraction');
+    }
+
+
     /**
      * Get the validation rules that apply to the request.
      */
@@ -15,7 +25,6 @@ class UpdateWaterExtractionRequest extends FormRequest
     {
         return [
             'extracted' => 'sometimes|numeric|min:0.0001|max:9999999999999.9999',
-            'extraction_date'     => 'sometimes|date|before_or_equal:now',
             'water_source_id'     => 'sometimes|exists:water_sources,id',
             'distribution_network_id' => 'sometimes|exists:distribution_networks,id',
         ];
@@ -25,28 +34,8 @@ class UpdateWaterExtractionRequest extends FormRequest
     {
         return [
             'extracted' => 'Extracted',
-            'extraction_date' => 'Extraction Date',
             'water_source_id' => 'Water Source'
         ];
-    }
-
-    public function messages()
-    {
-        return [
-            'numeric' => 'the :attribute should be numeric',
-            'exists' => 'the :attribute is not exist',
-            'before_or_equal' => 'the :attribute should be before or equal now',
-            'min' => 'the :attribute should be at least :min',
-            'max' => 'the :attribute should be at most :max',
-        ];
-    }
-
-    /**
-     * Determine if the user is authorized to make this request.
-     */
-    public function authorize(): bool
-    {
-        return true;
     }
 
     /**

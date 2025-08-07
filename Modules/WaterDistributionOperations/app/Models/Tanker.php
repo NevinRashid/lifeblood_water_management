@@ -2,6 +2,7 @@
 
 namespace Modules\WaterDistributionOperations\Models;
 
+use App\Traits\AutoTranslatesAttributes;
 use Spatie\Activitylog\LogOptions;
 use Modules\UsersAndTeams\Models\User;
 use Illuminate\Database\Eloquent\Model;
@@ -17,7 +18,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Tanker extends Model
 {
-    use HasFactory,LogsActivity, HasTranslations;
+    use HasFactory, LogsActivity, HasTranslations, AutoTranslatesAttributes;
 
     /**
      * The attributes that are mass assignable.
@@ -36,6 +37,8 @@ class Tanker extends Model
         'next_maintenance_date' => 'date',
         'current_location' => Point::class,
     ];
+
+    public array $translatable = ['note'];
     /**
      * Users assigned to this tanker
      */
@@ -57,20 +60,20 @@ class Tanker extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-        ->logFillable();
+            ->logFillable();
         // Chain fluent methods for configuration options
     }
     protected function isAvailable(): Attribute
     {
         return Attribute::make(
-            get: fn ($value, $attributes) => $attributes['status'] === 'available',
+            get: fn($value, $attributes) => $attributes['status'] === 'available',
         );
     }
 
     protected function licensePlate(): Attribute
     {
         return Attribute::make(
-            set: fn ($value) => strtoupper(str_replace(' ', '', $value)),
+            set: fn($value) => strtoupper(str_replace(' ', '', $value)),
         );
     }
 }
