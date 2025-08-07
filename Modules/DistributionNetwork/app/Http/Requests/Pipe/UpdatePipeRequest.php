@@ -4,6 +4,7 @@ namespace Modules\DistributionNetwork\Http\Requests\Pipe;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class UpdatePipeRequest extends FormRequest
 {
@@ -12,21 +13,21 @@ class UpdatePipeRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $user=Auth::user();
-        return $user->can('update_distribution_network_component');
+        $pipe = $this->route('pipe');
+        return Gate::allows('update_distribution_network_component', $pipe);
     }
 
     public function rules(): array
     {
         return [
-            'name'                      => ['nullable', 'string','unique:pipes', 'max:255'],
+            'name'                      => ['nullable', 'string', 'unique:pipes', 'max:255'],
             'status'                    => ['in:active,inactive, damaged, under_repair'],
-            'path.type'                 => ['nullable','in:LineString'],
-            'path.coordinates'          => ['nullable','array','min:2'],
-            'path.coordinates.*'        => ['array','size:2'],
-            'path.coordinates.*.0'      => ['numeric'],//lng
-            'path.coordinates.*.1'      => ['numeric'],//lat
-            'distribution_network_id'   => ['nullable', 'integer','exists:distribution_networks,id'],
+            'path.type'                 => ['nullable', 'in:LineString'],
+            'path.coordinates'          => ['nullable', 'array', 'min:2'],
+            'path.coordinates.*'        => ['array', 'size:2'],
+            'path.coordinates.*.0'      => ['numeric'], //lng
+            'path.coordinates.*.1'      => ['numeric'], //lat
+            'distribution_network_id'   => ['nullable', 'integer', 'exists:distribution_networks,id'],
             'current_pressure'          => ['nullable', 'numeric'],
             'current_flow'              => ['nullable', 'numeric'],
 
@@ -38,9 +39,9 @@ class UpdatePipeRequest extends FormRequest
      *
      *  @return array<string, string>
      */
-    public function messages():array
+    public function messages(): array
     {
-        return[
+        return [
             'name.max'                          => 'The length of the name may not be more than 255 characters.',
             'name.unique'                       => 'The name must be unique and not duplicate. Please use another name',
             'status.in'                         => 'The status must be one of (active,inactive,damaged,under_repair)',
@@ -57,6 +58,4 @@ class UpdatePipeRequest extends FormRequest
 
         ];
     }
-
 }
-

@@ -5,13 +5,24 @@ namespace Modules\DistributionNetwork\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\Gate;
 use Modules\DistributionNetwork\Http\Requests\Reservoirs\StoreReservoirRequest;
 use Modules\DistributionNetwork\Http\Requests\Reservoirs\UpdateReservoirRequest;
+use Modules\DistributionNetwork\Models\Reservoir;
 use Modules\DistributionNetwork\Services\ReservoirService;
 
 class ReservoirController extends Controller
 {
     protected ReservoirService $service;
+
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('can:show_distribution_network_component', only: ['show']),
+            new Middleware('can:view_all_distribution_network_component', only: ['index']),
+        ];
+    }
 
     public function __construct(ReservoirService $service)
     {
@@ -61,6 +72,7 @@ class ReservoirController extends Controller
 
     /**
      * Create a new reservoir record
+     * *Creating permission is checked in FormRequest
      * 
      * @param StoreReservoirRequest $request The HTTP request containing reservoir data
      * @return JsonResponse The newly created reservoir with success status
@@ -68,6 +80,7 @@ class ReservoirController extends Controller
     public function store(StoreReservoirRequest $request): JsonResponse
     {
         try {
+             
             $validated = $request->validated();
             $reservoir = $this->service->store($validated);
             return $this->successResponse('Reservoir created successfully', $reservoir, 201);
@@ -78,16 +91,16 @@ class ReservoirController extends Controller
 
     /**
      * Update an existing reservoir record
+     * *Updating permission is checked in FormRequest
      * 
      * @param UpdateReservoirRequest $request The HTTP request containing updated data
-     * @param string $id The ID of the reservoir to update
      * @return JsonResponse The updated reservoir data with success status
      */
-    public function update(UpdateReservoirRequest $request, string $id): JsonResponse
+    public function update(UpdateReservoirRequest $request,  Reservoir $reservoir): JsonResponse
     {
         try {
             $validated = $request->validated();
-            $reservoir = $this->service->update($validated, $id);
+            $reservoir = $this->service->update($validated, $reservoir);
             return $this->successResponse('Reservoir updated successfully', $reservoir);
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), null, $e->getCode() ?: 400);
@@ -100,10 +113,13 @@ class ReservoirController extends Controller
      * @param string $id The ID of the reservoir to delete
      * @return JsonResponse Success message with empty data
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(Reservoir $reservoir): JsonResponse
     {
         try {
-            $this->service->destroy($id);
+            if (!Gate::allows('delete_distribution_network_component', $reservoir)) {
+                return $this->errorResponse('Unauthorized', null, 403);
+            }
+            $this->service->destroy($reservoir);
             return $this->successResponse('Reservoir deleted successfully', null, 204);
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), null, $e->getCode());

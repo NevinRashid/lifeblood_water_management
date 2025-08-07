@@ -72,17 +72,17 @@ class PumpingStationsService
     /**
      * Update an existing pumping station
      */
-    public function update(array $data, string $id): PumpingStation
+    public function update(array $data, PumpingStation $pumpingStation): PumpingStation
     {
         try {
-            $station = PumpingStation::findOrFail($id);
-            $station->update($data);
+
+            $pumpingStation->update($data);
 
             // Invalidate the cache for the specific station and for the list of all stations.
-            Cache::forget('pumping_stations.' . $id);
+            Cache::forget('pumping_stations.' . $pumpingStation->id);
             Cache::tags('pumping_stations')->flush();
-            
-            return $station;
+
+            return $pumpingStation;
         } catch (ModelNotFoundException $e) {
             throw new \Exception('Pumping station not found', 404);
         } catch (QueryException $e) {
@@ -93,16 +93,15 @@ class PumpingStationsService
     /**
      * Delete a pumping station
      */
-    public function destroy(string $id): void
+    public function destroy(PumpingStation $pumpingStation): void
     {
         try {
-            $station = PumpingStation::findOrFail($id);
-            $station->delete();
+
+            $pumpingStation->delete();
 
             // Invalidate the cache for the specific station that was deleted and for the list of all stations.
-            Cache::forget('pumping_stations.' . $id);
+            Cache::forget('pumping_stations.' . $pumpingStation->id);
             Cache::tags('pumping_stations')->flush();
-
         } catch (ModelNotFoundException $e) {
             throw new \Exception('Pumping station not found', 404);
         } catch (QueryException $e) {

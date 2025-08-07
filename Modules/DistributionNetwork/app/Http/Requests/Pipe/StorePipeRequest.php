@@ -4,6 +4,8 @@ namespace Modules\DistributionNetwork\Http\Requests\Pipe;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
+use Modules\DistributionNetwork\Models\DistributionNetwork;
 
 class StorePipeRequest extends FormRequest
 {
@@ -12,21 +14,27 @@ class StorePipeRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $user=Auth::user();
-        return $user->can('create_distribution_network_component');
+        $networkId = $this->input('distribution_network_id');
+        $network = DistributionNetwork::find($networkId);
+
+        if (! $network) {
+            return false;
+        }
+
+        return Gate::allows('create_distribution_network_component', $network);
     }
 
     public function rules(): array
     {
         return [
-            'name'                      => ['required', 'string','unique:pipes', 'max:255'],
+            'name'                      => ['required', 'string', 'unique:pipes', 'max:255'],
             'status'                    => ['in:active,inactive, damaged, under_repair'],
-            'distribution_network_id'   => ['required', 'integer','exists:distribution_networks,id'],
+            'distribution_network_id'   => ['required', 'integer', 'exists:distribution_networks,id'],
             'current_pressure'          => ['nullable', 'numeric'],
             'current_flow'              => ['nullable', 'numeric'],
-            'path'                      => ['required','array'],
-            'path.*.lat'                => ['required_with:path','numeric','between:-90,90'],
-            'path.*.lng'                => ['required_with:path','numeric','between:-180,180'],
+            'path'                      => ['required', 'array'],
+            'path.*.lat'                => ['required_with:path', 'numeric', 'between:-90,90'],
+            'path.*.lng'                => ['required_with:path', 'numeric', 'between:-180,180'],
         ];
     }
 
@@ -35,9 +43,9 @@ class StorePipeRequest extends FormRequest
      *
      *  @return array<string, string>
      */
-    public function messages():array
+    public function messages(): array
     {
-        return[
+        return [
             'name.required'                     => 'The name is required please.',
             'name.max'                          => 'The length of the name may not be more than 255 characters.',
             'name.unique'                       => 'The name must be unique and not duplicate. Please use another name',
@@ -55,5 +63,4 @@ class StorePipeRequest extends FormRequest
 
         ];
     }
-
 }

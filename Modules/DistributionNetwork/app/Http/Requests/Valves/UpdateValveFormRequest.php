@@ -3,6 +3,7 @@
 namespace Modules\DistributionNetwork\Http\Requests\Valves;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 use MatanYadaev\EloquentSpatial\Objects\Point;
 
 class UpdateValveFormRequest extends FormRequest
@@ -32,7 +33,8 @@ class UpdateValveFormRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        $valve = $this->route('valve'); 
+        return Gate::allows('update_distribution_network_component',$valve);
     }
 
     // Convert validated data (handles null/missing/valid location)

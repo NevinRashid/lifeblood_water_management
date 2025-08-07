@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Gate;
 use Modules\DistributionNetwork\Models\Valve;
 
 class ValvesService
@@ -105,22 +106,21 @@ class ValvesService
      * @throws ModelNotFoundException If valve not found
      * @throws \Exception On update error
      */
-    public function update(array $data, string $id)
+    public function update(array $data,  Valve $valve)
     {
         try {
             DB::beginTransaction();
-            $valve = Valve::findOrFail($id);
 
             // Only update location if it was explicitly provided
             if (array_key_exists('location', $data)) {
                 $valve->location = $data['location'];
             }
-            
+
             $valve->update($data);
             DB::commit();
 
             // Clear the cache for the specific valve and all valves.
-            Cache::forget('valves.' . $id);
+            Cache::forget('valves.' . $valve->id);
             Cache::tags('valves')->flush();
 
             return $valve;
@@ -144,18 +144,16 @@ class ValvesService
      * @throws ModelNotFoundException If valve not found
      * @throws \Exception On deletion error
      */
-    public function destroy(string $id)
+    public function destroy(Valve $valve)
     {
         try {
             DB::beginTransaction();
-            $valve = Valve::findOrFail($id);
             $valve->delete();
             DB::commit();
 
             // Clear the cache for the specific valve and all valves.
-            Cache::forget('valves.' . $id);
+            Cache::forget('valves.' . $valve->id);
             Cache::tags('valves')->flush();
-
         } catch (ModelNotFoundException $e) {
             DB::rollBack();
             throw new \Exception('Valve not found', 404);

@@ -5,6 +5,7 @@ namespace Modules\DistributionNetwork\Http\Requests\PumpStations;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Support\Facades\Gate;
 use MatanYadaev\EloquentSpatial\Objects\Point;
 
 class UpdatePumpingStationRequest extends FormRequest
@@ -35,7 +36,8 @@ class UpdatePumpingStationRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        $pumpStation = $this->route('pumpStation');
+        return Gate::allows('update_distribution_network_component', $pumpStation);
     }
 
     // Convert validated data (handles null/missing/valid location)
