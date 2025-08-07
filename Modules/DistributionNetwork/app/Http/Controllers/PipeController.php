@@ -5,6 +5,7 @@ namespace Modules\DistributionNetwork\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\Gate;
 use Modules\DistributionNetwork\Http\Requests\Pipe\StorePipeRequest;
 use Modules\DistributionNetwork\Http\Requests\Pipe\UpdatePipeRequest;
 use Modules\DistributionNetwork\Models\Pipe;
@@ -22,7 +23,8 @@ class PipeController extends Controller
     public static function middleware(): array
     {
         return [
-            new Middleware('role:Super Admin|Distribution Network Manager', only:['store','index','show', 'update', 'destroy']),
+            new Middleware('can:show_distribution_network_component', only: ['show']),
+            new Middleware('can:view_all_distribution_network_component', only: ['index']),
         ];
     }
 
@@ -34,7 +36,7 @@ class PipeController extends Controller
      */
     public function __construct(PipeService $pipeService)
     {
-        $this->pipeService =$pipeService;
+        $this->pipeService = $pipeService;
     }
 
     /**
@@ -46,9 +48,10 @@ class PipeController extends Controller
     {
         $filters = $request->only(['status', 'distribution_network_id']);
         return $this->successResponse(
-                            'Operation succcessful'
-                            ,$this->pipeService->getAllPipes($filters)
-                            ,200);
+            'Operation succcessful',
+            $this->pipeService->getAllPipes($filters),
+            200
+        );
     }
 
     /**
@@ -62,9 +65,10 @@ class PipeController extends Controller
     public function store(StorePipeRequest $request)
     {
         return $this->successResponse(
-                            'Created succcessful'
-                            ,$this->pipeService->createPipe($request->validated())
-                            ,201);
+            'Created succcessful',
+            $this->pipeService->createPipe($request->validated()),
+            201
+        );
     }
 
     /**
@@ -78,9 +82,10 @@ class PipeController extends Controller
     public function show(Pipe $pipe)
     {
         return $this->successResponse(
-                            'Operation succcessful'
-                            ,$this->pipeService->showPipe($pipe)
-                            ,200);
+            'Operation succcessful',
+            $this->pipeService->showPipe($pipe),
+            200
+        );
     }
 
     /**
@@ -95,8 +100,9 @@ class PipeController extends Controller
     public function update(UpdatePipeRequest $request, Pipe $pipe)
     {
         return $this->successResponse(
-                        'Updated succcessful'
-                        ,$this->pipeService->updatePipe($request->validated(),$pipe));
+            'Updated succcessful',
+            $this->pipeService->updatePipe($request->validated(), $pipe)
+        );
     }
 
     /**
@@ -108,9 +114,13 @@ class PipeController extends Controller
      */
     public function destroy(Pipe $pipe)
     {
+        if (!Gate::allows('delete_distribution_network_component', $pipe)) {
+            return $this->errorResponse('Unauthorized', null, 403);
+        }
         $this->pipeService->deletePipe($pipe);
         return $this->successResponse(
-                        'Deleted succcessful'
-                        , null);
+            'Deleted succcessful',
+            null
+        );
     }
 }

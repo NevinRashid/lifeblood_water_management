@@ -25,6 +25,7 @@ class DistributionNetworkController extends Controller
         return [
             new Middleware('role:Super Admin|Distribution Network Manager', only:['store','show', 'update', 'destroy']),
             new Middleware('permission:view_distribution_network_map', only:['index']),
+            new Middleware('can:view_network_reports', only:['review']),
         ];
     }
 

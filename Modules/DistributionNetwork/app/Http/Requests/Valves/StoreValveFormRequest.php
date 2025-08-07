@@ -5,7 +5,9 @@ namespace Modules\DistributionNetwork\Http\Requests\Valves;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Support\Facades\Gate;
 use MatanYadaev\EloquentSpatial\Objects\Point;
+use Modules\DistributionNetwork\Models\DistributionNetwork;
 
 class StoreValveFormRequest extends FormRequest
 {
@@ -36,7 +38,14 @@ class StoreValveFormRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        $networkId = $this->input('distribution_network_id');
+        $network = DistributionNetwork::find($networkId);
+
+        if (! $network) {
+            return false;
+        }
+
+        return Gate::allows('create_distribution_network_component', $network);
     }
 
     // Convert to Point after validation

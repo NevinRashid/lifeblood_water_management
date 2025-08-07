@@ -83,6 +83,7 @@ class PermissionSeeder extends Seeder
             'view_all_reforms',
             'delete_reform',
             'upload_reform_images',
+            'view_network_reports',
 
             'create_team',
             'update_team',

@@ -102,11 +102,10 @@ class ReservoirService
      * @return Reservoir Updated reservoir
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      */
-    public function update(array $data, string $id): Reservoir
+    public function update(array $data, Reservoir $reservoir): Reservoir
     {
         try {
             DB::beginTransaction();
-            $reservoir = Reservoir::findOrFail($id);
 
             // Only update location if it was explicitly provided
             if (array_key_exists('location', $data)) {
@@ -117,7 +116,7 @@ class ReservoirService
             DB::commit();
 
             // Invalidate the cache for the specific reservoir and all reservoirs.
-            Cache::forget('reservoirs.' . $id);
+            Cache::forget('reservoirs.' . $reservoir->id);
             Cache::tags('reservoirs')->flush();
 
             return $reservoir;
@@ -140,16 +139,15 @@ class ReservoirService
      * @return void
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      */
-    public function destroy(string $id): void
+    public function destroy(Reservoir $reservoir): void
     {
         try {
             DB::beginTransaction();
-            $reservoir = Reservoir::findOrFail($id);
             $reservoir->delete();
             DB::commit();
 
             // Invalidate the cache for the specific reservoir and all reservoirs.
-            Cache::forget('reservoirs.' . $id);
+            Cache::forget('reservoirs.' . $reservoir->id);
             Cache::tags('reservoirs')->flush();
         } catch (QueryException $e) {
             DB::rollBack();

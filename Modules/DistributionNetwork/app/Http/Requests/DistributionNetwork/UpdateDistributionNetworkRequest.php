@@ -26,12 +26,10 @@ class UpdateDistributionNetworkRequest extends FormRequest
             'loss_percentage'         => ['nullable', 'numeric', 'between:0,100'],
             'current_volume'          => ['nullable', 'numeric', 'min:0'],
             'manager_id'              => ['sometimes', 'integer', 'exists:users,id'],
-
-            'address' => 'sometimes|array|min:1',
-            'address.*' => 'sometimes|string|max:255',
-
-            'name' => 'sometimes|array|min:1',
-            'name.*' => 'sometimes|string|unique:distribution_networks,name->*|max:255',
+            'address'                 => ['sometimes','array','min:1'],
+            'address.*'               => ['sometimes','string','max:255'],
+            'name'                    => ['sometimes','array','min:1'],
+            'name.*'                  => ['sometimes','string','unique:distribution_networks,name->*','max:255'],
         ];
     }
 }

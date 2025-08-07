@@ -4,6 +4,7 @@ namespace Modules\Sensors\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\Middleware;
 use Modules\Sensors\Http\Requests\SensorReading\StoreSensorReadingRequest;
 use Modules\Sensors\Http\Requests\SensorReading\UpdateSensorReadingRequest;
 use Modules\Sensors\Services\SensorReadingService;
@@ -14,6 +15,18 @@ class SensorReadingController extends Controller
      * @var SensorReadingsService Service instance for sensor readings business logic
      */
     protected SensorReadingService $service;
+
+        /**
+     * Summary of middleware
+     * @return array<Middleware|string>
+     */
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:view_sensor_data', ['only' => ['index', 'show']]),
+            new Middleware('permission:create_sensor_reading', ['only' => ['store']]),
+        ];
+    }
 
     /**
      * Constructor with dependency injection

@@ -203,7 +203,7 @@ class DistributionNetworkService
                     'type'     => $ticket->type,
                     'body'     => $ticket->body,
                     'reporter' => $ticket->reporter->name,
-                    'network'  => $ticket->network, // the distribution name
+                    'network'  => $ticket->network, // the distribution network name
                     'reform' => [
                         'info' => $ticket->reform,
                     ]

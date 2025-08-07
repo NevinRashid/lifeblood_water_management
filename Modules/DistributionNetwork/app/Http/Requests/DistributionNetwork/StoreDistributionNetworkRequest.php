@@ -25,15 +25,12 @@ class StoreDistributionNetworkRequest extends FormRequest
             'zone.*.lng'              => ['required_with:zone', 'numeric', 'between:-180,180'],
             'loss_percentage'         => ['required', 'numeric', 'between:0,100'],
             'current_volume'          => ['nullable', 'numeric', 'min:0'],
-
             'water_source_id'         => ['required', 'integer', 'exists:water_sources,id'],
             'manager_id'              => ['required', 'integer', 'exists:users,id'],
-
-            'address' => 'required|array|min:1',
-            'address.*' => 'required|string|max:255',
-
-            'name' => 'required|array|min:1',
-            'name.*' => 'required|string|unique:distribution_networks,name->*|max:255',
+            'address'                 => ['required','array','min:1'],
+            'address.*'               => ['required','string','max:255'],
+            'name'                    => ['required','array','min:1'],
+            'name.*'                  => ['required','string','unique:distribution_networks,name->*','max:255'],
         ];
     }
 }

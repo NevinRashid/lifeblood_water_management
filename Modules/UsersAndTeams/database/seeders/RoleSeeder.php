@@ -109,6 +109,7 @@ class RoleSeeder extends Seeder
             'assign water source parameters',
             'unassign water source parameters',
             'view testing parameters',
+            'view_network_reports',
         ]);
 
         // Water Treatment Engineer permissions
@@ -151,6 +152,7 @@ class RoleSeeder extends Seeder
             'view_all_distribution_network_components',
             'show_distribution_network_component',
             'delete_distribution_network_component',
+            'view_all_distribution_network_component',
             'view_sensor_data',
             'receive_pressure_alerts',
             'create_trouble_ticket',
@@ -187,7 +189,8 @@ class RoleSeeder extends Seeder
             'view_any_water_quota',
             'show_reservoir_activity',
             'view_all_reservoirs_activity',
-            'get_reservoir_current_level'
+            'get_reservoir_current_level',
+            'view_network_reports',
         ]);
 
         // Water Reservoir / Tanker Officer Permissions
