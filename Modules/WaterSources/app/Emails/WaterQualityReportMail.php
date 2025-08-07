@@ -1,11 +1,13 @@
 <?php
 
-namespace Modules\WaterSources\Mail;
+namespace Modules\WaterSources\Emails;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Support\Facades\App;
+use Illuminate\Mail\Mailables\Content;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Modules\WaterSources\Models\WaterQualityTest;
 
@@ -31,29 +33,40 @@ class WaterQualityReportMail extends Mailable
         $this->test = $test;
     }
 
-    /**
-     * Build the message.
-     *
-     * @return $this
-     */
-    public function build()
-    {
-        $subject = $this->test->meets_standard_parameters
-            ? 'Successful Water Quality Report for Source: ' . $this->test->waterSource->name
-            : 'Urgent Alert: Water Quality Test Failed for Source: ' . $this->test->waterSource->name;
 
+
+     public function envelope(): Envelope
+    {
+        $locale = App::getLocale();
+        $sourceName = $this->test->waterSource->getTranslation('name', $locale);
+
+        $subjectKey = $this->test->meets_standard_parameters
+            ? 'mail.quality_report.subject_success'
+            : 'mail.quality_report.subject_failure';
+
+        return new Envelope(
+            subject: __($subjectKey, ['sourceName' => $sourceName]),
+        );
+    }
+
+    /**
+     * Get the message content definition.
+     */
+    public function content(): Content
+    {
         $failedParameters = [];
         if (!$this->test->meets_standard_parameters) {
             $failedParameters = $this->getFailedParameters();
         }
-        return $this->subject($subject)
-                    ->markdown('emails.reports.water-quality')
-                    ->with([
-                        'test' => $this->test,
-                        'failedParameters' => $failedParameters,
-                    ]);
-    }
 
+        return new Content(
+            markdown: 'emails.reports.water-quality',
+            with: [
+                'test' => $this->test,
+                'failedParameters' => $failedParameters,
+            ],
+        );
+    }
 
     private function getFailedParameters(): array
     {

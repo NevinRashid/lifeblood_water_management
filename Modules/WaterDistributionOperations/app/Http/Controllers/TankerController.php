@@ -3,6 +3,7 @@
 namespace Modules\WaterDistributionOperations\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use Illuminate\Routing\Controllers\Middleware;
@@ -42,7 +43,7 @@ class TankerController extends Controller
     public function index(Request $request): JsonResponse
     {
         $tankers = Tanker::with('users')->latest()->paginate($request->get('per_page', 15));
-        return response()->json($tankers);
+         return $this->successResponse('Tankers retrieved successfully.', $tankers);
     }
 
     /**
@@ -55,10 +56,11 @@ class TankerController extends Controller
         // dd($request);
         $tanker = $this->tankerService->store($request->validated());
 
-        return response()->json([
-            'message' => 'Tanker created successfully.',
-            'data' => $tanker
-        ], 201); // 201 Created
+         return $this->successResponse(
+            'Tanker created successfully.',
+            $tanker,
+            Response::HTTP_CREATED // 201
+        );
     }
 
     /**
@@ -69,7 +71,8 @@ class TankerController extends Controller
     public function show(Tanker $tanker): JsonResponse
     {
 
-        return response()->json($tanker->load('users'));
+        $tanker->load('users');
+        return $this->successResponse('Tanker details retrieved successfully.', $tanker);
     }
 
     /**
@@ -83,10 +86,7 @@ class TankerController extends Controller
         // dd($request);
         $updatedTanker = $this->tankerService->update($request->validated(),$tanker );
 
-        return response()->json([
-            'message' => 'Tanker updated successfully.',
-            'data' => $updatedTanker
-        ]);
+        return $this->successResponse('Tanker updated successfully.', $updatedTanker);
     }
 
     /**
@@ -97,6 +97,6 @@ class TankerController extends Controller
     public function destroy(Tanker $tanker): JsonResponse
     {
         $this->tankerService->destroy($tanker);
-        return $this->successResponse('Tanker deleted successfully.', null);
+        return $this->successResponse('Tanker deleted successfully.');
     }
 }

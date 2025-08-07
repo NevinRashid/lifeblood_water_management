@@ -39,7 +39,7 @@ class TestingParameterController extends Controller
     public function index()
     {
         $parameters = $this->service->index();
-        return response()->json(['success' => true, 'data' => $parameters]);
+     return $this->successResponse('responses.testing_parameter.retrieved', $parameters);
     }
 
     /**
@@ -50,7 +50,7 @@ class TestingParameterController extends Controller
     public function store(StoreTestingParameterRequest $request)
     {
         $parameter = $this->service->store($request->validated());
-        return response()->json(['success' => true, 'data' => $parameter], 201);
+           return $this->successResponse('responses.testing_parameter.created', $parameter, 201);
     }
 
     /**
@@ -61,7 +61,7 @@ class TestingParameterController extends Controller
     public function show($id)
     {
         $parameter = $this->service->show($id);
-        return response()->json(['success' => true, 'data' => $parameter]);
+         return $this->successResponse('responses.testing_parameter.retrieved_single', $parameter);
     }
 
     /**
@@ -73,7 +73,7 @@ class TestingParameterController extends Controller
     public function update(UpdateTestingParameterRequest $request, $id)
     {
         $parameter = $this->service->update($request->validated(),$id );
-        return response()->json(['success' => true, 'data' => $parameter]);
+          return $this->successResponse('responses.testing_parameter.updated', $parameter);
     }
 
     /**
@@ -84,6 +84,6 @@ class TestingParameterController extends Controller
     public function destroy($id)
     {
         $this->service->destroy($id);
-        return response()->json(['success' => true, 'message' => 'Deleted successfully']);
+         return $this->successResponse('responses.testing_parameter.deleted');
     }
 }

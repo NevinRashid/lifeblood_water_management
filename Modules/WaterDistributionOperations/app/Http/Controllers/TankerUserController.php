@@ -20,7 +20,7 @@ class TankerUserController extends Controller
     public function __construct(protected TankerUserService $tankerUserService)
     {
     }
-    
+
 
      /**
       *
@@ -43,7 +43,7 @@ class TankerUserController extends Controller
     public function index(Request $request, Tanker $tanker): JsonResponse
     {
         $users = $this->tankerUserService->getAssignedUsers($tanker, $request->get('per_page', 15));
-        return response()->json($users);
+         return $this->successResponse('User assigned successfully.', $users);
     }
 
     /**
@@ -59,15 +59,12 @@ class TankerUserController extends Controller
         $request->validated('user_id')
     );
 
-    $message = $assignedTanker
-        ? 'User assigned successfully.'
-        : 'User was already assigned to this tanker.';
+      if (!$assignedTanker) {
+            return $this->errorResponse('User was already assigned to this tanker.', null, 409); // 409 Conflict
+        }
 
-    return response()->json([
-        'message' => $message,
-        'data' => $assignedTanker
-    ]);
-}
+        return $this->successResponse('User assigned successfully.', $assignedTanker);
+    }
 
    /**
     *
@@ -79,11 +76,10 @@ class TankerUserController extends Controller
 {
     $success = $this->tankerUserService->unassignUserFromTanker($tanker, $user);
 
-    $message = $success
-        ? 'User unassigned successfully.'
-        : 'User was not assigned to this tanker.';
-
-    return response()->json(['message' => $message]);
-}
+       if (!$success) {
+            return $this->errorResponse('User was not assigned to this tanker.', null, 404); // 404 Not Found
+        }
+    return $this->successResponse('User unassigned successfully.');
+    }
 
 }

@@ -52,7 +52,6 @@ class CheckWaterLevelAndSendEmail implements ShouldQueue
 
         $extractedBeforeThis = $totalExtractedToday - $this->waterExtraction->extracted;
 
-        // if the total extraction equal or more than 80%, send email
         if ($totalExtractedToday >= $thresholdAmount && $extractedBeforeThis < $thresholdAmount) {
             $emails = User::select('email')->role('Treatment Plant Engineer')->get();
             foreach ($emails as $email) {
