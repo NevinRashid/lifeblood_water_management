@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Events;
+namespace Modules\WaterSources\Events;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Queue\SerializesModels;

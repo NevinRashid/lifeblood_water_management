@@ -4,9 +4,10 @@ namespace Modules\WaterSources\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controllers\Middleware;
 use Modules\WaterSources\Services\TestingParameterService;
-use Modules\WaterSources\Http\Requests\StoreTestingParameterRequest;
-use Modules\WaterSources\Http\Requests\UpdateTestingParameterRequest;
+use Modules\WaterSources\Http\Requests\TestingParameter\StoreTestingParameterRequest;
+use Modules\WaterSources\Http\Requests\TestingParameter\UpdateTestingParameterRequest;
 
 class TestingParameterController extends Controller
 {
@@ -16,14 +17,24 @@ class TestingParameterController extends Controller
     public function __construct(TestingParameterService $service)
     {   $this->service = $service;
 
-        // $this->middleware('permission:create_water_quality_test')->only('store');
-        // $this->middleware('permission:update_water_quality_test')->only('update');
-        // $this->middleware('permission:view water quality reports')->only(['index', 'show']);
-        // $this->middleware('permission:delete water quality test')->only('destroy');
     }
-
     /**
-     * Display a listing of the resource.
+     * Define the middleware for this controller.
+     *
+     * @return array
+     */
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:view testing parameters', only: ['index', 'show']),
+            new Middleware('permission:create testing parameter', only: ['store']),
+            new Middleware('permission:update testing parameter', only: ['update']),
+            new Middleware('permission:delete testing parameter', only: ['destroy']),
+        ];
+    }
+    /**
+     * Summary of index
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index()
     {
@@ -32,7 +43,9 @@ class TestingParameterController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Summary of store
+     * @param \Modules\WaterSources\Http\Requests\TestingParameter\StoreTestingParameterRequest $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(StoreTestingParameterRequest $request)
     {
@@ -41,7 +54,9 @@ class TestingParameterController extends Controller
     }
 
     /**
-     * Show the specified resource.
+     * Summary of show
+     * @param mixed $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show($id)
     {
@@ -50,16 +65,21 @@ class TestingParameterController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Summary of update
+     * @param \Modules\WaterSources\Http\Requests\TestingParameter\UpdateTestingParameterRequest $request
+     * @param mixed $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(UpdateTestingParameterRequest $request, $id)
     {
-        $parameter = $this->service->update($id, $request->validated());
+        $parameter = $this->service->update($request->validated(),$id );
         return response()->json(['success' => true, 'data' => $parameter]);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Summary of destroy
+     * @param mixed $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id)
     {

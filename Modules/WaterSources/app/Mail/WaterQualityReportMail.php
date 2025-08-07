@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Mail;
+namespace Modules\WaterSources\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
+use Illuminate\Support\Facades\App;
 use Illuminate\Queue\SerializesModels;
-use Modules\WaterSources\Models\WaterQualityTest; 
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Modules\WaterSources\Models\WaterQualityTest;
 
 class WaterQualityReportMail extends Mailable
 {
@@ -18,6 +19,7 @@ class WaterQualityReportMail extends Mailable
      * @var \Modules\WaterSources\Models\WaterQualityTest
      */
     public WaterQualityTest $test;
+
 
     /**
      * Create a new message instance.
@@ -37,8 +39,9 @@ class WaterQualityReportMail extends Mailable
     public function build()
     {
         $subject = $this->test->meets_standard_parameters
-            ? 'تقرير جودة مياه ناجح لمصدر: ' . $this->test->waterSource->name
-            : 'تنبيه هام: فشل اختبار جودة المياه لمصدر: ' . $this->test->waterSource->name;
+            ? 'Successful Water Quality Report for Source: ' . $this->test->waterSource->name
+            : 'Urgent Alert: Water Quality Test Failed for Source: ' . $this->test->waterSource->name;
+
         $failedParameters = [];
         if (!$this->test->meets_standard_parameters) {
             $failedParameters = $this->getFailedParameters();

@@ -25,9 +25,24 @@ class PermissionSeeder extends Seeder
             'delete field team',
             'assign field team',
 
+            'assign user to tanker',
+            'unassign user from tanker',
+            'view tanker assignments',
+
+            'manage User Role',
+
+            'view testing parameters',
+            'create testing parameter',
+            'update testing parameter',
+            'delete testing parameter',
+
+            'view water source parameters',
+            'assign water source parameters',
+            'unassign water source parameters',
+
             'view water quantity reports',
             'set water quality standards',
-
+            'destroy water quality analysis',
             'record water quality analysis',
             'view water quality reports',
             'receive water quality alerts',

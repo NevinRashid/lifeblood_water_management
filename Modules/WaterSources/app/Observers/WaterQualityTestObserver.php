@@ -11,7 +11,7 @@ use Modules\WaterSources\Notifications\WaterTestFailedNotification;
 
 class WaterQualityTestObserver
 {
-  
+
     public function created(WaterQualityTest $waterQualityTest): void
     {
         $this->sendNotificationIfFailed($waterQualityTest);
@@ -20,7 +20,7 @@ class WaterQualityTestObserver
 
     public function updated(WaterQualityTest $waterQualityTest): void
     {
-        if ($waterQualityTest->isDirty('meets_standard_parameters')) {
+         if (!$waterQualityTest->meets_standard_parameters) {
             $this->sendNotificationIfFailed($waterQualityTest);
         }
     }
@@ -36,7 +36,7 @@ class WaterQualityTestObserver
                 return;
             }
 
-            $qualityEngineers = User::where('role', 'engineer')->get();
+            $qualityEngineers = User::role('Treatment Plant Engineer')->get();
 
             if ($qualityEngineers->isNotEmpty()) {
                 Notification::send($qualityEngineers, new WaterTestFailedNotification(

@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\WaterSources\Http\Requests;
+namespace Modules\WaterSources\Http\Requests\WaterQualityTest;
 
 use Illuminate\Foundation\Http\FormRequest;
 

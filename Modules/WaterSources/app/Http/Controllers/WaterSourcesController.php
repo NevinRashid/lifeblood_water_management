@@ -1,158 +1,158 @@
 <?php
 
-namespace Modules\WaterSources\Http\Controllers;
+    namespace Modules\WaterSources\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Http\JsonResponse;
-use App\Http\Controllers\Controller;
-use Exception;
-use Modules\WaterSources\Models\WaterSource;
-use Modules\WaterSources\Http\Requests\AddMediaRequest;
-use Modules\WaterSources\Http\Resources\WaterSourceResource;
-use Modules\WaterSources\Http\Requests\StoreWaterSourceRequest;
-use Modules\WaterSources\Http\Requests\UpdateWaterSourceRequest;
-use Modules\WaterSources\Services\WaterSourceService;
+    use Exception;
+    use Illuminate\Http\Request;
+    use Illuminate\Http\Response;
+    use Illuminate\Http\JsonResponse;
+    use App\Http\Controllers\Controller;
+    use Modules\WaterSources\Models\WaterSource;
+    use Illuminate\Routing\Controllers\Middleware;
+    use Modules\WaterSources\Services\WaterSourceService;
+    use Modules\WaterSources\Http\Requests\WaterSource\AddMediaRequest;
+    use Modules\WaterSources\Http\Resources\WaterSourceResource;
+    use Modules\WaterSources\Http\Requests\WaterSource\StoreWaterSourceRequest;
+    use Modules\WaterSources\Http\Requests\WaterSource\UpdateWaterSourceRequest;
 
-class WaterSourcesController extends Controller
-{
-    protected WaterSourceService $waterSourceService;
-
-    public function __construct(WaterSourceService $waterSourceService)
+    class WaterSourcesController extends Controller
     {
+        protected WaterSourceService $waterSourceService;
 
-        $this->waterSourceService = $waterSourceService;
-
-        //  $this->middleware('permission:view water source')->only('index', 'show', 'overview');
-
-        // // Only users with 'create water source' permission can store a new one
-        // $this->middleware('permission:create water source')->only('store');
-
-        // // Only users with 'update water source' permission can update
-        // $this->middleware('permission:update water source')->only('update');
-
-        // // Only users with 'delete water source' permission can destroy
-        // $this->middleware('permission:delete water source')->only('destroy');
-
-        // // Only users with 'attach documents to water source' permission can add media
-        // $this->middleware('permission:attach documents to water source')->only('addMedia');
-    }
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @param Request $request
-     * @return JsonResponse
-     */
+        public function __construct(WaterSourceService $waterSourceService)
+        {
+            $this->waterSourceService = $waterSourceService;
+        }
 
 
-    public function index(Request $request): JsonResponse
-    {
-        $waterSources = $this->waterSourceService->getAll($request->all());
+        /**
+         * Define the middleware for this controller.
+         *
+         * @return array
+         */
+        public static function middleware(): array
+        {
+            return [
+                new Middleware('permission:view water source', only: ['index', 'show', 'overview']),
+                new Middleware('permission:create water source', only: ['store']),
+                new Middleware('permission:update water source', only: ['update']),
+                new Middleware('permission:delete water source', only: ['destroy']),
+                new Middleware('permission:attach documents to water source', only: ['addMedia']),
+            ];
+        }
+        /**
+         * Display a listing of the resource.
+         *
+         * @param Request $request
+         * @return JsonResponse
+         */
 
 
-        $data = WaterSourceResource::collection($waterSources);
+        public function index(Request $request): JsonResponse
+        {
+            $waterSources = $this->waterSourceService->getAll($request->all());
 
-        return $this->successResponse('Water sources retrieved successfully.', $data);
-    }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param StoreWaterSourceRequest $request
-     * @return JsonResponse
-     */
-    public function store(StoreWaterSourceRequest $request): JsonResponse
-    {
+            $data = WaterSourceResource::collection($waterSources);
 
-        $waterSource = $this->waterSourceService->store($request->validated());
+            return $this->successResponse('Water sources retrieved successfully.', $data);
+        }
 
-        // $data = new WaterSourceResource($waterSource->load('media'));
-        $waterSource->load('media');
-        return $this->successResponse(
-            'Water source created successfully.',
-            $waterSource,
-            Response::HTTP_CREATED // Status Code 201
-        );
-    }
+        /**
+         * Store a newly created resource in storage.
+         *
+         * @param StoreWaterSourceRequest $request
+         * @return JsonResponse
+         */
+        public function store(StoreWaterSourceRequest $request): JsonResponse
+        {
 
-    /**
-     * Display the specified resource.
-     *
-     * @param string $id
-     * @return JsonResponse
-     */
-    public function show(string $id): JsonResponse
-    {
-        $waterSource = $this->waterSourceService->get($id);
+            $waterSource = $this->waterSourceService->store($request->validated());
+            $waterSource->load('media');
+            return $this->successResponse(
+                'Water source created successfully.',
+                $waterSource,
+                Response::HTTP_CREATED // Status Code 201
+            );
+        }
 
-        $data = new WaterSourceResource($waterSource->load('media'));
+        /**
+         * Display the specified resource.
+         *
+         * @param string $id
+         * @return JsonResponse
+         */
+        public function show(string $id): JsonResponse
+        {
+            $waterSource = $this->waterSourceService->get($id);
 
-        return $this->successResponse('Water source retrieved successfully.', $data);
-    }
+            $data = new WaterSourceResource($waterSource->load('media'));
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param UpdateWaterSourceRequest $request
-     * @param string $id
-     * @return JsonResponse
-     */
-    public function update(UpdateWaterSourceRequest $request, string $id): JsonResponse
-    {
-        $waterSource = $this->waterSourceService->update($request->validated(), $id);
+            return $this->successResponse('Water source retrieved successfully.', $data);
+        }
 
-        $data = new WaterSourceResource($waterSource->load('media'));
+        /**
+         * Update the specified resource in storage.
+         *
+         * @param UpdateWaterSourceRequest $request
+         * @param string $id
+         * @return JsonResponse
+         */
+        public function update(UpdateWaterSourceRequest $request, string $id): JsonResponse
+        {
+            $waterSource = $this->waterSourceService->update($request->validated(), $id);
 
-        return $this->successResponse('Water source updated successfully.', $data);
-    }
+            $data = new WaterSourceResource($waterSource->load('media'));
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param string $id
-     * @return JsonResponse
-     */
-    public function destroy(string $id): JsonResponse
-    {
-        $this->waterSourceService->destroy($id);
+            return $this->successResponse('Water source updated successfully.', $data);
+        }
 
-        return $this->successResponse(
-            'Water source deleted successfully.',
-            null, // No data to return
-            Response::HTTP_OK // We can use 200 OK or 204 No Content
-        );
-    }
-    /**
-     *
-     *
-     * @param AddMediaRequest $request
-     * @param WaterSource $waterSource
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function addMedia(AddMediaRequest $request, WaterSource $waterSource)
-    {
+        /**
+         * Remove the specified resource from storage.
+         *
+         * @param string $id
+         * @return JsonResponse
+         */
+        public function destroy(string $id): JsonResponse
+        {
+            $this->waterSourceService->destroy($id);
 
-        $updatedWaterSource = $this->waterSourceService->addMedia($request->validated(), $waterSource);
+            return $this->successResponse(
+                'Water source deleted successfully.',
+                null, // No data to return
+                Response::HTTP_OK // We can use 200 OK or 204 No Content
+            );
+        }
+        /**
+         *
+         *
+         * @param AddMediaRequest $request
+         * @param WaterSource $waterSource
+         * @return \Illuminate\Http\JsonResponse
+         */
+        public function addMedia(AddMediaRequest $request, WaterSource $waterSource)
+        {
 
-        return new WaterSourceResource($updatedWaterSource);
-    }
+            $updatedWaterSource = $this->waterSourceService->addMedia($request->validated(), $waterSource);
 
-    /**
-     * Get an overview of the water situation
-     *
-     * Returns all active water sources with their associated networks,
-     * reservoirs, and distribution points.
-     *
-     * @return JsonResponse
-     */
-    public function overview(): JsonResponse
-    {
-        try {
-            $overview = $this->waterSourceService->overview();
-            return $this->successResponse('review of water sources retrieved successfully', $overview);
-        } catch (Exception $e) {
-            return $this->errorResponse($e->getMessage(), null, $e->getCode());
+            return new WaterSourceResource($updatedWaterSource);
+        }
+
+        /**
+         * Get an overview of the water situation
+         *
+         * Returns all active water sources with their associated networks,
+         * reservoirs, and distribution points.
+         *
+         * @return JsonResponse
+         */
+        public function overview(): JsonResponse
+        {
+            try {
+                $overview = $this->waterSourceService->overview();
+                return $this->successResponse('review of water sources retrieved successfully', $overview);
+            } catch (Exception $e) {
+                return $this->errorResponse($e->getMessage(), null, $e->getCode());
+            }
         }
     }
-}

@@ -4,21 +4,34 @@ namespace Modules\WaterSources\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controllers\Middleware;
 use Modules\WaterSources\Services\WaterQualityTestService;
-use Modules\WaterSources\Http\Requests\StoreWaterQualityTestRequest;
-use Modules\WaterSources\Http\Requests\UpdateWaterQualityTestRequest;
+use Modules\WaterSources\Http\Requests\WaterQualityTest\StoreWaterQualityTestRequest;
+use Modules\WaterSources\Http\Requests\WaterQualityTest\UpdateWaterQualityTestRequest;
 
 class WaterQualityTestController extends Controller
 {
 
     public function __construct(protected WaterQualityTestService $service) {
-
-        // $this->middleware('permission:record water quality analysis')->only('store' , 'update');
-        // $this->middleware('permission:view water quality reports')->only(['index', 'show']);
     }
 
     /**
-     * Display a listing of the resource.
+     * Define the middleware for this controller.
+     *
+     * @return array
+     */
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:view water quality reports', only: ['index', 'show','generateReport']),
+            new Middleware('permission:record water quality analysis', only: ['store', 'update']),
+            new Middleware('permission:destroy water quality analysis', only: ['destroy']),
+        ];
+    }
+    /**
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index(Request $request)
     {
@@ -33,7 +46,9 @@ class WaterQualityTestController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * 
+     * @param \Modules\WaterSources\Http\Requests\WaterQualityTest\StoreWaterQualityTestRequest $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(StoreWaterQualityTestRequest $request)
     {
@@ -48,7 +63,9 @@ class WaterQualityTestController extends Controller
         ], 201);
     }
     /**
-     * Show the specified resource.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show(int $id)
     {
@@ -60,12 +77,15 @@ class WaterQualityTestController extends Controller
         ]);
     }
     /**
-     * Update the specified resource in storage.
+     *
+     * @param \Modules\WaterSources\Http\Requests\WaterQualityTest\UpdateWaterQualityTestRequest $request
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(UpdateWaterQualityTestRequest $request, int $id)
     {
 
-        $result = $this->service->update($id, $request->validated());
+        $result = $this->service->update($request->validated(),$id );
         $test = $result['test'];
         $failedParameters = $result['failed_parameters'];
 
@@ -77,7 +97,9 @@ class WaterQualityTestController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(int $id)
     {
