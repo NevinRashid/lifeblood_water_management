@@ -74,35 +74,39 @@ Ensure you have the following installed on your machine:
 
 1.  **Clone the repository**:
     ```bash
-    git clone [https://github.com/NevinRashid/lifeblood_water_management](https://github.com/NevinRashid/lifeblood_water_management)
-    cd lifeblood_water_management
+    git clone https://github.com/NevinRashid/lifeblood_water_management
     ```
+       Then navigate to the Project Directory.
+    *(بعد ذلك، قم بالانتقال لمسار المشروع.)*
+       ```bash
+       cd lifeblood_water_management
+       ```
 
-2.  **Install dependencies**:
+3.  **Install dependencies**:
     ```bash
     composer install
     ```
 
-3.  **Setup environment file `.env`**:
+4.  **Setup environment file `.env`**:
     ```bash
     cp .env.example .env
     ```
     *Afterward, configure your database settings in the `.env` file.*
     *(بعد ذلك، قم بتكوين إعدادات قاعدة البيانات الخاصة بك في ملف `.env`.)*
 
-4.  **Generate application key**:
+5.  **Generate application key**:
     ```bash
     php artisan key:generate
     ```
 
-5.  **Run database migrations**:
+6.  **Run database migrations**:
     *This is a critical step that will create all ~25 tables for the application and its modules.*
     *(هذه خطوة حاسمة ستقوم بإنشاء جميع جداول التطبيق ووحداته (حوالي 25 جدولًا).)*
     ```bash
     php artisan migrate
     ```
 
-6.  **Run database seeders**:
+7.  **Run database seeders**:
     *This will populate the database with essential data like permissions, roles, and an admin user.*
     *(سيقوم هذا الأمر بملء قاعدة البيانات بالبيانات الأساسية مثل الصلاحيات والأدوار ومستخدم مسؤول.)*
     ```bash
@@ -110,20 +114,20 @@ Ensure you have the following installed on your machine:
     ```
     >**Default Admin Credentials**: Check `Modules/UsersAndTeams/Database/Seeders/` for details. The default password is `password`.
 
-7.  **Start the application**:
+8.  **Start the application**:
     ```bash
     php artisan serve
     ```
 
-8.  **Run the queue worker** (in a separate terminal):
+9.  **Run the queue worker** (in a separate terminal):
     *This is necessary for processing background jobs like notifications.*
     *(هذا ضروري لمعالجة المهام في الخلفية مثل الإشعارات.)*
     ```bash
     php artisan queue:work
     ```
 
-9.  **Interact with the API**:
-    Use Postman to test the various endpoints. Get the collection from [here](https://documenter.getpostman.com/view/33882685/2sB2qgeJiD).
+10.  **Interact with the API**:
+    Use Postman to test the various endpoints. Get the collection from [here](https://documenter.getpostman.com/view/39062755/2sB3BDKBeV).
 
 ---
 
