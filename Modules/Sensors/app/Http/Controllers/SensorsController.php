@@ -4,6 +4,7 @@ namespace Modules\Sensors\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\Middleware;
 use Modules\Sensors\Http\Requests\Sensor\StoreSensorRequest;
 use Modules\Sensors\Http\Requests\Sensor\UpdateSensorRequest;
 use Modules\Sensors\Services\SensorService;
@@ -11,6 +12,20 @@ use Modules\Sensors\Services\SensorService;
 class SensorsController extends Controller
 {
     protected SensorService $service;
+
+    /**
+     * Summary of middleware
+     * @return array<Middleware|string>
+     */
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:view_sensors', ['only' => ['index', 'show']]),
+            new Middleware('permission:create_sensors', ['only' => ['store']]),
+            new Middleware('permission:update_sensors', ['only' => ['update']]),
+            new Middleware('permission:delete_sensors', ['only' => ['destroy']]),
+        ];
+    }
 
     public function __construct(SensorService $service)
     {
