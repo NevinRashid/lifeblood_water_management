@@ -39,6 +39,7 @@ class PermissionSeeder extends Seeder
             'delete_distribution_network',
             'create_distribution_network_component',
             'update_distribution_network_component',
+            'view_all_distribution_network_components',
             'show_distribution_network_component',
             'delete_distribution_network_component',
             'view_sensor_data',
