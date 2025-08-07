@@ -87,6 +87,13 @@ class PermissionSeeder extends Seeder
             'update_distribution_record',
             'receive_reservoir_alerts',
 
+            'create_reservoir_activity',
+            'show_reservoir_activity',
+            'view_all_reservoirs_activity',
+            'update_reservoir_activity',
+            'delete_reservoir_activity',
+            'get_reservoir_current_level',
+
             'create_water_quality_test',
             'update_water_quality_test',
             'create_sensor_reading',

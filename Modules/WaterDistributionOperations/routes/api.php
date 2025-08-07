@@ -5,14 +5,15 @@ use Modules\WaterDistributionOperations\Http\Controllers\TankerController;
 use Modules\WaterDistributionOperations\Http\Controllers\TankerUserController;
 use Modules\WaterDistributionOperations\Http\Controllers\DeliveryRouteController;
 use Modules\WaterDistributionOperations\Http\Controllers\RouteDeliveryController;
-use Modules\WaterDistributionOperations\Http\Controllers\ReservoirActivityController;
 use Modules\WaterDistributionOperations\Http\Controllers\ReservoirsActivityController;
 use Modules\WaterDistributionOperations\Http\Controllers\WaterDistributionOperationsController;
+use Modules\WaterDistributionOperations\Models\ReservoirActivity;
 
 Route::middleware(['auth:sanctum','set_locale_lang'])->prefix('v1')->group(function () {
     Route::apiResource('distribution-operations', WaterDistributionOperationsController::class);
-    
-   
+    Route::apiResource('reservoirs_activity', ReservoirsActivityController::class);
+    Route::get('reservoirs_activity/{reservoir_activity}/get_current_level', [ReservoirsActivityController::class,'getCurrentLevel']);
+
     Route::apiResource('tankers', TankerController::class);
     Route::prefix('tankers/{tanker}')->group(function () {
         Route::get('/users', [TankerUserController::class, 'index']);

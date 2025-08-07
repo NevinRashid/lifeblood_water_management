@@ -1,11 +1,21 @@
 <?php
 
-namespace Modules\WaterDistributionOperations\Http\Requests;
+namespace Modules\WaterDistributionOperations\Http\Requests\ReservoirsActivity;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class UpdateReservoirsActivityRequest extends FormRequest
 {
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        $user = Auth::user();
+        return $user->can('update_reservoir_activity');
+    }
+
     /**
      * Get the validation rules that apply to the request.
      */
@@ -23,11 +33,4 @@ class UpdateReservoirsActivityRequest extends FormRequest
         ];
     }
 
-    /**
-     * Determine if the user is authorized to make this request.
-     */
-    public function authorize(): bool
-    {
-        return true;
-    }
 }

@@ -80,7 +80,7 @@ class BeneficiaryService extends BaseService
             if($user && !$user->hasRole('Affected Community Member')){
                 $user->assignRole('Affected Community Member');
             }
-            $beneficiaries = parent::store($data);
+            $beneficiary = parent::store($data);
             foreach (config('translatable.locales') as $locale) {
                 Cache::forget("beneficiaries_{$locale}");
             }

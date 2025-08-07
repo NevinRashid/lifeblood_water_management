@@ -5,6 +5,7 @@ namespace Modules\WaterDistributionOperations\Providers;
 use Illuminate\Support\Facades\Route;
 use Modules\WaterDistributionOperations\Models\Tanker;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
+use Modules\WaterDistributionOperations\Models\ReservoirActivity;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -20,6 +21,7 @@ class RouteServiceProvider extends ServiceProvider
     {
         parent::boot();
         //  Route::model('tankers',Tanker::class);
+        //Route::model('reservoirs_activity',ReservoirActivity::class);
     }
 
     /**

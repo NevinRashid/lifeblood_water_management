@@ -38,10 +38,10 @@ class ReservoirCriticalLevelNotification extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->subject("تنبيه: انخفاض مستوى خزان {$this->reservoir->name}")
-            ->line("المستوى الحالي: {$this->currentLevel}")
-            ->line("الحد الحرج: {$this->reservoir->minimum_critical_level}")
-            ->line("يرجى التدخل الفوري.");
+            ->subject("Alert:Water level has dropped in the reservoir {$this->reservoir->name}")
+            ->line("Current Level: {$this->currentLevel} m³")
+            ->line("Critical Threshold: {$this->reservoir->minimum_critical_level} m³")
+            ->line("Immediate action is required to prevent service disruption.");
     }
 
     /**
@@ -54,7 +54,6 @@ class ReservoirCriticalLevelNotification extends Notification
             'name' => $this->reservoir->name,
             'current_level' => $this->currentLevel,
             'critical_level' => $this->reservoir->minimum_critical_level,
-            'message' => "انخفاض مستوى المياه في خزان {$this->reservoir->id} إلى {$this->currentLevel} أقل من الحد الحرج ({$this->reservoir->minimum_critical_level})"
-        ];
+            'message' => "Water level in reservoir #{$this->reservoir->id} has dropped to {$this->currentLevel}, which is below the critical threshold ({$this->reservoir->minimum_critical_level})."        ];
     }
 }

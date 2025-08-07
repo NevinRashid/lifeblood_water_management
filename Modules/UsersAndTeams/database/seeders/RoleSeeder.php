@@ -34,14 +34,14 @@ class RoleSeeder extends Seeder
         $networkManager = Role::create([
             'name' => 'Distribution Network Manager',
             'guard_name' => 'sanctum'
-    
+
 
         ]);
 
         $reservoirAndTankerSupervisor = Role::create([
             'name' => 'Reservoir And Tanker Supervisor',
             'guard_name' => 'sanctum'
-       
+
 
         ]);
 
@@ -131,6 +131,7 @@ class RoleSeeder extends Seeder
             'delete_distribution_network',
             'create_distribution_network_component',
             'update_distribution_network_component',
+            'view_all_distribution_network_components',
             'show_distribution_network_component',
             'delete_distribution_network_component',
             'view_sensor_data',
@@ -167,6 +168,9 @@ class RoleSeeder extends Seeder
             'delete_water_quota',
             'view_water_quota',
             'view_any_water_quota',
+            'show_reservoir_activity',
+            'view_all_reservoirs_activity',
+            'get_reservoir_current_level'
         ]);
 
         // Water Reservoir / Tanker Officer Permissions
@@ -186,7 +190,13 @@ class RoleSeeder extends Seeder
             'view_distribution_records',
             'create_distribution_record',
             'update_distribution_record',
-            'receive_reservoir_alerts'
+            'receive_reservoir_alerts',
+            'create_reservoir_activity',
+            'show_reservoir_activity',
+            'view_all_reservoirs_activity',
+            'update_reservoir_activity',
+            'delete_reservoir_activity',
+            'get_reservoir_current_level'
         ]);
 
         // Field Monitoring permissions

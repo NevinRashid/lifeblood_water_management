@@ -39,6 +39,8 @@ class PipeController extends Controller
 
     /**
      * This method return all pipes from database.
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index(Request $request)
     {
