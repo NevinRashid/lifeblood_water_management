@@ -57,6 +57,7 @@ class PumpingStationsController extends Controller
 
     /**
      * Get a single pumping station by ID
+     * *Creating permission is checked in FormRequest
      * 
      * @param string $id The ID of the pumping station to retrieve
      * @return JsonResponse The requested pumping station data with success status
