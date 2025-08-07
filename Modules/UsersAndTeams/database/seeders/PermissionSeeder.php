@@ -72,6 +72,7 @@ class PermissionSeeder extends Seeder
             'update_water_extraction',
             'delete_water_extraction',
             'view_water_extraction',
+            'view_any_water_extraction',
 
             'create_infrastructure_status',
             'update_infrastructure_status',
@@ -101,11 +102,13 @@ class PermissionSeeder extends Seeder
             'update_beneficiary',
             'delete_beneficiary',
             'view_beneficiary',
+            'view_any_beneficiaries',
 
             'create_water_quota',
             'update_water_quota',
             'delete_water_quota',
             'view_water_quota',
+            'view_any_water_quota',
         ];
 
         foreach ($permissions as $permission) {

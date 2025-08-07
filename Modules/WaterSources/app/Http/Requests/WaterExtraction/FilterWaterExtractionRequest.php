@@ -14,7 +14,7 @@ class FilterWaterExtractionRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->hasPermissionTo('view_water_extraction');
+        return $this->user()->hasPermissionTo('view_any_water_extraction');
     }
 
 

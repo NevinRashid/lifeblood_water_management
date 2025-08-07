@@ -17,7 +17,7 @@ class FilterBeneficiaryRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->hasPermissionTo('view_beneficiary');
+        return $this->user()->hasPermissionTo('view_any_beneficiaries');
     }
 
     /**

@@ -83,6 +83,11 @@ class RoleSeeder extends Seeder
             'update field team',
             'view field team',
             'delete field team',
+            'create_beneficiary',
+            'update_beneficiary',
+            'delete_beneficiary',
+            'view_beneficiary',
+            'view_any_beneficiaries',
         ]);
 
         // Water Treatment Engineer permissions
@@ -111,6 +116,11 @@ class RoleSeeder extends Seeder
             'receive_repair_task_alerts',
             'view_efficiency_reports',
             'view_repair_reports',
+            'create_water_quota',
+            'update_water_quota',
+            'delete_water_quota',
+            'view_water_quota',
+            'view_any_water_quota',
         ]);
 
         // Water Reservoir / Tanker Officer Permissions
@@ -140,6 +150,9 @@ class RoleSeeder extends Seeder
             'update_sensor_reading',
             'create_water_extraction',
             'update_water_extraction',
+            'delete_water_extraction',
+            'view_water_extraction',
+            'view_any_water_extraction',
             'create_infrastructure_status',
             'update_infrastructure_status',
             'view_distribution_network_map',
@@ -172,6 +185,5 @@ class RoleSeeder extends Seeder
             'predict_water_shortages',
             'access_environmental_impact_data'
         ]);
-
-}
+    }
 }
