@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\App; // استيراد App
 use Modules\WaterSources\Models\WaterQualityTest;
 
 class WaterTestFailedNotification extends Notification implements ShouldQueue
@@ -35,7 +36,7 @@ class WaterTestFailedNotification extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
-        return ['mail','database'];
+        return ['mail', 'database'];
     }
 
     /**
@@ -46,35 +47,36 @@ class WaterTestFailedNotification extends Notification implements ShouldQueue
      */
     public function toMail(object $notifiable): MailMessage
     {
-        
+        $sourceName = $this->test->waterSource->getTranslation('name', App::getLocale());
+
         $mail = (new MailMessage)
-                    ->error()
-                    ->subject('Immediate Alert: Water Quality Test Deviation')
-                    ->greeting('Hello ' . $notifiable->name . ',')
-                    ->line('A water quality test has been recorded with results that do not meet the required standards. All details are provided below.')
-                    ->line('---')
-                    ->line('**Test ID:** ' . $this->test->id) // إضافة ID الاختبار للمرجعية
-                    ->line('**Water Source:** ' . $this->test->waterSource->name)
-                    ->line('**Source Type:** ' . $this->test->waterSource->source)
-                    ->line('**Test Date:** ' . $this->test->test_date->format('Y-m-d H:i'))
-                    ->line('---')
-                    ->line('**Details of the recorded deviations:**');
+            ->error()
+            ->subject(__('mail.test_failed_notification.subject', ['sourceName' => $sourceName]))
+            ->greeting(__('mail.test_failed_notification.greeting', ['name' => $notifiable->name]))
+            ->line(__('mail.test_failed_notification.intro', ['sourceName' => $sourceName]))
+            ->line('---')
+            ->line('**' . __('mail.test_failed_notification.test_id') . '** ' . $this->test->id)
+            ->line('**' . __('mail.test_failed_notification.water_source') . '** ' . $sourceName)
+            ->line('**' . __('mail.test_failed_notification.source_type') . '** ' . $this->test->waterSource->source)
+            ->line('**' . __('mail.test_failed_notification.test_date') . '** ' . $this->test->test_date->format('Y-m-d H:i'))
+            ->line('---')
+            ->line('**' . __('mail.test_failed_notification.details_intro') . '**');
 
         foreach ($this->failedParameters as $param) {
+            $parameterName = __('mail.test_failed_notification.' . $param['parameter']);
+
             $mail->line(
-                "- **Parameter:** {$param['parameter']} | ".
-                "**Recorded Value:** {$param['value_recorded']} | ".
-                "**Allowed Range:** [{$param['minimum_allowed']} - {$param['maximum_allowed']}]"
+                "- **" . __('mail.test_failed_notification.parameter') . "** {$parameterName} | " .
+                "**" . __('mail.test_failed_notification.recorded_value') . "** {$param['value_recorded']} | " .
+                "**" . __('mail.test_failed_notification.allowed_range') . "** [{$param['minimum_allowed']} - {$param['maximum_allowed']}]"
             );
         }
 
         $mail->line('---')
-             ->line('Please review the details above and take the necessary action.');
+             ->line(__('mail.test_failed_notification.action_needed'));
 
         return $mail;
     }
-
-
 
     /**
      * Get the array representation of the notification.

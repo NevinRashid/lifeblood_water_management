@@ -39,28 +39,24 @@ class WaterQualityTestController extends Controller
             'water_source_id', 'date_from', 'date_to'
         ]));
 
-        return response()->json([
-            'message' => 'Quality Test List',
-            'data' => $tests,
-        ]);
+          return $this->successResponse('Water quality tests retrieved successfully.', $tests);
     }
 
+
     /**
-     * 
+     *
      * @param \Modules\WaterSources\Http\Requests\WaterQualityTest\StoreWaterQualityTestRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(StoreWaterQualityTestRequest $request)
     {
         $result  = $this->service->store($request->validated());
-        $test = $result['test'];
-        $failedParameters = $result['failed_parameters'];
+         $responseData = [
+            'test' => $result['test'],
+            'debug_failures' => $result['failed_parameters'],
+        ];
+          return $this->successResponse('Water quality test saved successfully.', $responseData, 201);
 
-        return response()->json([
-            'message' => 'Saved successfully',
-            'data' => $test,
-            'debug_failures' => $failedParameters
-        ], 201);
     }
     /**
      *
@@ -71,10 +67,7 @@ class WaterQualityTestController extends Controller
     {
         $test = $this->service->show($id);
 
-        return response()->json([
-            'message' => ' Quality Test Details ',
-            'data' => $test,
-        ]);
+         return $this->successResponse('Water quality test details retrieved successfully.', $test);
     }
     /**
      *
@@ -86,16 +79,12 @@ class WaterQualityTestController extends Controller
     {
 
         $result = $this->service->update($request->validated(),$id );
-        $test = $result['test'];
-        $failedParameters = $result['failed_parameters'];
-
-        return response()->json([
-            'message' => 'Updated successfully',
-            'data' => $test,
-            'debug_failures' => $failedParameters
-        ]);
+        $responseData = [
+            'test' => $result['test'],
+            'debug_failures' => $result['failed_parameters'],
+        ];
+       return $this->successResponse('Water quality test updated successfully.', $responseData);
     }
-
     /**
      *
      * @param int $id
@@ -104,7 +93,7 @@ class WaterQualityTestController extends Controller
     public function destroy(int $id)
     {
         $this->service->destroy($id);
-        return response()->json(['message' => 'Deleted successfully']);
+        return $this->successResponse('Water quality test deleted successfully.');
     }
 
 
@@ -117,10 +106,10 @@ class WaterQualityTestController extends Controller
         public function generateReport(int $id)
         {
             $reportData = $this->service->getReportAndDispatchEmail($id);
-            return response()->json([
-                'message' => 'Report data retrieved. The email is being sent in the background.',
-                'data' => $reportData
-            ]);
-        }
+              return $this->successResponse(
+            'Report data retrieved. The email is being sent in the background.',
+            $reportData
+        );
+    }
 
 }

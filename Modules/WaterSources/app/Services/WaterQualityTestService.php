@@ -143,7 +143,7 @@ class WaterQualityTestService extends BaseService
                 'waterSource.parameters'
             ])->findOrFail($id);
             if (Auth::check()) {
-                SendDetailedReportJob::dispatch($test,  Auth::user());
+                SendDetailedReportJob::dispatch($test,  Auth::user(),app()->getlocal())->afterCommit();
             }
             return $test;
         });

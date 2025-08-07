@@ -47,7 +47,6 @@ class RouteDeliveryService extends BaseService
     public function store(array $data): Model
     {
         return $this->handle(function () use ($data) {
-            // Simply call the parent's store method which is already wrapped in handle().
             return parent::store($data);
         });
     }

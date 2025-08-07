@@ -43,12 +43,8 @@
         {
             $parameters = $this->service->getParametersForSource($waterSource);
 
-            return response()->json([
-                'message' => 'Parameters assigned successfully.',
-                'data' => $parameters
-            ], Response::HTTP_CREATED);
-        ;
-        }
+             return $this->successResponse('Parameters for the source retrieved successfully.', $parameters);
+    }
         /**
          *
          * @param \Modules\WaterSources\Http\Requests\WaterSourceParameter\StoreWaterSourceParameterRequest $request
@@ -59,11 +55,12 @@
         {
             $assignedParameters = $this->service->assignParameters($waterSource, $request->validated()['parameters']);
 
-            return response()->json([
-                'message' => 'Parameters assigned successfully.',
-                'data' => $assignedParameters
-            ], Response::HTTP_CREATED);
-        }
+          return $this->successResponse(
+            'Parameters assigned successfully.',
+            $assignedParameters,
+            Response::HTTP_CREATED // 201
+        );
+    }
 
         /**
          *
@@ -75,11 +72,8 @@
         {
             $syncedParameters = $this->service->syncParameters($waterSource, $request->validated()['parameters']);
 
-            return response()->json([
-                'message' => 'Parameters synced successfully.',
-                'data' => $syncedParameters
-            ]);
-        }
+           return $this->successResponse('Parameters synced successfully.', $syncedParameters);
+    }
 
         /**
          *
@@ -91,8 +85,6 @@
         {
             $this->service->removeParameter($waterSource, $parameter);
 
-            return response()->json([
-                'message' => 'Parameters Removed successfully'
-            ]);
-        }
+            return $this->successResponse('Parameter removed successfully.');
+    }
     }

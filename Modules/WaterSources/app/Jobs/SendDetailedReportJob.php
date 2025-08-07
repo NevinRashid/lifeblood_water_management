@@ -11,7 +11,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Modules\WaterSources\Models\WaterQualityTest;
-use Modules\WaterSources\Mail\WaterQualityReportMail;
+use Modules\WaterSources\Emails\WaterQualityReportMail;
 
 class SendDetailedReportJob implements ShouldQueue
 {

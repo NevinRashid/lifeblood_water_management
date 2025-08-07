@@ -3,6 +3,7 @@ namespace Modules\UsersAndTeams\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 
+use Illuminate\Http\Response;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
@@ -37,7 +38,7 @@ class RoleManagementController extends Controller
     public function index(): JsonResponse
     {
         $roles = $this->roleService->getAllRoles();
-        return response()->json($roles);
+        return $this->successResponse('Roles retrieved successfully.', $roles);
     }
 
     /**
@@ -45,23 +46,29 @@ class RoleManagementController extends Controller
      */
     public function assign(UserRoleRequest $request, User $user): JsonResponse
     {
-        $updatedUser = $this->roleService->assignRoleToUser($user, $request->validated()['role']);
-        return response()->json([
-            'message' => "Role '{$request->role}' assigned successfully.",
-            'user' => $updatedUser,
-        ]);
+        $validatedData = $request->validated();
+        $roleName = $validatedData['role'];
+
+        $updatedUser = $this->roleService->assignRoleToUser($user, $roleName);
+     if (!$updatedUser) {
+            return $this->errorResponse("User already has the '{$roleName}' role.", null, Response::HTTP_CONFLICT); // 409
+        }
+
+        return $this->successResponse(
+            "Role '{$roleName}' assigned to user successfully.",
+            $updatedUser
+        );
     }
 
      public function update(UserRoleRequest $request, User $user): JsonResponse
     {
-
-
-            $updatedUser = $this->roleService->updateUserRole($user, $request->validated()['role']);
-
-            return response()->json([
-                'message' => "User's role has been updated to '{$request->role}'.",
-                'user' => $updatedUser,
-            ]);
+                $validatedData = $request->validated();
+                $roleName = $validatedData['role'];
+                    $updatedUser = $this->roleService->updateUserRole($user, $roleName);
+                    return $this->successResponse(
+                    "User's role has been updated to '{$roleName}'.",
+                    $updatedUser
+                );
 
     }
 
@@ -71,13 +78,17 @@ class RoleManagementController extends Controller
     public function revoke(UserRoleRequest $request, User $user): JsonResponse
     {
 
+            $validatedData = $request->validated();
+            $roleName = $validatedData['role'];
+                $updatedUser = $this->roleService->revokeRoleFromUser($user, $request->validated()['role']);
+                if (!$updatedUser) {
+                return $this->errorResponse("User does not have the '{$roleName}' role to revoke.", null, Response::HTTP_NOT_FOUND); // 404
+            }
+            return $this->successResponse(
+                "Role '{$roleName}' revoked from user successfully.",
+                $updatedUser
+            );
 
-
-            $updatedUser = $this->roleService->revokeRoleFromUser($user, $request->validated()['role']);
-            return response()->json([
-                'message' => "Role '{$request->role}' revoked successfully.",
-                'user' => $updatedUser,
-            ]);
 
     }
 }
